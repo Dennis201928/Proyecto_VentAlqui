@@ -1,0 +1,32 @@
+# Configuración para Apache
+DirectoryIndex login.php index.php index.html
+
+# Habilitar reescritura de URL
+RewriteEngine On
+
+# Redirigir a login si no está autenticado
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/Proyecto_VentAlqui/(login\.php|register\.php|install.*\.php|test\.php|fix_tables\.php)$
+RewriteRule ^(.*)$ login.php [L]
+
+# Permitir acceso a archivos PHP
+<Files "*.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Configuración de errores personalizados
+ErrorDocument 404 /Proyecto_VentAlqui/login.php
+
+# Configuración de seguridad
+<Files ".htaccess">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Prevenir acceso a archivos sensibles
+<FilesMatch "\.(sql|log|txt)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
