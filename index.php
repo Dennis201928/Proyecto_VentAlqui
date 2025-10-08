@@ -308,7 +308,7 @@ if (isset($_GET['success'])) {
                     </ol>
                     <div class="carousel-inner">
                         <div class="carousel-item position-relative active" style="height: 430px;">
-                            <img class="position-absolute w-100 h-100" src="img/carousel-1.jpg"
+                            <img class="position-absolute w-100 h-100" src="img/reference/carousel-1.jpg"
                                 style="object-fit: cover;">
                             <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                 <div class="p-3" style="max-width: 700px;">
@@ -322,7 +322,7 @@ if (isset($_GET['success'])) {
                             </div>
                         </div>
                         <div class="carousel-item position-relative" style="height: 430px;">
-                            <img class="position-absolute w-100 h-100" src="img/carousel-2.jpg"
+                            <img class="position-absolute w-100 h-100" src="img/reference/carousel-2.jpg"
                                 style="object-fit: cover;">
                             <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                 <div class="p-3" style="max-width: 700px;">
@@ -339,14 +339,14 @@ if (isset($_GET['success'])) {
             </div>
             <div class="col-lg-4">
                 <div class="product-offer mb-30" style="height: 200px;">
-                    <img class="img-fluid" src="img/offer-1.jpg" alt="">
+                    <img class="img-fluid" src="img/reference/offer-1.jpg" alt="">
                     <div class="offer-text">
                         <h3 class="text-white mb-3">Oferta Especial</h3>
                         <a href="alquiler.php" class="btn btn-primary">Alquilar</a>
                     </div>
                 </div>
                 <div class="product-offer mb-30" style="height: 200px;">
-                    <img class="img-fluid" src="img/offer-2.jpg" alt="">
+                    <img class="img-fluid" src="img/reference/offer-2.jpg" alt="">
                     <div class="offer-text">
                         <h3 class="text-white mb-3">Oferta Especial</h3>
                         <a href="index.php" class="btn btn-primary">Comprar</a>
@@ -408,7 +408,7 @@ if (isset($_GET['success'])) {
                     <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                         <div class="product-item bg-light mb-4">
                             <div class="product-img position-relative overflow-hidden">
-                                <img class="img-fluid w-100" src="<?php echo $product['imagen_principal'] ?: 'img/product-1.jpg'; ?>" alt="<?php echo htmlspecialchars($product['nombre']); ?>">
+                                <img class="img-fluid w-100" src="<?php echo $product['imagen_principal'] ?: 'img/reference/product-1.jpg'; ?>" alt="<?php echo htmlspecialchars($product['nombre']); ?>">
                                 <div class="product-action">
                                     <a class="btn btn-outline-dark btn-square" href="#" onclick="addToFavorites(<?php echo $product['id']; ?>)">
                                         <i class="far fa-heart"></i>
@@ -476,7 +476,7 @@ if (isset($_GET['success'])) {
                     <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                         <div class="product-item bg-light mb-4">
                             <div class="product-img position-relative overflow-hidden">
-                                <img class="img-fluid w-100" src="<?php echo $product['imagen_principal'] ?: 'img/product-1.jpg'; ?>" alt="<?php echo htmlspecialchars($product['nombre']); ?>">
+                                <img class="img-fluid w-100" src="<?php echo $product['imagen_principal'] ?: 'img/reference/product-1.jpg'; ?>" alt="<?php echo htmlspecialchars($product['nombre']); ?>">
                                 <div class="product-action">
                                     <a class="btn btn-outline-dark btn-square" href="#" onclick="addToFavorites(<?php echo $product['id']; ?>)">
                                         <i class="far fa-heart"></i>
@@ -539,7 +539,7 @@ if (isset($_GET['success'])) {
         <div class="row px-xl-5">
             <div class="col-md-6">
                 <div class="product-offer mb-30" style="height: 300px;">
-                    <img class="img-fluid" src="img/offer-1.jpg" alt="">
+                    <img class="img-fluid" src="img/reference/offer-1.jpg" alt="">
                     <div class="offer-text">
                         <h3 class="text-white mb-3">Precios Especiales</h3>
                         <a href="index.php" class="btn btn-primary">Comprar</a>
@@ -548,7 +548,7 @@ if (isset($_GET['success'])) {
             </div>
             <div class="col-md-6">
                 <div class="product-offer mb-30" style="height: 300px;">
-                    <img class="img-fluid" src="img/offer-2.jpg" alt="">
+                    <img class="img-fluid" src="img/reference/offer-2.jpg" alt="">
                     <div class="offer-text">
                         <h3 class="text-white mb-3">Precios Especiales</h3>
                         <a href="alquiler.php" class="btn btn-primary">Alquilar</a>
@@ -623,7 +623,7 @@ if (isset($_GET['success'])) {
                 </p>
             </div>
             <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="">
+                <img class="img-fluid" src="img/reference/payments.png" alt="">
             </div>
         </div>
     </div>

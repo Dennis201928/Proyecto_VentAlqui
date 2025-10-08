@@ -330,7 +330,7 @@ if (isset($_GET['success'])) {
                                 <div class="product-item bg-light mb-4">
                                     <div class="product-img position-relative overflow-hidden">
                                         <img class="img-fluid w-100"
-                                             src="<?php echo !empty($p['imagen_principal']) ? htmlspecialchars($p['imagen_principal']) : 'img/product-1.jpg'; ?>"
+                                             src="<?php echo !empty($p['imagen_principal']) ? htmlspecialchars($p['imagen_principal']) : 'img/reference/product-1.jpg'; ?>"
                                              alt="<?php echo htmlspecialchars($p['nombre'] ?? 'Producto'); ?>">
                                         <div class="product-action">
                                             <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'material')">
@@ -461,7 +461,7 @@ if (isset($_GET['success'])) {
                 </p>
             </div>
             <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/payments.png" alt="">
+                <img class="img-fluid" src="img/reference/payments.png" alt="">
             </div>
         </div>
     </div>
