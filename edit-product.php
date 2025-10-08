@@ -49,12 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             
             $imagen_principal = $product_data['imagen_principal'];
+            $imagen_anterior = $product_data['imagen_principal'];
+            
             if (isset($_FILES['imagen_principal']) && $_FILES['imagen_principal']['error'] == 0) {
-                // Eliminar imagen anterior si existe
-                if ($imagen_principal && file_exists($imagen_principal)) {
-                    unlink($imagen_principal);
+                try {
+                    $imagen_principal = $imageUpload->uploadImage($_FILES['imagen_principal'], 'principal');
+                    
+                    // Solo eliminar imagen anterior si la nueva se subió correctamente
+                    if ($imagen_anterior && file_exists($imagen_anterior)) {
+                        unlink($imagen_anterior);
+                    }
+                } catch (Exception $e) {
+                    throw new Exception('Error al subir imagen: ' . $e->getMessage());
                 }
-                $imagen_principal = $imageUpload->uploadImage($_FILES['imagen_principal'], 'principal');
             }
             
             $update_data = [

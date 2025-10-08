@@ -3,7 +3,7 @@
  * Clase para manejo de productos
  */
 
-require_once 'config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 class Product {
     private $db;

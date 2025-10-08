@@ -22,6 +22,9 @@ if (isset($_GET['success'])) {
         case 'product_updated':
             $success_message = 'Producto actualizado exitosamente';
             break;
+        case 'registration_complete':
+            $success_message = '¡Registro completado exitosamente! Ya puedes iniciar sesión.';
+            break;
     }
 }
 ?>
@@ -162,7 +165,7 @@ if (isset($_GET['success'])) {
                                 <a class="dropdown-item" href="logout.php">Cerrar Sesión</a>
                             <?php else: ?>
                                 <a class="dropdown-item" href="login.php">Iniciar Sesión</a>
-                                <a class="dropdown-item" href="login.php">Registrarse</a>
+                                <a class="dropdown-item" href="register.php">Registrarse</a>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -417,6 +420,9 @@ if (isset($_GET['success'])) {
                                         <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo $product['id']; ?>" title="Editar producto">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <a class="btn btn-outline-danger btn-square" href="#" onclick="deleteProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['nombre']); ?>')" title="Eliminar producto">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -481,6 +487,9 @@ if (isset($_GET['success'])) {
                                     <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
                                         <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo $product['id']; ?>" title="Editar producto">
                                             <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a class="btn btn-outline-danger btn-square" href="#" onclick="deleteProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['nombre']); ?>')" title="Eliminar producto">
+                                            <i class="fas fa-trash"></i>
                                         </a>
                                     <?php endif; ?>
                                 </div>
@@ -581,7 +590,7 @@ if (isset($_GET['success'])) {
                                 <a class="text-secondary mb-2" href="my-rentals.php"><i class="fa fa-angle-right mr-2"></i>Mis Alquileres</a>
                             <?php else: ?>
                                 <a class="text-secondary mb-2" href="login.php"><i class="fa fa-angle-right mr-2"></i>Iniciar Sesión</a>
-                                <a class="text-secondary mb-2" href="login.php"><i class="fa fa-angle-right mr-2"></i>Registrarse</a>
+                                <a class="text-secondary mb-2" href="register.php"><i class="fa fa-angle-right mr-2"></i>Registrarse</a>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -674,9 +683,42 @@ if (isset($_GET['success'])) {
         <?php endif; ?>
     }
     
+    // Eliminar producto
+    function deleteProduct(productId, productName) {
+        if (confirm('¿Estás seguro de que quieres eliminar el producto "' + productName + '"?\n\nEsta acción no se puede deshacer.')) {
+            console.log('Enviando petición de eliminación para producto ID:', productId);
+            
+            $.post('api/delete-product.php', {
+                id: productId
+            }, function(response) {
+                console.log('Respuesta del servidor:', response);
+                
+                if (response && response.success) {
+                    alert('Producto eliminado exitosamente');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (response ? response.message : 'Respuesta inválida del servidor'));
+                }
+            }).fail(function(xhr, status, error) {
+                console.log('Error en la petición:', xhr.responseText);
+                alert('Error al eliminar el producto: ' + xhr.responseText);
+            });
+        }
+    }
+    
     // Actualizar contador al cargar la página
     $(document).ready(function() {
         updateCartCount();
+        
+        $('.dropdown-menu a').on('click', function(e) {
+            window.location.href = $(this).attr('href');
+        });
+        
+        $('a[onclick*="addToFavorites"]').on('click', function(e) {
+            e.preventDefault();
+            var productId = $(this).attr('onclick').match(/\d+/)[0];
+            addToFavorites(productId);
+        });
     });
     </script>
 </body>

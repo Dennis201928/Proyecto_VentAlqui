@@ -1,0 +1,14 @@
+NUEVO MENSAJE DE CONTACTO - ALQUIVENTA
+==========================================
+Fecha: 2025-10-08 20:25:02
+Nombre: Technologies
+Email: isaacj122001@gmail.com
+Asunto: testestes
+==========================================
+
+MENSAJE:
+testestestest
+
+==========================================
+IP: ::1
+User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36
