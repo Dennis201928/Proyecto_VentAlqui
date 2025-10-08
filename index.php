@@ -2,29 +2,28 @@
 require_once 'includes/auth.php';
 require_once 'includes/product.php';
 require_once 'includes/security.php';
-
-// Aplicar headers de seguridad
 Security::setSecurityHeaders();
-
-// Verificar autenticación
-Security::requireAuth();
 
 $auth = new Auth();
 $product = new Product();
 
-// Obtener productos destacados
 $featured_products = $product->getFeaturedProducts(8);
-
-// Obtener categorías
 $categories = $product->getCategories();
-
-// Obtener productos de maquinaria para alquiler
 $maquinaria_products = $product->getProducts(['tipo' => 'maquinaria', 'limit' => 7]);
-
-// Obtener productos de materiales para venta
 $materiales_products = $product->getProducts(['tipo' => 'material', 'limit' => 4]);
-
 $current_user = $auth->getCurrentUser();
+
+$success_message = '';
+if (isset($_GET['success'])) {
+    switch ($_GET['success']) {
+        case 'product_created':
+            $success_message = 'Producto creado exitosamente';
+            break;
+        case 'product_updated':
+            $success_message = 'Producto actualizado exitosamente';
+            break;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -44,7 +43,7 @@ $current_user = $auth->getCurrentUser();
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <!-- Libraries Stylesheet -->
     <link href="lib/animate/animate.min.css" rel="stylesheet">
@@ -52,6 +51,79 @@ $current_user = $auth->getCurrentUser();
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    
+    <!-- Estilos personalizados para las tarjetas de productos -->
+    <style>
+        .product-item {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .product-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .product-description {
+            color: #6c757d;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin: 8px 0;
+            min-height: 2.4rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .stock-badge {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .stock-badge i {
+            font-size: 0.7rem;
+        }
+        
+        .product-item .text-center {
+            padding: 1.5rem 1rem;
+        }
+        
+        .product-item .h6 {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-item .h5 {
+            color: #007bff;
+            font-weight: 700;
+        }
+        
+        
+        .product-action {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+        }
+        
+        .product-action .btn-square {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -77,6 +149,15 @@ $current_user = $auth->getCurrentUser();
                                 <a class="dropdown-item" href="profile.php">Mi Perfil</a>
                                 <a class="dropdown-item" href="my-orders.php">Mis Pedidos</a>
                                 <a class="dropdown-item" href="my-rentals.php">Mis Alquileres</a>
+                                <?php if ($current_user['tipo_usuario'] === 'admin'): ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-primary" href="admin.php">
+                                        <i class="fas fa-tools me-2"></i>Panel de Administración
+                                    </a>
+                                    <a class="dropdown-item text-primary" href="admin-products.php">
+                                        <i class="fas fa-list me-2"></i>Gestionar Productos
+                                    </a>
+                                <?php endif; ?>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="logout.php">Cerrar Sesión</a>
                             <?php else: ?>
@@ -188,6 +269,11 @@ $current_user = $auth->getCurrentUser();
                             <a href="index.php" class="nav-item nav-link">Venta</a>
                             <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
+                            <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
+                                <a href="admin.php" class="nav-item nav-link text-warning">
+                                    <i class="fas fa-tools me-1"></i>Admin
+                                </a>
+                            <?php endif; ?>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                             <a href="favorites.php" class="btn px-0">
@@ -268,6 +354,16 @@ $current_user = $auth->getCurrentUser();
     </div>
     <!-- Carousel End -->
 
+    <!-- Mensaje de Éxito -->
+    <?php if ($success_message): ?>
+        <div class="container-fluid pt-3">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($success_message); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <!-- Featured Start -->
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
@@ -317,17 +413,32 @@ $current_user = $auth->getCurrentUser();
                                     <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo $product['id']; ?>">
                                         <i class="fa fa-search"></i>
                                     </a>
+                                    <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
+                                        <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo $product['id']; ?>" title="Editar producto">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="product-detail.php?id=<?php echo $product['id']; ?>">
                                     <?php echo htmlspecialchars($product['nombre']); ?>
                                 </a>
-                                <?php if ($product['precio_alquiler_dia']): ?>
-                                    <div class="d-flex align-items-center justify-content-center mt-2">
-                                        <h5>$<?php echo number_format($product['precio_alquiler_dia'], 2); ?>/día</h5>
+                                
+                                <!-- Descripción -->
+                                <?php if (!empty($product['descripcion'])): ?>
+                                    <div class="product-description">
+                                        <?php echo htmlspecialchars(substr($product['descripcion'], 0, 100)) . (strlen($product['descripcion']) > 100 ? '...' : ''); ?>
                                     </div>
                                 <?php endif; ?>
+                                
+                                <!-- Stock -->
+                                <div class="mb-2">
+                                    <span class="stock-badge">
+                                        <i class="fas fa-box"></i>Stock: <?php echo $product['stock_disponible']; ?>
+                                    </span>
+                                </div>
+                                
                                 <div class="d-flex align-items-center justify-content-center mb-1">
                                     <small class="fa fa-star text-primary mr-1"></small>
                                     <small class="fa fa-star text-primary mr-1"></small>
@@ -361,26 +472,38 @@ $current_user = $auth->getCurrentUser();
                             <div class="product-img position-relative overflow-hidden">
                                 <img class="img-fluid w-100" src="<?php echo $product['imagen_principal'] ?: 'img/product-1.jpg'; ?>" alt="<?php echo htmlspecialchars($product['nombre']); ?>">
                                 <div class="product-action">
-                                    <a class="btn btn-outline-dark btn-square" href="#" onclick="addToCart(<?php echo $product['id']; ?>, 'venta')">
-                                        <i class="fa fa-shopping-cart"></i>
-                                    </a>
                                     <a class="btn btn-outline-dark btn-square" href="#" onclick="addToFavorites(<?php echo $product['id']; ?>)">
                                         <i class="far fa-heart"></i>
                                     </a>
                                     <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo $product['id']; ?>">
                                         <i class="fa fa-search"></i>
                                     </a>
+                                    <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
+                                        <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo $product['id']; ?>" title="Editar producto">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="product-detail.php?id=<?php echo $product['id']; ?>">
                                     <?php echo htmlspecialchars($product['nombre']); ?>
                                 </a>
-                                <?php if ($product['precio_venta']): ?>
-                                    <div class="d-flex align-items-center justify-content-center mt-2">
-                                        <h5>$<?php echo number_format($product['precio_venta'], 2); ?></h5>
+                                
+                                <!-- Descripción -->
+                                <?php if (!empty($product['descripcion'])): ?>
+                                    <div class="product-description">
+                                        <?php echo htmlspecialchars(substr($product['descripcion'], 0, 100)) . (strlen($product['descripcion']) > 100 ? '...' : ''); ?>
                                     </div>
                                 <?php endif; ?>
+                                
+                                <!-- Stock -->
+                                <div class="mb-2">
+                                    <span class="stock-badge">
+                                        <i class="fas fa-box"></i>Stock: <?php echo $product['stock_disponible']; ?>
+                                    </span>
+                                </div>
+                                
                                 <div class="d-flex align-items-center justify-content-center mb-1">
                                     <small class="fa fa-star text-primary mr-1"></small>
                                     <small class="fa fa-star text-primary mr-1"></small>

@@ -9,7 +9,9 @@ class Security {
      * Verificar si el usuario está autenticado
      */
     public static function requireAuth() {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         
         if (!isset($_SESSION['user_id'])) {
             header('Location: login.php');

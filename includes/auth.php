@@ -3,7 +3,9 @@
  * Sistema de autenticación y manejo de sesiones
  */
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once 'config/database.php';
 require_once 'security.php';
 
@@ -215,7 +217,7 @@ class Auth {
      * Verificar si el usuario es administrador
      */
     public function isAdmin() {
-        return $this->isLoggedIn() && $_SESSION['user_type'] === 'admin';
+        return $this->isLoggedIn() && isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'admin';
     }
 
     /**

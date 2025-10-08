@@ -1,9 +1,8 @@
 <?php
-/**
- * Página de registro de usuarios
- */
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once 'includes/auth.php';
 
 $auth = new Auth();

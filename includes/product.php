@@ -15,6 +15,21 @@ class Product {
     }
 
     /**
+     * Convertir array PHP a formato de array PostgreSQL
+     */
+    private function arrayToPostgresArray($array) {
+        if (empty($array) || !is_array($array)) {
+            return null;
+        }
+        
+        $escaped_array = array_map(function($item) {
+            return '"' . addslashes($item) . '"';
+        }, $array);
+        
+        return '{' . implode(',', $escaped_array) . '}';
+    }
+
+    /**
      * Obtener todos los productos con filtros
      */
     public function getProducts($filters = []) {
@@ -134,7 +149,11 @@ class Product {
             $stmt->bindParam(':stock_disponible', $data['stock_disponible']);
             $stmt->bindParam(':stock_minimo', $data['stock_minimo']);
             $stmt->bindParam(':imagen_principal', $data['imagen_principal']);
-            $stmt->bindParam(':imagenes_adicionales', $data['imagenes_adicionales']);
+            
+            // Manejar array de imágenes adicionales
+            $imagenes_adicionales = $this->arrayToPostgresArray($data['imagenes_adicionales'] ?? []);
+            $stmt->bindParam(':imagenes_adicionales', $imagenes_adicionales);
+            
             $stmt->bindParam(':especificaciones', $data['especificaciones']);
             $stmt->bindParam(':estado', $data['estado']);
             
@@ -171,7 +190,11 @@ class Product {
             $stmt->bindParam(':stock_disponible', $data['stock_disponible']);
             $stmt->bindParam(':stock_minimo', $data['stock_minimo']);
             $stmt->bindParam(':imagen_principal', $data['imagen_principal']);
-            $stmt->bindParam(':imagenes_adicionales', $data['imagenes_adicionales']);
+            
+            // Manejar array de imágenes adicionales
+            $imagenes_adicionales = $this->arrayToPostgresArray($data['imagenes_adicionales'] ?? []);
+            $stmt->bindParam(':imagenes_adicionales', $imagenes_adicionales);
+            
             $stmt->bindParam(':especificaciones', $data['especificaciones']);
             $stmt->bindParam(':estado', $data['estado']);
             
