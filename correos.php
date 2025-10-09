@@ -16,14 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'isaacj122001@gmail.com';
-        $mail->Password = 'sgoahzptxcrquxyl';
+        $mail->Username = 'dennis2000.david@gmail.com';
+        $mail->Password = 'twvy ieuz unri nclp';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
         // Remitente y destinatario
-        $mail->setFrom('isaacj122001@gmail.com', 'VentAlqui');
-        $mail->addAddress('isaacj122001@gmail.com');
+        $mail->setFrom('dennis2000.david@gmail.com', 'VentAlqui');
+        $mail->addAddress('dennis2000.david@gmail.com');
 
         // Contenido del correo
         $mail->isHTML(true);
