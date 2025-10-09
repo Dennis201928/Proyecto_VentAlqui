@@ -19,6 +19,13 @@ class Auth {
     }
 
     /**
+     * Obtener conexión a la base de datos
+     */
+    public function getConnection() {
+        return $this->conn;
+    }
+
+    /**
      * Registrar un nuevo usuario con validaciones de seguridad
      */
     public function register($nombre, $apellido, $email, $password, $telefono = null, $direccion = null) {
@@ -299,6 +306,162 @@ class Auth {
             }
         } catch (PDOException $e) {
             return ['success' => false, 'message' => 'Error de base de datos: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Generar token de recuperación de contraseña
+     */
+    public function generatePasswordRecoveryToken($email) {
+        try {
+            // Verificar si el email existe
+            $query = "SELECT id, nombre, apellido FROM usuarios WHERE email = :email AND activo = true";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            
+            if ($stmt->rowCount() == 0) {
+                return ['success' => false, 'message' => 'Email no encontrado o cuenta inactiva'];
+            }
+            
+            $user = $stmt->fetch();
+            
+            // Limpiar tokens anteriores del usuario
+            $delete_query = "DELETE FROM password_recovery_tokens WHERE usuario_id = :usuario_id";
+            $delete_stmt = $this->conn->prepare($delete_query);
+            $delete_stmt->bindParam(':usuario_id', $user['id']);
+            $delete_stmt->execute();
+            
+            // Generar token único
+            $token = bin2hex(random_bytes(32));
+            $expires_at = date('Y-m-d H:i:s', time() + (60 * 60)); // 1 hora de validez
+            
+            // Guardar token en la base de datos
+            $insert_query = "INSERT INTO password_recovery_tokens (usuario_id, token, expires_at, ip_address, user_agent) 
+                           VALUES (:usuario_id, :token, :expires_at, :ip_address, :user_agent)";
+            $insert_stmt = $this->conn->prepare($insert_query);
+            $insert_stmt->bindParam(':usuario_id', $user['id']);
+            $insert_stmt->bindParam(':token', $token);
+            $insert_stmt->bindParam(':expires_at', $expires_at);
+            $insert_stmt->bindParam(':ip_address', $_SERVER['REMOTE_ADDR'] ?? 'unknown');
+            $insert_stmt->bindParam(':user_agent', $_SERVER['HTTP_USER_AGENT'] ?? 'unknown');
+            
+            if ($insert_stmt->execute()) {
+                // Log del evento
+                Security::logSecurityEvent('password_recovery_requested', [
+                    'user_id' => $user['id'],
+                    'email' => $email,
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                ]);
+                
+                return [
+                    'success' => true, 
+                    'message' => 'Token de recuperación generado exitosamente',
+                    'token' => $token,
+                    'user' => $user
+                ];
+            } else {
+                return ['success' => false, 'message' => 'Error al generar token de recuperación'];
+            }
+        } catch (PDOException $e) {
+            Security::logSecurityEvent('password_recovery_error', [
+                'error' => $e->getMessage(),
+                'email' => $email
+            ]);
+            return ['success' => false, 'message' => 'Error de base de datos: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Verificar token de recuperación de contraseña
+     */
+    public function verifyPasswordRecoveryToken($token) {
+        try {
+            $query = "SELECT prt.*, u.id as user_id, u.nombre, u.apellido, u.email 
+                     FROM password_recovery_tokens prt 
+                     JOIN usuarios u ON prt.usuario_id = u.id 
+                     WHERE prt.token = :token AND prt.used = false AND prt.expires_at > NOW()";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':token', $token);
+            $stmt->execute();
+            
+            if ($stmt->rowCount() == 1) {
+                return ['success' => true, 'data' => $stmt->fetch()];
+            } else {
+                return ['success' => false, 'message' => 'Token inválido o expirado'];
+            }
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => 'Error de base de datos: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Cambiar contraseña usando token de recuperación
+     */
+    public function resetPasswordWithToken($token, $new_password) {
+        try {
+            // Verificar token
+            $token_verification = $this->verifyPasswordRecoveryToken($token);
+            if (!$token_verification['success']) {
+                return $token_verification;
+            }
+            
+            $token_data = $token_verification['data'];
+            
+            // Validar nueva contraseña
+            $rules = ['password' => ['required' => true, 'type' => 'password']];
+            $validation = Security::validateAndSanitize(['password' => $new_password], $rules);
+            
+            if (!empty($validation['errors'])) {
+                return ['success' => false, 'message' => implode('<br>', $validation['errors'])];
+            }
+            
+            // Actualizar contraseña
+            $new_password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+            $update_query = "UPDATE usuarios SET password_hash = :password_hash WHERE id = :id";
+            $update_stmt = $this->conn->prepare($update_query);
+            $update_stmt->bindParam(':password_hash', $new_password_hash);
+            $update_stmt->bindParam(':id', $token_data['user_id']);
+            
+            if ($update_stmt->execute()) {
+                // Marcar token como usado
+                $mark_used_query = "UPDATE password_recovery_tokens SET used = true WHERE id = :id";
+                $mark_used_stmt = $this->conn->prepare($mark_used_query);
+                $mark_used_stmt->bindParam(':id', $token_data['id']);
+                $mark_used_stmt->execute();
+                
+                // Log del evento
+                Security::logSecurityEvent('password_reset_completed', [
+                    'user_id' => $token_data['user_id'],
+                    'email' => $token_data['email'],
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                ]);
+                
+                return ['success' => true, 'message' => 'Contraseña restablecida exitosamente'];
+            } else {
+                return ['success' => false, 'message' => 'Error al actualizar contraseña'];
+            }
+        } catch (PDOException $e) {
+            Security::logSecurityEvent('password_reset_error', [
+                'error' => $e->getMessage(),
+                'token' => $token
+            ]);
+            return ['success' => false, 'message' => 'Error de base de datos: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Limpiar tokens expirados
+     */
+    public function cleanExpiredTokens() {
+        try {
+            $query = "DELETE FROM password_recovery_tokens WHERE expires_at < NOW() OR used = true";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            
+            return ['success' => true, 'message' => 'Tokens expirados limpiados'];
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => 'Error al limpiar tokens: ' . $e->getMessage()];
         }
     }
 }

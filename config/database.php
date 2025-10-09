@@ -7,7 +7,7 @@ class Database {
     private $host = 'localhost';
     private $db_name = 'venta_alquiler_db';
     private $username = 'postgres';
-    private $password = '1234';
+    private $password = '123456';
     private $port = '5432';
     private $conn;
 
