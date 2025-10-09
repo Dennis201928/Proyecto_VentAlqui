@@ -136,7 +136,7 @@ if (isset($_GET['success'])) {
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center h-100">
-                    <a class="text-body mr-3" href="about.php">Acerca de</a>
+                    <a class="text-body mr-3" href="quienes_somos.php">Acerca de</a>
                     <a class="text-body mr-3" href="contact.php">Contáctanos</a>
                     
                 </div>
@@ -213,36 +213,7 @@ if (isset($_GET['success'])) {
     <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
-            <div class="col-lg-3 d-none d-lg-block">
-                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse"
-                    href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
-                    <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Maquinarias y Materiales Pétreos</h6>
-                    <i class="fa fa-angle-down text-dark"></i>
-                </a>
-                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
-                    id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
-                    <div class="navbar-nav w-100">
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Materiales Pétreos <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                                <?php foreach ($categories as $category): ?>
-                                    <?php if ($category['tipo'] == 'material'): ?>
-                                        <a href="index.php?categoria=<?php echo $category['id']; ?>" class="dropdown-item"><?php echo $category['nombre']; ?></a>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                        <?php foreach ($categories as $category): ?>
-                            <?php if ($category['tipo'] == 'maquinaria'): ?>
-                                <a href="alquiler.php?categoria=<?php echo $category['id']; ?>" class="nav-item nav-link"><?php echo $category['nombre']; ?></a>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </div>
-                </nav>
-            </div>
-
-            <div class="col-lg-9">
+             <div class="col-12 px-0">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                     <a href="index.php" class="text-decoration-none d-block d-lg-none">
                         <span class="h1 text-uppercase text-dark bg-light px-2">Alqui</span>
@@ -257,6 +228,7 @@ if (isset($_GET['success'])) {
                             <a href="venta.php" class="nav-item nav-link">Venta</a>
                             <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
+                            <a href="quienes_somos.php" class="nav-item nav-link">Quienes Somos</a>
                             <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
                                 <a href="admin.php" class="nav-item nav-link text-warning">
                                     <i class="fas fa-tools me-1"></i>Admin
@@ -267,12 +239,12 @@ if (isset($_GET['success'])) {
                             <a href="favorites.php" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle"
-                                    style="padding-bottom: 2px;">0</span>
+                                    style="padding-bottom: 2px;">99</span>
                             </a>
                             <a href="cart.php" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" id="cart-count-header"
-                                    style="padding-bottom: 2px;">0</span>
+                                    style="padding-bottom: 2px;">+100</span>
                             </a>
                         </div>
                     </div>
@@ -315,7 +287,7 @@ if (isset($_GET['success'])) {
                                         Materiales Pétreos</h1>
                                     <p class="mx-md-5 px-5 animate__animated animate__bounceIn">Materiales de alta calidad para construcción</p>
                                     <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                                        href="index.php">Ver</a>
+                                        href="venta.php">Ver</a>
                                 </div>
                             </div>
                         </div>
@@ -334,7 +306,7 @@ if (isset($_GET['success'])) {
                     <img class="img-fluid" src="img/reference/offer-2.jpg" alt="">
                     <div class="offer-text">
                         <h3 class="text-white mb-3">Oferta Especial</h3>
-                        <a href="index.php" class="btn btn-primary">Comprar</a>
+                        <a href="venta.php" class="btn btn-primary">Comprar</a>
                     </div>
                 </div>
             </div>
@@ -527,7 +499,7 @@ if (isset($_GET['success'])) {
                     <img class="img-fluid" src="img/reference/offer-1.jpg" alt="">
                     <div class="offer-text">
                         <h3 class="text-white mb-3">Precios Especiales</h3>
-                        <a href="index.php" class="btn btn-primary">Comprar</a>
+                        <a href="venta.php" class="btn btn-primary">Comprar</a>
                     </div>
                 </div>
             </div>
@@ -560,19 +532,17 @@ if (isset($_GET['success'])) {
                         <h5 class="text-secondary text-uppercase mb-4">Navegación</h5>
                         <div class="d-flex flex-column justify-content-start">
                             <a class="text-secondary mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
-                            <a class="text-secondary mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>Venta</a>
+                            <a class="text-secondary mb-2" href="venta.php"><i class="fa fa-angle-right mr-2"></i>Venta</a>
                             <a class="text-secondary mb-2" href="alquiler.php"><i class="fa fa-angle-right mr-2"></i>Alquiler</a>
-                            <a class="text-secondary mb-2" href="cart.php"><i class="fa fa-angle-right mr-2"></i>Carrito</a>
                             <a class="text-secondary mb-2" href="contact.php"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
                         </div>
                     </div>
                     <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Mi Cuenta</h5>
+                        <h5 class="text-secondary text-uppercase mb-4">Quienes somos?</h5>
                         <div class="d-flex flex-column justify-content-start">
                             <?php if ($current_user): ?>
-                                <a class="text-secondary mb-2" href="profile.php"><i class="fa fa-angle-right mr-2"></i>Mi Perfil</a>
-                                <a class="text-secondary mb-2" href="my-orders.php"><i class="fa fa-angle-right mr-2"></i>Mis Pedidos</a>
-                                <a class="text-secondary mb-2" href="my-rentals.php"><i class="fa fa-angle-right mr-2"></i>Mis Alquileres</a>
+                                <a class="text-secondary mb-2" href="profile.php"><i class="fa fa-angle-right mr-2"></i>Descubrir</a>
+                                
                             <?php else: ?>
                                 <a class="text-secondary mb-2" href="login.php"><i class="fa fa-angle-right mr-2"></i>Iniciar Sesión</a>
                                 <a class="text-secondary mb-2" href="register.php"><i class="fa fa-angle-right mr-2"></i>Registrarse</a>
@@ -580,7 +550,7 @@ if (isset($_GET['success'])) {
                         </div>
                     </div>
                     <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
+                        <!-- <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
                         <p>Suscríbete para recibir ofertas especiales</p>
                         <form action="newsletter.php" method="POST">
                             <div class="input-group">
@@ -589,7 +559,7 @@ if (isset($_GET['success'])) {
                                     <button class="btn btn-primary">Suscribirse</button>
                                 </div>
                             </div>
-                        </form>
+                        </form> -->
                         <h6 class="text-secondary text-uppercase mt-4 mb-3">Síguenos</h6>
                         <div class="d-flex">
                             <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
