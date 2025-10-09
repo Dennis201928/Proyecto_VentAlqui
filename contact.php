@@ -1,3 +1,12 @@
+<?php
+require_once 'includes/auth.php';
+require_once 'includes/security.php';
+Security::setSecurityHeaders();
+
+$auth = new Auth();
+$auth->requireAuth();
+$current_user = $auth->getCurrentUser();
+?>
 <!DOCTYPE html>
 <html lang="es">
 

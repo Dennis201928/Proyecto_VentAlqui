@@ -5,13 +5,10 @@ require_once 'includes/security.php';
 Security::setSecurityHeaders();
 
 $auth = new Auth();
+$auth->requireAuth();
 $productSrv = new Product();
 $current_user = $auth->getCurrentUser();
 
-/**
- * Filtros básicos para la tienda de venta (materiales).
- * availability: 'in_stock' (disponible), 'out_of_stock' (no disponible)
- */
 $filters = [
     'tipo'       => 'material',
     'limit'      => isset($_GET['limit']) ? (int)$_GET['limit'] : 24,

@@ -5,6 +5,7 @@ require_once 'includes/security.php';
 Security::setSecurityHeaders();
 
 $auth = new Auth();
+$auth->requireAuth();
 $product = new Product();
 
 $featured_products = $product->getFeaturedProducts(8);
