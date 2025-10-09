@@ -122,6 +122,9 @@ $productos = $product->getProducts($filters);
                         <a class="nav-link" href="admin.php">
                             <i class="fas fa-plus-circle me-2"></i>Agregar Producto
                         </a>
+                        <a class="nav-link" href="admin-categories.php">
+                            <i class="fas fa-tags me-2"></i>Gestionar Categorías
+                        </a>
                         <a class="nav-link active" href="admin-products.php">
                             <i class="fas fa-list me-2"></i>Gestionar Productos
                         </a>

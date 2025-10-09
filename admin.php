@@ -164,8 +164,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                     <nav class="nav flex-column px-3">
-                        <a class="nav-link active" href="#productos">
-                            <i class="fas fa-box me-2"></i>Gestión de Productos
+                        <a class="nav-link" href="admin-products.php">
+                            <i class="fas fa-list me-2"></i>Gestionar Productos
+                        </a>
+                        <a class="nav-link" href="admin-categories.php">
+                            <i class="fas fa-tags me-2"></i>Gestionar Categorías
+                        </a>
+                        <a class="nav-link active" href="admin.php">
+                            <i class="fas fa-plus-circle me-2"></i>Agregar Producto
                         </a>
                         <a class="nav-link" href="index.php">
                             <i class="fas fa-home me-2"></i>Volver al Sitio
