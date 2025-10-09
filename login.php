@@ -276,6 +276,12 @@ if (isset($_GET['registered'])) {
             </a>
         </div>
 
+        <div class="text-center mt-3">
+            <a href="forgot-password.php" class="text-muted">
+                <i class="fas fa-key mr-1"></i>¿Olvidaste tu contraseña?
+            </a>
+        </div>
+
         <div class="security-info">
             <i class="fas fa-shield-alt mr-2"></i>
             <strong>Información de Seguridad:</strong><br>
