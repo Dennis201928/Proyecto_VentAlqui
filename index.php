@@ -138,8 +138,7 @@ if (isset($_GET['success'])) {
                 <div class="d-inline-flex align-items-center h-100">
                     <a class="text-body mr-3" href="about.php">Acerca de</a>
                     <a class="text-body mr-3" href="contact.php">Contáctanos</a>
-                    <a class="text-body mr-3" href="help.php">Ayuda</a>
-                    <a class="text-body mr-3" href="faq.php">FAQs</a>
+                    
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
@@ -170,22 +169,7 @@ if (isset($_GET['success'])) {
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div class="btn-group mx-2">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">USD</button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">EUR</button>
-                            <button class="dropdown-item" type="button">GBP</button>
-                            <button class="dropdown-item" type="button">CAD</button>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">ES</button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">EN</button>
-                            <button class="dropdown-item" type="button">FR</button>
-                            <button class="dropdown-item" type="button">PT</button>
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
                     <a href="favorites.php" class="btn px-0 ml-2">
@@ -207,7 +191,7 @@ if (isset($_GET['success'])) {
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="search.php" method="GET">
+                <!-- <form action="search.php" method="GET">
                     <div class="input-group">
                         <input type="text" class="form-control" name="q" placeholder="Buscar productos">
                         <div class="input-group-append">
@@ -216,7 +200,7 @@ if (isset($_GET['success'])) {
                             </span>
                         </div>
                     </div>
-                </form>
+                </form> -->
             </div>
             <div class="col-lg-4 col-6 text-right">
                 <p class="m-0">Contáctanos</p>
