@@ -290,18 +290,18 @@ if (isset($_GET['success'])) {
                                              src="<?php echo !empty($p['imagen_principal']) ? htmlspecialchars($p['imagen_principal']) : 'img/product-1.jpg'; ?>"
                                              alt="<?php echo htmlspecialchars($p['nombre'] ?? 'Maquinaria'); ?>">
                                         <div class="product-action">
-                                            <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'maquinaria')"
+                                            <!-- <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'maquinaria')"
                                                title="Alquilar">
                                                 <i class="fa fa-shopping-cart"></i>
-                                            </a>
+                                            </a> -->
                                             <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToFavorites(<?php echo (int)$p['id']; ?>)"
                                                title="Favoritos">
                                                 <i class="far fa-heart"></i>
                                             </a>
-                                            <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo (int)$p['id']; ?>"
+                                            <!-- <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo (int)$p['id']; ?>"
                                                title="Ver detalles">
                                                 <i class="fa fa-search"></i>
-                                            </a>
+                                            </a> -->
                                             <?php if ($current_user && $current_user['tipo_usuario']==='admin'): ?>
                                                 <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo (int)$p['id']; ?>"
                                                    title="Editar">

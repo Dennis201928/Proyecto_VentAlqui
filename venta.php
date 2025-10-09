@@ -292,15 +292,21 @@ if (isset($_GET['success'])) {
                                              src="<?php echo !empty($p['imagen_principal']) ? htmlspecialchars($p['imagen_principal']) : 'img/reference/product-1.jpg'; ?>"
                                              alt="<?php echo htmlspecialchars($p['nombre'] ?? 'Producto'); ?>">
                                         <div class="product-action">
-                                            <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'material')">
+                                            <!-- <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'material')">
                                                 <i class="fa fa-shopping-cart"></i>
-                                            </a>
+                                            </a> -->
                                             <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToFavorites(<?php echo (int)$p['id']; ?>)">
                                                 <i class="far fa-heart"></i>
                                             </a>
-                                            <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo (int)$p['id']; ?>">
+                                            <!-- <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo (int)$p['id']; ?>">
                                                 <i class="fa fa-search"></i>
-                                            </a>
+                                            </a> -->
+                                            <?php if ($current_user && $current_user['tipo_usuario']==='admin'): ?>
+                                                <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo (int)$p['id']; ?>"
+                                                   title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="text-center py-4">
