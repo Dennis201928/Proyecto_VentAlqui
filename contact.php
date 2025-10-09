@@ -42,32 +42,44 @@ $current_user = $auth->getCurrentUser();
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center h-100">
                     <a class="text-body mr-3" href="quienes_somos.php">Acerca de</a>
-                    <a class="text-body mr-3" href="contact.php">Contactanos</a>
-                   
+                    <a class="text-body mr-3" href="contact.php">Contáctanos</a>
+                    
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Mi
-                            Cuenta</button>
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            <?php echo $current_user ? htmlspecialchars($current_user['nombre'].' '.$current_user['apellido']) : 'Mi Cuenta'; ?>
+                        </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a href="login.php" class="dropdown-item">Iniciar Sesión</a>
-                            <a href="register.php" class="dropdown-item">Registrarse</a>
+                            <?php if ($current_user): ?>
+                                <a class="dropdown-item" href="profile.php">Mi Perfil</a>
+                                <a class="dropdown-item" href="my-orders.php">Mis Pedidos</a>
+                                <a class="dropdown-item" href="my-rentals.php">Mis Alquileres</a>
+                                <?php if ($current_user['tipo_usuario'] === 'admin'): ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-primary" href="admin.php"><i class="fas fa-tools mr-2"></i>Panel de Administración</a>
+                                    <a class="dropdown-item text-primary" href="admin-products.php"><i class="fas fa-list mr-2"></i>Gestionar Productos</a>
+                                <?php endif; ?>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="logout.php">Cerrar Sesión</a>
+                            <?php else: ?>
+                                <a class="dropdown-item" href="login.php">Iniciar Sesión</a>
+                                <a class="dropdown-item" href="login.php">Registrarse</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                     
                 </div>
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
-                    <a href="" class="btn px-0 ml-2">
+                    <a href="favorites.php" class="btn px-0 ml-2">
                         <i class="fas fa-heart text-dark"></i>
-                        <span class="badge text-dark border border-dark rounded-circle"
-                            style="padding-bottom: 2px;">0</span>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom:2px;">0</span>
                     </a>
-                    <a href="" class="btn px-0 ml-2">
+                    <a href="cart.php" class="btn px-0 ml-2">
                         <i class="fas fa-shopping-cart text-dark"></i>
-                        <span class="badge text-dark border border-dark rounded-circle"
-                            style="padding-bottom: 2px;">0</span>
+                        <span class="badge text-dark border border-dark rounded-circle" id="cart-count" style="padding-bottom:2px;">0</span>
                     </a>
                 </div>
             </div>
@@ -80,20 +92,20 @@ $current_user = $auth->getCurrentUser();
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
+                <form action="alquiler.php" method="GET">
                     <!-- <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Buscar productos">
+                        <input type="text" class="form-control" name="q" value="<?php echo htmlspecialchars($filters['q'] ?? ''); ?>" placeholder="Buscar maquinaria">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button class="input-group-text bg-transparent text-primary" type="submit">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
                     </div> -->
                 </form>
             </div>
             <div class="col-lg-4 col-6 text-right">
-                <p class="m-0">Contactanos</p>
-                <h5 class="m-0">+593 99 123 4567</h5>
+                <p class="m-0">Contáctanos</p>
+                <h5 class="m-0">+012 345 6789</h5>
             </div>
         </div>
     </div>
