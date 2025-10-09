@@ -9,19 +9,19 @@ $productSrv = new Product();
 $current_user = $auth->getCurrentUser();
 
 /**
- * Filtros básicos para la tienda de venta (materiales).
- * availability: 'in_stock' (disponible), 'out_of_stock' (no disponible)
+ * Página de ALQUILER DE MAQUINARIA
+ * availability: 'in_stock' (Disponible), 'out_of_stock' (No disponible), '' (Todos)
  */
 $filters = [
-    'tipo'       => 'material',
-    'limit'      => isset($_GET['limit']) ? (int)$_GET['limit'] : 24,
-    'q'          => isset($_GET['q']) ? trim($_GET['q']) : null,
-    'categoria'  => isset($_GET['categoria']) ? (int)$_GET['categoria'] : null,
+    'tipo'         => 'maquinaria',
+    'limit'        => isset($_GET['limit']) ? (int)$_GET['limit'] : 24,
+    'q'            => isset($_GET['q']) ? trim($_GET['q']) : null,
+    'categoria'    => isset($_GET['categoria']) ? (int)$_GET['categoria'] : null,
     'availability' => isset($_GET['availability']) ? $_GET['availability'] : null,
 ];
 
 $categories = $productSrv->getCategories();
-$materiales_products = $productSrv->getProducts($filters);
+$maquinaria_products = $productSrv->getProducts($filters);
 
 // Mensajes de éxito
 $success_message = '';
@@ -36,10 +36,10 @@ if (isset($_GET['success'])) {
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title><?php echo Config::SITE_NAME; ?> - Venta de Materiales Pétreos</title>
+    <title><?php echo Config::SITE_NAME; ?> - Alquiler de Maquinaria</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Venta y alquiler de maquinaria pesada y materiales pétreos" name="keywords">
-    <meta content="Sistema de venta y alquiler de maquinaria pesada y materiales pétreos" name="description">
+    <meta content="Alquiler de maquinaria pesada y venta de materiales pétreos" name="keywords">
+    <meta content="Sistema de alquiler de maquinaria pesada y venta de materiales pétreos" name="description">
 
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
@@ -146,9 +146,9 @@ if (isset($_GET['success'])) {
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="shop.php" method="GET">
+                <form action="alquiler.php" method="GET">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="q" value="<?php echo htmlspecialchars($filters['q'] ?? ''); ?>" placeholder="Buscar productos">
+                        <input type="text" class="form-control" name="q" value="<?php echo htmlspecialchars($filters['q'] ?? ''); ?>" placeholder="Buscar maquinaria">
                         <div class="input-group-append">
                             <button class="input-group-text bg-transparent text-primary" type="submit">
                                 <i class="fa fa-search"></i>
@@ -177,6 +177,7 @@ if (isset($_GET['success'])) {
                 <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
                      id="navbar-vertical" style="width:calc(100% - 30px); z-index:999;">
                     <div class="navbar-nav w-100">
+                        <!-- Dropdown de Materiales (lleva a la tienda de venta) -->
                         <div class="nav-item dropdown dropright">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Materiales Pétreos
                                 <i class="fa fa-angle-right float-right mt-1"></i></a>
@@ -188,6 +189,7 @@ if (isset($_GET['success'])) {
                                 <?php endif; endforeach; ?>
                             </div>
                         </div>
+                        <!-- Enlaces de categorías de MAQUINARIA (esta página) -->
                         <?php foreach ($categories as $cat): if ($cat['tipo']==='maquinaria'): ?>
                             <a href="alquiler.php?categoria=<?php echo (int)$cat['id']; ?>" class="nav-item nav-link">
                                 <?php echo htmlspecialchars($cat['nombre']); ?>
@@ -209,7 +211,7 @@ if (isset($_GET['success'])) {
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.php" class="nav-item nav-link">Inicio</a>
-                            <a href="venta.php" class="nav-item nav-link">Venta</a>
+                           <a href="venta.php" class="nav-item nav-link">Venta</a>
                             <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
                             <?php if ($current_user && $current_user['tipo_usuario']==='admin'): ?>
@@ -239,8 +241,8 @@ if (isset($_GET['success'])) {
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
                     <a class="breadcrumb-item text-dark" href="index.php">Inicio</a>
-                    <a class="breadcrumb-item text-dark" href="shop.php">Venta</a>
-                    <span class="breadcrumb-item active">Materiales Pétreos</span>
+                    <a class="breadcrumb-item text-dark" href="alquiler.php">Alquiler</a>
+                    <span class="breadcrumb-item active">Maquinaria</span>
                 </nav>
             </div>
         </div>
@@ -267,7 +269,7 @@ if (isset($_GET['success'])) {
                     <span class="bg-secondary pr-3">Disponibilidad</span>
                 </h5>
                 <div class="bg-light p-4 mb-30">
-                    <form action="shop.php" method="GET">
+                    <form action="alquiler.php" method="GET">
                         <?php if (!empty($filters['q'])): ?>
                             <input type="hidden" name="q" value="<?php echo htmlspecialchars($filters['q']); ?>">
                         <?php endif; ?>
@@ -275,9 +277,7 @@ if (isset($_GET['success'])) {
                             <input type="hidden" name="categoria" value="<?php echo (int)$filters['categoria']; ?>">
                         <?php endif; ?>
 
-                        <?php
-                        $availability = $filters['availability'] ?? '';
-                        ?>
+                        <?php $availability = $filters['availability'] ?? ''; ?>
                         <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
                             <input type="radio" class="custom-control-input" id="av-all" name="availability" value="" <?php echo $availability===''?'checked':''; ?>>
                             <label class="custom-control-label" for="av-all">Todos</label>
@@ -324,29 +324,38 @@ if (isset($_GET['success'])) {
                         </div>
                     </div>
 
-                    <?php if (is_array($materiales_products) && !empty($materiales_products)): ?>
-                        <?php foreach ($materiales_products as $p): ?>
+                    <?php if (is_array($maquinaria_products) && !empty($maquinaria_products)): ?>
+                        <?php foreach ($maquinaria_products as $p): ?>
                             <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                                 <div class="product-item bg-light mb-4">
                                     <div class="product-img position-relative overflow-hidden">
                                         <img class="img-fluid w-100"
-                                             src="<?php echo !empty($p['imagen_principal']) ? htmlspecialchars($p['imagen_principal']) : 'img/reference/product-1.jpg'; ?>"
-                                             alt="<?php echo htmlspecialchars($p['nombre'] ?? 'Producto'); ?>">
+                                             src="<?php echo !empty($p['imagen_principal']) ? htmlspecialchars($p['imagen_principal']) : 'img/product-1.jpg'; ?>"
+                                             alt="<?php echo htmlspecialchars($p['nombre'] ?? 'Maquinaria'); ?>">
                                         <div class="product-action">
-                                            <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'material')">
+                                            <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'maquinaria')"
+                                               title="Alquilar">
                                                 <i class="fa fa-shopping-cart"></i>
                                             </a>
-                                            <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToFavorites(<?php echo (int)$p['id']; ?>)">
+                                            <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToFavorites(<?php echo (int)$p['id']; ?>)"
+                                               title="Favoritos">
                                                 <i class="far fa-heart"></i>
                                             </a>
-                                            <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo (int)$p['id']; ?>">
+                                            <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo (int)$p['id']; ?>"
+                                               title="Ver detalles">
                                                 <i class="fa fa-search"></i>
                                             </a>
+                                            <?php if ($current_user && $current_user['tipo_usuario']==='admin'): ?>
+                                                <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo (int)$p['id']; ?>"
+                                                   title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="text-center py-4">
                                         <a class="h6 text-decoration-none text-truncate" href="product-detail.php?id=<?php echo (int)$p['id']; ?>">
-                                            <?php echo htmlspecialchars($p['nombre'] ?? 'Producto'); ?>
+                                            <?php echo htmlspecialchars($p['nombre'] ?? 'Maquinaria'); ?>
                                         </a>
 
                                         <?php if (!empty($p['descripcion'])): ?>
@@ -359,17 +368,22 @@ if (isset($_GET['success'])) {
                                         <?php endif; ?>
 
                                         <div class="d-flex align-items-center justify-content-center mt-2">
-                                            <?php if (isset($p['precio'])): ?>
-                                                <h5>$<?php echo number_format((float)$p['precio'], 2); ?></h5>
-                                            <?php else: ?>
-                                                <h6 class="text-muted">Precio a consultar</h6>
-                                            <?php endif; ?>
+                                            <?php
+                                            // Si tu tabla tiene tarifa de alquiler, intenta mostrarla (ajusta el campo según tu modelo)
+                                            if (isset($p['tarifa_diaria']) && $p['tarifa_diaria'] !== null) {
+                                                echo '<h5>$'.number_format((float)$p['tarifa_diaria'], 2).'</h5><h6 class="text-muted ml-2">/día</h6>';
+                                            } elseif (isset($p['precio'])) {
+                                                echo '<h5>$'.number_format((float)$p['precio'], 2).'</h5><h6 class="text-muted ml-2">/día</h6>';
+                                            } else {
+                                                echo '<h6 class="text-muted">Tarifa a consultar</h6>';
+                                            }
+                                            ?>
                                         </div>
 
                                         <div class="mb-2">
                                             <span class="stock-badge">
                                                 <i class="fas fa-box"></i>
-                                                Stock: <?php echo (int)($p['stock_disponible'] ?? 0); ?>
+                                                Disponibles: <?php echo (int)($p['stock_disponible'] ?? 0); ?>
                                             </span>
                                         </div>
 
@@ -387,7 +401,7 @@ if (isset($_GET['success'])) {
                         <?php endforeach; ?>
                     <?php else: ?>
                         <div class="col-12">
-                            <p class="text-center mb-4">No hay productos disponibles con los criterios seleccionados.</p>
+                            <p class="text-center mb-4">No hay maquinaria disponible con los criterios seleccionados.</p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -402,7 +416,7 @@ if (isset($_GET['success'])) {
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
                 <h5 class="text-secondary text-uppercase mb-4">Contáctanos</h5>
-                <p class="mb-4">Somos especialistas en venta y alquiler de maquinaria pesada y materiales pétreos de alta calidad.</p>
+                <p class="mb-4">Especialistas en alquiler de maquinaria pesada y materiales pétreos de alta calidad.</p>
                 <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
                 <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@alquivent.com</p>
                 <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
@@ -461,7 +475,7 @@ if (isset($_GET['success'])) {
                 </p>
             </div>
             <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="img/reference/payments.png" alt="">
+                <img class="img-fluid" src="img/payments.png" alt="">
             </div>
         </div>
     </div>
@@ -491,19 +505,19 @@ if (isset($_GET['success'])) {
         <?php endif; ?>
     }
 
-    // Agregar al carrito
+    // Agregar al carrito (alquiler)
     function addToCart(productId, tipo) {
         <?php if ($current_user): ?>
         $.post('api/cart.php', { producto_id: productId, tipo: tipo, cantidad: 1 }, function(response) {
             if (response && response.success) {
                 updateCartCount();
-                alert('Producto agregado al carrito');
+                alert('Maquinaria agregada al carrito de alquiler');
             } else {
                 alert('Error: ' + (response && response.message ? response.message : 'No se pudo agregar.'));
             }
         }, 'json');
         <?php else: ?>
-        alert('Debe iniciar sesión para agregar productos al carrito');
+        alert('Debe iniciar sesión para alquilar maquinaria');
         <?php endif; ?>
     }
 

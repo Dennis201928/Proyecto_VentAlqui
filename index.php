@@ -269,7 +269,7 @@ if (isset($_GET['success'])) {
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.php" class="nav-item nav-link active">Inicio</a>
-                            <a href="index.php" class="nav-item nav-link">Venta</a>
+                            <a href="venta.php" class="nav-item nav-link">Venta</a>
                             <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
                             <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
