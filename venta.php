@@ -76,10 +76,9 @@ if (isset($_GET['success'])) {
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center h-100">
-                    <a class="text-body mr-3" href="about.php">Acerca de</a>
+                    <a class="text-body mr-3" href="quienes_somos.php">Acerca de</a>
                     <a class="text-body mr-3" href="contact.php">Contáctanos</a>
-                    <a class="text-body mr-3" href="help.php">Ayuda</a>
-                    <a class="text-body mr-3" href="faq.php">FAQs</a>
+                    
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
@@ -106,22 +105,7 @@ if (isset($_GET['success'])) {
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div class="btn-group mx-2">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">USD</button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">EUR</button>
-                            <button class="dropdown-item" type="button">GBP</button>
-                            <button class="dropdown-item" type="button">CAD</button>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">ES</button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">EN</button>
-                            <button class="dropdown-item" type="button">FR</button>
-                            <button class="dropdown-item" type="button">PT</button>
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
                     <a href="favorites.php" class="btn px-0 ml-2">
@@ -144,14 +128,14 @@ if (isset($_GET['success'])) {
             </div>
             <div class="col-lg-4 col-6 text-left">
                 <form action="shop.php" method="GET">
-                    <div class="input-group">
+                    <!-- <div class="input-group">
                         <input type="text" class="form-control" name="q" value="<?php echo htmlspecialchars($filters['q'] ?? ''); ?>" placeholder="Buscar productos">
                         <div class="input-group-append">
                             <button class="input-group-text bg-transparent text-primary" type="submit">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> -->
                 </form>
             </div>
             <div class="col-lg-4 col-6 text-right">
@@ -162,39 +146,10 @@ if (isset($_GET['success'])) {
     </div>
     <!-- Topbar End -->
 
-    <!-- Navbar Start -->
+        <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
-            <div class="col-lg-3 d-none d-lg-block">
-                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse"
-                   href="#navbar-vertical" style="height:65px;padding:0 30px;">
-                    <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Maquinarias y Materiales Pétreos</h6>
-                    <i class="fa fa-angle-down text-dark"></i>
-                </a>
-                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
-                     id="navbar-vertical" style="width:calc(100% - 30px); z-index:999;">
-                    <div class="navbar-nav w-100">
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Materiales Pétreos
-                                <i class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                                <?php foreach ($categories as $cat): if ($cat['tipo']==='material'): ?>
-                                    <a href="shop.php?categoria=<?php echo (int)$cat['id']; ?>" class="dropdown-item">
-                                        <?php echo htmlspecialchars($cat['nombre']); ?>
-                                    </a>
-                                <?php endif; endforeach; ?>
-                            </div>
-                        </div>
-                        <?php foreach ($categories as $cat): if ($cat['tipo']==='maquinaria'): ?>
-                            <a href="alquiler.php?categoria=<?php echo (int)$cat['id']; ?>" class="nav-item nav-link">
-                                <?php echo htmlspecialchars($cat['nombre']); ?>
-                            </a>
-                        <?php endif; endforeach; ?>
-                    </div>
-                </nav>
-            </div>
-
-            <div class="col-lg-9">
+             <div class="col-12 px-0">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                     <a href="index.php" class="text-decoration-none d-block d-lg-none">
                         <span class="h1 text-uppercase text-dark bg-light px-2">Alqui</span>
@@ -205,22 +160,27 @@ if (isset($_GET['success'])) {
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="index.php" class="nav-item nav-link">Inicio</a>
+                            <a href="index.php" class="nav-item nav-link active">Inicio</a>
                             <a href="venta.php" class="nav-item nav-link">Venta</a>
                             <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
-                            <?php if ($current_user && $current_user['tipo_usuario']==='admin'): ?>
-                                <a href="admin.php" class="nav-item nav-link text-warning"><i class="fas fa-tools mr-1"></i>Admin</a>
+                            <a href="quienes_somos.php" class="nav-item nav-link">Quienes Somos</a>
+                            <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
+                                <a href="admin.php" class="nav-item nav-link text-warning">
+                                    <i class="fas fa-tools me-1"></i>Admin
+                                </a>
                             <?php endif; ?>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                             <a href="favorites.php" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom:2px;">0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle"
+                                    style="padding-bottom: 2px;">99</span>
                             </a>
                             <a href="cart.php" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle" id="cart-count-header" style="padding-bottom:2px;">0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle" id="cart-count-header"
+                                    style="padding-bottom: 2px;">+100</span>
                             </a>
                         </div>
                     </div>
@@ -243,7 +203,9 @@ if (isset($_GET['success'])) {
         </div>
     </div>
     <!-- Breadcrumb End -->
-
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4">
+            <span class="bg-secondary pr-3">Venta de Materiales Petreos</span>
+        </h2>
     <!-- Mensaje de Éxito -->
     <?php if ($success_message): ?>
         <div class="container-fluid pt-3">
@@ -330,15 +292,21 @@ if (isset($_GET['success'])) {
                                              src="<?php echo !empty($p['imagen_principal']) ? htmlspecialchars($p['imagen_principal']) : 'img/reference/product-1.jpg'; ?>"
                                              alt="<?php echo htmlspecialchars($p['nombre'] ?? 'Producto'); ?>">
                                         <div class="product-action">
-                                            <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'material')">
+                                            <!-- <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToCart(<?php echo (int)$p['id']; ?>, 'material')">
                                                 <i class="fa fa-shopping-cart"></i>
-                                            </a>
+                                            </a> -->
                                             <a class="btn btn-outline-dark btn-square" href="javascript:void(0)" onclick="addToFavorites(<?php echo (int)$p['id']; ?>)">
                                                 <i class="far fa-heart"></i>
                                             </a>
-                                            <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo (int)$p['id']; ?>">
+                                            <!-- <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo (int)$p['id']; ?>">
                                                 <i class="fa fa-search"></i>
-                                            </a>
+                                            </a> -->
+                                            <?php if ($current_user && $current_user['tipo_usuario']==='admin'): ?>
+                                                <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo (int)$p['id']; ?>"
+                                                   title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="text-center py-4">
@@ -394,7 +362,7 @@ if (isset($_GET['success'])) {
     </div>
     <!-- Shop End -->
 
-    <!-- Footer Start -->
+    
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
@@ -410,27 +378,25 @@ if (isset($_GET['success'])) {
                         <h5 class="text-secondary text-uppercase mb-4">Navegación</h5>
                         <div class="d-flex flex-column justify-content-start">
                             <a class="text-secondary mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
-                            <a class="text-secondary mb-2" href="shop.php"><i class="fa fa-angle-right mr-2"></i>Venta</a>
+                            <a class="text-secondary mb-2" href="venta.php"><i class="fa fa-angle-right mr-2"></i>Venta</a>
                             <a class="text-secondary mb-2" href="alquiler.php"><i class="fa fa-angle-right mr-2"></i>Alquiler</a>
-                            <a class="text-secondary mb-2" href="cart.php"><i class="fa fa-angle-right mr-2"></i>Carrito</a>
                             <a class="text-secondary mb-2" href="contact.php"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
                         </div>
                     </div>
                     <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Mi Cuenta</h5>
+                        <h5 class="text-secondary text-uppercase mb-4">Quienes somos?</h5>
                         <div class="d-flex flex-column justify-content-start">
                             <?php if ($current_user): ?>
-                                <a class="text-secondary mb-2" href="profile.php"><i class="fa fa-angle-right mr-2"></i>Mi Perfil</a>
-                                <a class="text-secondary mb-2" href="my-orders.php"><i class="fa fa-angle-right mr-2"></i>Mis Pedidos</a>
-                                <a class="text-secondary mb-2" href="my-rentals.php"><i class="fa fa-angle-right mr-2"></i>Mis Alquileres</a>
+                                <a class="text-secondary mb-2" href="profile.php"><i class="fa fa-angle-right mr-2"></i>Descubrir</a>
+                                
                             <?php else: ?>
                                 <a class="text-secondary mb-2" href="login.php"><i class="fa fa-angle-right mr-2"></i>Iniciar Sesión</a>
-                                <a class="text-secondary mb-2" href="login.php"><i class="fa fa-angle-right mr-2"></i>Registrarse</a>
+                                <a class="text-secondary mb-2" href="register.php"><i class="fa fa-angle-right mr-2"></i>Registrarse</a>
                             <?php endif; ?>
                         </div>
                     </div>
                     <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
+                        <!-- <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
                         <p>Suscríbete para recibir ofertas especiales</p>
                         <form action="newsletter.php" method="POST">
                             <div class="input-group">
@@ -439,7 +405,7 @@ if (isset($_GET['success'])) {
                                     <button class="btn btn-primary">Suscribirse</button>
                                 </div>
                             </div>
-                        </form>
+                        </form> -->
                         <h6 class="text-secondary text-uppercase mt-4 mb-3">Síguenos</h6>
                         <div class="d-flex">
                             <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
@@ -462,7 +428,6 @@ if (isset($_GET['success'])) {
             </div>
         </div>
     </div>
-    <!-- Footer End -->
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>

@@ -41,51 +41,45 @@ $current_user = $auth->getCurrentUser();
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center h-100">
-                    <a class="text-body mr-3" href="">Acerca de</a>
-                    <a class="text-body mr-3" href="contact.php">Contactanos</a>
-                    <a class="text-body mr-3" href="">Ayuda</a>
-                    <a class="text-body mr-3" href="">FAQs</a>
+                    <a class="text-body mr-3" href="quienes_somos.php">Acerca de</a>
+                    <a class="text-body mr-3" href="contact.php">Contáctanos</a>
+                    
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Mi
-                            Cuenta</button>
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            <?php echo $current_user ? htmlspecialchars($current_user['nombre'].' '.$current_user['apellido']) : 'Mi Cuenta'; ?>
+                        </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a href="login.php" class="dropdown-item">Iniciar Sesión</a>
-                            <a href="register.php" class="dropdown-item">Registrarse</a>
+                            <?php if ($current_user): ?>
+                                <a class="dropdown-item" href="profile.php">Mi Perfil</a>
+                                <a class="dropdown-item" href="my-orders.php">Mis Pedidos</a>
+                                <a class="dropdown-item" href="my-rentals.php">Mis Alquileres</a>
+                                <?php if ($current_user['tipo_usuario'] === 'admin'): ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-primary" href="admin.php"><i class="fas fa-tools mr-2"></i>Panel de Administración</a>
+                                    <a class="dropdown-item text-primary" href="admin-products.php"><i class="fas fa-list mr-2"></i>Gestionar Productos</a>
+                                <?php endif; ?>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="logout.php">Cerrar Sesión</a>
+                            <?php else: ?>
+                                <a class="dropdown-item" href="login.php">Iniciar Sesión</a>
+                                <a class="dropdown-item" href="login.php">Registrarse</a>
+                            <?php endif; ?>
                         </div>
                     </div>
-                    <div class="btn-group mx-2">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle"
-                            data-toggle="dropdown">USD</button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">EUR</button>
-                            <button class="dropdown-item" type="button">GBP</button>
-                            <button class="dropdown-item" type="button">CAD</button>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle"
-                            data-toggle="dropdown">ES</button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">EN</button>
-                            <button class="dropdown-item" type="button">FR</button>
-                            <button class="dropdown-item" type="button">AR</button>
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="d-inline-flex align-items-center d-block d-lg-none">
-                    <a href="" class="btn px-0 ml-2">
+                    <a href="favorites.php" class="btn px-0 ml-2">
                         <i class="fas fa-heart text-dark"></i>
-                        <span class="badge text-dark border border-dark rounded-circle"
-                            style="padding-bottom: 2px;">0</span>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom:2px;">0</span>
                     </a>
-                    <a href="" class="btn px-0 ml-2">
+                    <a href="cart.php" class="btn px-0 ml-2">
                         <i class="fas fa-shopping-cart text-dark"></i>
-                        <span class="badge text-dark border border-dark rounded-circle"
-                            style="padding-bottom: 2px;">0</span>
+                        <span class="badge text-dark border border-dark rounded-circle" id="cart-count" style="padding-bottom:2px;">0</span>
                     </a>
                 </div>
             </div>
@@ -98,58 +92,28 @@ $current_user = $auth->getCurrentUser();
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Buscar productos">
+                <form action="alquiler.php" method="GET">
+                    <!-- <div class="input-group">
+                        <input type="text" class="form-control" name="q" value="<?php echo htmlspecialchars($filters['q'] ?? ''); ?>" placeholder="Buscar maquinaria">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button class="input-group-text bg-transparent text-primary" type="submit">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
-                    </div>
+                    </div> -->
                 </form>
             </div>
             <div class="col-lg-4 col-6 text-right">
-                <p class="m-0">Contactanos</p>
-                <h5 class="m-0">+593 99 123 4567</h5>
+                <p class="m-0">Contáctanos</p>
+                <h5 class="m-0">+012 345 6789</h5>
             </div>
         </div>
     </div>
     <!-- Topbar End -->
-    <!-- Navbar Start -->
+        <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
-            <div class="col-lg-3 d-none d-lg-block">
-                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse"
-                    href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
-                    <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Maquinarias y Materiales Petreos</h6>
-                    <i class="fa fa-angle-down text-dark"></i>
-                </a>
-                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
-                    id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
-                    <div class="navbar-nav w-100">
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Materiales Petreos <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                                <a href="" class="dropdown-item">Granito</a>
-                                <a href="" class="dropdown-item">Arena</a>
-                                <a href="" class="dropdown-item">Grava</a>
-                                <a href="" class="dropdown-item">Piedra Coco</a>
-                            </div>
-                        </div>
-                        <a href="" class="nav-item nav-link">Volquetas</a>
-                        <a href="" class="nav-item nav-link">Retroexcavadoras</a>
-                        <a href="" class="nav-item nav-link">Gallinetas</a>
-                        <a href="" class="nav-item nav-link">Rodillos</a>
-                        <a href="" class="nav-item nav-link">Excavadoras</a>
-                        <a href="" class="nav-item nav-link">Compactadoras</a>
-                        <a href="" class="nav-item nav-link">Cargadores frontales</a>
-                    </div>
-                </nav>
-            </div>
-
-            <div class="col-lg-9">
+             <div class="col-12 px-0">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                     <a href="index.php" class="text-decoration-none d-block d-lg-none">
                         <span class="h1 text-uppercase text-dark bg-light px-2">Alqui</span>
@@ -160,21 +124,27 @@ $current_user = $auth->getCurrentUser();
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="index.php" class="nav-item nav-link">Inicio</a>
-                            <a href="index.php" class="nav-item nav-link">Venta</a>
-                            <a href="index.php" class="nav-item nav-link">Alquiler</a>
-                            <a href="contact.php" class="nav-item nav-link active">Contactanos</a>
+                            <a href="index.php" class="nav-item nav-link active">Inicio</a>
+                            <a href="venta.php" class="nav-item nav-link">Venta</a>
+                            <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
+                            <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
+                            <a href="quienes_somos.php" class="nav-item nav-link">Quienes Somos</a>
+                            <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
+                                <a href="admin.php" class="nav-item nav-link text-warning">
+                                    <i class="fas fa-tools me-1"></i>Admin
+                                </a>
+                            <?php endif; ?>
                         </div>
                         <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="" class="btn px-0">
+                            <a href="favorites.php" class="btn px-0">
                                 <i class="fas fa-heart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle"
-                                    style="padding-bottom: 2px;">0</span>
+                                    style="padding-bottom: 2px;">99</span>
                             </a>
-                            <a href="" class="btn px-0 ml-3">
+                            <a href="cart.php" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle"
-                                    style="padding-bottom: 2px;">0</span>
+                                <span class="badge text-secondary border border-secondary rounded-circle" id="cart-count-header"
+                                    style="padding-bottom: 2px;">+100</span>
                             </a>
                         </div>
                     </div>
@@ -258,11 +228,10 @@ $current_user = $auth->getCurrentUser();
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
                 <h5 class="text-secondary text-uppercase mb-4">Contáctanos</h5>
-                <p class="mb-4">Somos especialistas en alquiler y venta de maquinarias pesadas y materiales pétreos. 
-                    Contamos con años de experiencia en el sector de la construcción.</p>
-                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>Cumbayá-Nayón, Quito, Ecuador</p>
+                <p class="mb-4">Somos especialistas en venta y alquiler de maquinaria pesada y materiales pétreos de alta calidad.</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
                 <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@alquivent.com</p>
-                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+593 99 123 4567</p>
+                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
             </div>
             <div class="col-lg-8 col-md-12">
                 <div class="row">
@@ -270,30 +239,34 @@ $current_user = $auth->getCurrentUser();
                         <h5 class="text-secondary text-uppercase mb-4">Navegación</h5>
                         <div class="d-flex flex-column justify-content-start">
                             <a class="text-secondary mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>Inicio</a>
-                            <a class="text-secondary mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>Venta</a>
-                            <a class="text-secondary mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>Alquiler</a>
-                            <a class="text-secondary mb-2" href="contact.php"><i class="fa fa-angle-right mr-2"></i>Contactanos</a>
+                            <a class="text-secondary mb-2" href="venta.php"><i class="fa fa-angle-right mr-2"></i>Venta</a>
+                            <a class="text-secondary mb-2" href="alquiler.php"><i class="fa fa-angle-right mr-2"></i>Alquiler</a>
+                            <a class="text-secondary mb-2" href="contact.php"><i class="fa fa-angle-right mr-2"></i>Contacto</a>
                         </div>
                     </div>
                     <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Mi Cuenta</h5>
+                        <h5 class="text-secondary text-uppercase mb-4">Quienes somos?</h5>
                         <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="login.php"><i class="fa fa-angle-right mr-2"></i>Iniciar Sesión</a>
-                            <a class="text-secondary mb-2" href="register.php"><i class="fa fa-angle-right mr-2"></i>Registrarse</a>
-                            <a class="text-secondary mb-2" href="contact.php"><i class="fa fa-angle-right mr-2"></i>Contactanos</a>
+                            <?php if ($current_user): ?>
+                                <a class="text-secondary mb-2" href="profile.php"><i class="fa fa-angle-right mr-2"></i>Descubrir</a>
+                                
+                            <?php else: ?>
+                                <a class="text-secondary mb-2" href="login.php"><i class="fa fa-angle-right mr-2"></i>Iniciar Sesión</a>
+                                <a class="text-secondary mb-2" href="register.php"><i class="fa fa-angle-right mr-2"></i>Registrarse</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
-                        <p>Mantente informado sobre nuestras ofertas y nuevos productos</p>
-                        <form action="">
+                        <!-- <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
+                        <p>Suscríbete para recibir ofertas especiales</p>
+                        <form action="newsletter.php" method="POST">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Tu correo electrónico">
+                                <input type="email" class="form-control" name="email" placeholder="Tu Email" required>
                                 <div class="input-group-append">
                                     <button class="btn btn-primary">Suscribirse</button>
                                 </div>
                             </div>
-                        </form>
+                        </form> -->
                         <h6 class="text-secondary text-uppercase mt-4 mb-3">Síguenos</h6>
                         <div class="d-flex">
                             <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
@@ -308,9 +281,7 @@ $current_user = $auth->getCurrentUser();
         <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
             <div class="col-md-6 px-xl-0">
                 <p class="mb-md-0 text-center text-md-left text-secondary">
-                    &copy; <a class="text-primary" href="#">AlquiVenta</a>. Todos los derechos reservados. Diseñado
-                    por
-                    <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a>
+                    &copy; <a class="text-primary" href="#"><?php echo Config::SITE_NAME; ?></a>. Todos los derechos reservados.
                 </p>
             </div>
             <div class="col-md-6 px-xl-0 text-center text-md-right">
