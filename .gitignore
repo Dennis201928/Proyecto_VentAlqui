@@ -1,0 +1,38 @@
+# Archivos de configuración sensibles
+logs/security.log
+config/database.php
+
+# Archivos de configuración de base de datos
+*.env
+.env.local
+.env.production
+
+# Archivos de log
+logs/*.log
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de dependencias
+vendor/
+node_modules/
+
+# Archivos de uploads (opcional - descomenta si no quieres versionar las imágenes)
+# uploads/
+# img/products/
+
+# Archivos de backup
+*.bak
+*.backup
