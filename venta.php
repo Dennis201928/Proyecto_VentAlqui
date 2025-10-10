@@ -10,11 +10,12 @@ $productSrv = new Product();
 $current_user = $auth->getCurrentUser();
 
 $filters = [
-    'tipo'       => 'material',
-    'limit'      => isset($_GET['limit']) ? (int)$_GET['limit'] : 24,
-    'q'          => isset($_GET['q']) ? trim($_GET['q']) : null,
-    'categoria'  => isset($_GET['categoria']) ? (int)$_GET['categoria'] : null,
-    'availability' => isset($_GET['availability']) ? $_GET['availability'] : null,
+    'tipo'         => 'material',
+    'limit'        => isset($_GET['limit']) ? (int)$_GET['limit'] : 24,
+    'search'       => isset($_GET['q']) ? trim($_GET['q']) : null,
+    'categoria_id' => isset($_GET['categoria']) ? (int)$_GET['categoria'] : null,
+    'estado'       => isset($_GET['estado']) ? $_GET['estado'] : null,
+    'order_by'     => isset($_GET['order_by']) ? $_GET['order_by'] : null,
 ];
 
 $categories = $productSrv->getCategories();
@@ -225,43 +226,97 @@ if (isset($_GET['success'])) {
         <div class="row px-xl-5">
             <!-- Shop Sidebar Start -->
             <div class="col-lg-3 col-md-4">
-                <!-- Único filtro: Disponibilidad -->
-                <h5 class="section-title position-relative text-uppercase mb-3">
-                    <span class="bg-secondary pr-3">Disponibilidad</span>
-                </h5>
-                <div class="bg-light p-4 mb-30">
-                    <form action="shop.php" method="GET">
-                        <?php if (!empty($filters['q'])): ?>
-                            <input type="hidden" name="q" value="<?php echo htmlspecialchars($filters['q']); ?>">
-                        <?php endif; ?>
-                        <?php if (!empty($filters['categoria'])): ?>
-                            <input type="hidden" name="categoria" value="<?php echo (int)$filters['categoria']; ?>">
-                        <?php endif; ?>
+                <form action="venta.php" method="GET" id="filterForm">
+                    <!-- Búsqueda -->
+                    <h5 class="section-title position-relative text-uppercase mb-3">
+                        <span class="bg-secondary pr-3">Búsqueda</span>
+                    </h5>
+                    <div class="bg-light p-4 mb-30">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" name="q" placeholder="Buscar productos..." 
+                                   value="<?php echo htmlspecialchars($filters['q'] ?? ''); ?>">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                        <?php
-                        $availability = $filters['availability'] ?? '';
-                        ?>
+                    <!-- Categorías -->
+                    <h5 class="section-title position-relative text-uppercase mb-3">
+                        <span class="bg-secondary pr-3">Categorías</span>
+                    </h5>
+                    <div class="bg-light p-4 mb-30">
                         <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                            <input type="radio" class="custom-control-input" id="av-all" name="availability" value="" <?php echo $availability===''?'checked':''; ?>>
-                            <label class="custom-control-label" for="av-all">Todos</label>
-                            <span class="badge border font-weight-normal">—</span>
+                            <input type="radio" class="custom-control-input" id="cat-all" name="categoria" value="" 
+                                   <?php echo empty($filters['categoria_id']) ? 'checked' : ''; ?>>
+                            <label class="custom-control-label" for="cat-all">Todas las categorías</label>
                         </div>
-                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                            <input type="radio" class="custom-control-input" id="av-in" name="availability" value="in_stock" <?php echo $availability==='in_stock'?'checked':''; ?>>
-                            <label class="custom-control-label" for="av-in">Disponible</label>
-                            <span class="badge border font-weight-normal">—</span>
-                        </div>
-                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
-                            <input type="radio" class="custom-control-input" id="av-out" name="availability" value="out_of_stock" <?php echo $availability==='out_of_stock'?'checked':''; ?>>
-                            <label class="custom-control-label" for="av-out">No disponible</label>
-                            <span class="badge border font-weight-normal">—</span>
-                        </div>
+                        <?php foreach ($categories as $cat): ?>
+                            <?php if ($cat['tipo'] === 'material'): ?>
+                                <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                                    <input type="radio" class="custom-control-input" id="cat-<?php echo $cat['id']; ?>" 
+                                           name="categoria" value="<?php echo $cat['id']; ?>"
+                                           <?php echo ($filters['categoria_id'] == $cat['id']) ? 'checked' : ''; ?>>
+                                    <label class="custom-control-label" for="cat-<?php echo $cat['id']; ?>">
+                                        <?php echo htmlspecialchars($cat['nombre']); ?>
+                                    </label>
+                                </div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
 
-                        <button class="btn btn-primary btn-block" type="submit">
-                            <i class="fa fa-filter mr-1"></i>Aplicar
+                    <!-- Estado -->
+                    <h5 class="section-title position-relative text-uppercase mb-3">
+                        <span class="bg-secondary pr-3">Estado</span>
+                    </h5>
+                    <div class="bg-light p-4 mb-30">
+                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                            <input type="radio" class="custom-control-input" id="estado-all" name="estado" value="" 
+                                   <?php echo empty($filters['estado']) ? 'checked' : ''; ?>>
+                            <label class="custom-control-label" for="estado-all">Todos los estados</label>
+                        </div>
+                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                            <input type="radio" class="custom-control-input" id="estado-disponible" name="estado" value="disponible" 
+                                   <?php echo ($filters['estado'] === 'disponible') ? 'checked' : ''; ?>>
+                            <label class="custom-control-label" for="estado-disponible">Disponible</label>
+                        </div>
+                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                            <input type="radio" class="custom-control-input" id="estado-mantenimiento" name="estado" value="mantenimiento" 
+                                   <?php echo ($filters['estado'] === 'mantenimiento') ? 'checked' : ''; ?>>
+                            <label class="custom-control-label" for="estado-mantenimiento">En Mantenimiento</label>
+                        </div>
+                        <div class="custom-control custom-radio d-flex align-items-center justify-content-between mb-3">
+                            <input type="radio" class="custom-control-input" id="estado-vendido" name="estado" value="vendido" 
+                                   <?php echo ($filters['estado'] === 'vendido') ? 'checked' : ''; ?>>
+                            <label class="custom-control-label" for="estado-vendido">Vendido</label>
+                        </div>
+                    </div>
+
+
+                    <!-- Ordenar por -->
+                    <h5 class="section-title position-relative text-uppercase mb-3">
+                        <span class="bg-secondary pr-3">Ordenar por</span>
+                    </h5>
+                    <div class="bg-light p-4 mb-30">
+                        <select class="form-control" name="order_by">
+                            <option value="">Orden por defecto</option>
+                            <option value="nombre_asc" <?php echo ($filters['order_by'] === 'nombre_asc') ? 'selected' : ''; ?>>Nombre: A-Z</option>
+                            <option value="nombre_desc" <?php echo ($filters['order_by'] === 'nombre_desc') ? 'selected' : ''; ?>>Nombre: Z-A</option>
+                        </select>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="bg-light p-4 mb-30">
+                        <button class="btn btn-primary btn-block mb-2" type="submit">
+                            <i class="fa fa-filter mr-1"></i>Aplicar Filtros
                         </button>
-                    </form>
-                </div>
+                        <a href="venta.php" class="btn btn-outline-secondary btn-block">
+                            <i class="fa fa-refresh mr-1"></i>Limpiar Filtros
+                        </a>
+                    </div>
+                </form>
             </div>
             <!-- Shop Sidebar End -->
 
@@ -269,18 +324,51 @@ if (isset($_GET['success'])) {
             <div class="col-lg-9 col-md-8">
                 <div class="row pb-3">
                     <div class="col-12 pb-1">
+                        <!-- Información de filtros aplicados -->
+                        <?php 
+                        $filtros_aplicados = [];
+                        if (!empty($filters['search'])) $filtros_aplicados[] = "Búsqueda: " . htmlspecialchars($filters['search']);
+                        if (!empty($filters['categoria_id'])) {
+                            $cat_nombre = '';
+                            foreach ($categories as $cat) {
+                                if ($cat['id'] == $filters['categoria_id']) {
+                                    $cat_nombre = $cat['nombre'];
+                                    break;
+                                }
+                            }
+                            $filtros_aplicados[] = "Categoría: " . $cat_nombre;
+                        }
+                        if (!empty($filters['estado'])) {
+                            $estados = ['disponible' => 'Disponible', 'mantenimiento' => 'En Mantenimiento', 'vendido' => 'Vendido'];
+                            $filtros_aplicados[] = "Estado: " . ($estados[$filters['estado']] ?? $filters['estado']);
+                        }
+                        ?>
+                        
+                        <?php if (!empty($filtros_aplicados)): ?>
+                            <div class="alert alert-info mb-3">
+                                <strong>Filtros aplicados:</strong> <?php echo implode(' | ', $filtros_aplicados); ?>
+                                <a href="venta.php" class="btn btn-sm btn-outline-secondary ml-2">
+                                    <i class="fa fa-times"></i> Limpiar
+                                </a>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div>
-                                <button class="btn btn-sm btn-light" title="Cuadrícula"><i class="fa fa-th-large"></i></button>
-                                <button class="btn btn-sm btn-light ml-2" title="Lista"><i class="fa fa-bars"></i></button>
+                                <h6 class="mb-0">
+                                    Mostrando <?php echo count($materiales_products); ?> producto(s)
+                                    <?php if (!empty($filters['search'])): ?>
+                                        para "<?php echo htmlspecialchars($filters['search']); ?>"
+                                    <?php endif; ?>
+                                </h6>
                             </div>
                             <div class="ml-2">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Mostrar</button>
                                     <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="?limit=12">12</a>
-                                        <a class="dropdown-item" href="?limit=24">24</a>
-                                        <a class="dropdown-item" href="?limit=48">48</a>
+                                        <a class="dropdown-item" href="?<?php echo http_build_query(array_merge($_GET, ['limit' => 12])); ?>">12</a>
+                                        <a class="dropdown-item" href="?<?php echo http_build_query(array_merge($_GET, ['limit' => 24])); ?>">24</a>
+                                        <a class="dropdown-item" href="?<?php echo http_build_query(array_merge($_GET, ['limit' => 48])); ?>">48</a>
                                     </div>
                                 </div>
                             </div>
@@ -509,7 +597,21 @@ if (isset($_GET['success'])) {
         <?php endif; ?>
     }
 
-    $(document).ready(function(){ updateCartCount(); });
+    $(document).ready(function(){ 
+        updateCartCount(); 
+        
+        // Auto-submit form cuando cambian los filtros
+        $('#filterForm input[type="radio"], #filterForm select').change(function() {
+            $('#filterForm').submit();
+        });
+        
+        // Auto-submit form cuando se presiona Enter en el campo de búsqueda
+        $('#filterForm input[name="q"]').keypress(function(e) {
+            if (e.which == 13) {
+                $('#filterForm').submit();
+            }
+        });
+    });
     </script>
 </body>
 </html>
