@@ -237,7 +237,7 @@ if (isset($_GET['registered'])) {
                     </span>
                     <input type="email" class="form-control" id="email" name="email" 
                            value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" 
-                           placeholder="tu@email.com" required autocomplete="email">
+                           placeholder="tu_email@email.com" required autocomplete="email">
                 </div>
             </div>
 
