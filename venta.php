@@ -63,6 +63,10 @@ if (isset($_GET['success'])) {
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
         .stock-badge{background:linear-gradient(45deg,#17a2b8,#138496);color:#fff;padding:4px 8px;border-radius:15px;
             font-size:.75rem;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+        .badge-success{background:linear-gradient(45deg,#28a745,#20c997) !important}
+        .badge-warning{background:linear-gradient(45deg,#ffc107,#fd7e14) !important;color:#000 !important}
+        .badge-info{background:linear-gradient(45deg,#17a2b8,#6f42c1) !important}
+        .badge-danger{background:linear-gradient(45deg,#dc3545,#e83e8c) !important}
         .product-action{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
         .btn-square{width:40px;height:40px;display:flex;align-items:center;justify-content:center}
         .breadcrumb a { text-decoration: none; }
@@ -160,11 +164,11 @@ if (isset($_GET['success'])) {
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="index.php" class="nav-item nav-link active">Inicio</a>
-                            <a href="venta.php" class="nav-item nav-link">Venta</a>
+                            <a href="index.php" class="nav-item nav-link">Inicio</a>
+                            <a href="venta.php" class="nav-item nav-link active">Venta</a>
                             <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
+                            <a href="quienes_somos.php" class="nav-item nav-link">Quiénes Somos</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
-                            <a href="quienes_somos.php" class="nav-item nav-link">Quienes Somos</a>
                             <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
                                 <a href="admin.php" class="nav-item nav-link text-warning">
                                     <i class="fas fa-tools me-1"></i>Admin
@@ -332,9 +336,36 @@ if (isset($_GET['success'])) {
                                         </div>
 
                                         <div class="mb-2">
-                                            <span class="stock-badge">
-                                                <i class="fas fa-box"></i>
-                                                Stock: <?php echo (int)($p['stock_disponible'] ?? 0); ?>
+                                            <?php
+                                            $estado = $p['estado'] ?? 'disponible';
+                                            $estado_texto = '';
+                                            $estado_class = '';
+                                            
+                                            switch ($estado) {
+                                                case 'disponible':
+                                                    $estado_texto = 'Disponible';
+                                                    $estado_class = 'badge-success';
+                                                    break;
+                                                case 'mantenimiento':
+                                                    $estado_texto = 'En Mantenimiento';
+                                                    $estado_class = 'badge-warning';
+                                                    break;
+                                                case 'alquilado':
+                                                    $estado_texto = 'Alquilado';
+                                                    $estado_class = 'badge-info';
+                                                    break;
+                                                case 'vendido':
+                                                    $estado_texto = 'Vendido';
+                                                    $estado_class = 'badge-danger';
+                                                    break;
+                                                default:
+                                                    $estado_texto = 'Disponible';
+                                                    $estado_class = 'badge-success';
+                                            }
+                                            ?>
+                                            <span class="stock-badge <?php echo $estado_class; ?>">
+                                                <i class="fas fa-info-circle"></i>
+                                                Estado: <?php echo $estado_texto; ?>
                                             </span>
                                         </div>
 

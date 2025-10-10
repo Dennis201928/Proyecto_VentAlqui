@@ -97,6 +97,23 @@ if (isset($_GET['success'])) {
             font-size: 0.7rem;
         }
         
+        .badge-success {
+            background: linear-gradient(45deg, #28a745, #20c997) !important;
+        }
+        
+        .badge-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14) !important;
+            color: #000 !important;
+        }
+        
+        .badge-info {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1) !important;
+        }
+        
+        .badge-danger {
+            background: linear-gradient(45deg, #dc3545, #e83e8c) !important;
+        }
+        
         .product-item .text-center {
             padding: 1.5rem 1rem;
         }
@@ -227,8 +244,8 @@ if (isset($_GET['success'])) {
                             <a href="index.php" class="nav-item nav-link active">Inicio</a>
                             <a href="venta.php" class="nav-item nav-link">Venta</a>
                             <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
+                            <a href="quienes_somos.php" class="nav-item nav-link">Quiénes Somos</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
-                            <a href="quienes_somos.php" class="nav-item nav-link">Quienes Somos</a>
                             <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
                                 <a href="admin.php" class="nav-item nav-link text-warning">
                                     <i class="fas fa-tools me-1"></i>Admin
@@ -463,10 +480,38 @@ if (isset($_GET['success'])) {
                                     </div>
                                 <?php endif; ?>
                                 
-                                <!-- Stock -->
+                                <!-- Estado -->
                                 <div class="mb-2">
-                                    <span class="stock-badge">
-                                        <i class="fas fa-box"></i>Stock: <?php echo $product['stock_disponible']; ?>
+                                    <?php
+                                    $estado = $product['estado'] ?? 'disponible';
+                                    $estado_texto = '';
+                                    $estado_class = '';
+                                    
+                                    switch ($estado) {
+                                        case 'disponible':
+                                            $estado_texto = 'Disponible';
+                                            $estado_class = 'badge-success';
+                                            break;
+                                        case 'mantenimiento':
+                                            $estado_texto = 'En Mantenimiento';
+                                            $estado_class = 'badge-warning';
+                                            break;
+                                        case 'alquilado':
+                                            $estado_texto = 'Alquilado';
+                                            $estado_class = 'badge-info';
+                                            break;
+                                        case 'vendido':
+                                            $estado_texto = 'Vendido';
+                                            $estado_class = 'badge-danger';
+                                            break;
+                                        default:
+                                            $estado_texto = 'Disponible';
+                                            $estado_class = 'badge-success';
+                                    }
+                                    ?>
+                                    <span class="stock-badge <?php echo $estado_class; ?>">
+                                        <i class="fas fa-info-circle"></i>
+                                        Estado: <?php echo $estado_texto; ?>
                                     </span>
                                 </div>
                                 

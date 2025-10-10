@@ -164,7 +164,7 @@ $current_user = $auth->getCurrentUser();
                             <a href="index.php" class="nav-item nav-link">Inicio</a>
                             <a href="venta.php" class="nav-item nav-link">Venta</a>
                             <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
-                            <a href="quienes-somos.php" class="nav-item nav-link active">Quiénes Somos</a>
+                            <a href="quienes_somos.php" class="nav-item nav-link active">Quiénes Somos</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
                             <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
                                 <a href="admin.php" class="nav-item nav-link text-warning"><i class="fas fa-tools me-1"></i>Admin</a>

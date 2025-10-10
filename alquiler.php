@@ -8,10 +8,6 @@ $auth = new Auth();
 $productSrv = new Product();
 $current_user = $auth->getCurrentUser();
 
-/**
- * Página de ALQUILER DE MAQUINARIA
- * availability: 'in_stock' (Disponible), 'out_of_stock' (No disponible), '' (Todos)
- */
 $filters = [
     'tipo'         => 'maquinaria',
     'limit'        => isset($_GET['limit']) ? (int)$_GET['limit'] : 24,
@@ -165,10 +161,10 @@ if (isset($_GET['success'])) {
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="index.php" class="nav-item nav-link">Inicio</a>
-                           <a href="venta.php" class="nav-item nav-link">Venta</a>
-                            <a href="alquiler.php" class="nav-item nav-link">Alquiler</a>
+                            <a href="venta.php" class="nav-item nav-link">Venta</a>
+                            <a href="alquiler.php" class="nav-item nav-link active">Alquiler</a>
+                            <a href="quienes_somos.php" class="nav-item nav-link">Quiénes Somos</a>
                             <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
-                            <a href="quienes_somos.php" class="nav-item nav-link">Quienes Somos</a>
                             <?php if ($current_user && $current_user['tipo_usuario']==='admin'): ?>
                                 <a href="admin.php" class="nav-item nav-link text-warning"><i class="fas fa-tools mr-1"></i>Admin</a>
                             <?php endif; ?>
