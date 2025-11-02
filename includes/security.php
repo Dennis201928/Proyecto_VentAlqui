@@ -201,8 +201,15 @@ class Security {
         // Referrer Policy
         header('Referrer-Policy: strict-origin-when-cross-origin');
         
-        // Content Security Policy básico
-        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:;");
+        // Content Security Policy con todos los recursos necesarios
+        header("Content-Security-Policy: " .
+            "default-src 'self'; " .
+            "script-src 'self' 'unsafe-inline' https://code.jquery.com https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " .
+            "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com https://fonts.googleapis.com https://cdn.jsdelivr.net; " .
+            "font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; " .
+            "img-src 'self' data: https:; " .
+            "connect-src 'self' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com https://fonts.googleapis.com; " .
+            "frame-src 'none';");
     }
     
     /**

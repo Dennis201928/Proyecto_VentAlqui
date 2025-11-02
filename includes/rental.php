@@ -3,9 +3,9 @@
  * Sistema de alquileres
  */
 
-require_once 'config/database.php';
-require_once 'includes/auth.php';
-require_once 'includes/product.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/product.php';
 
 class Rental {
     private $db;
@@ -35,7 +35,13 @@ class Rental {
 
             // Calcular total
             $dias = (strtotime($fecha_fin) - strtotime($fecha_inicio)) / (60 * 60 * 24);
-            $precio_dia = $product_info['precio_alquiler_dia'];
+            if ($dias <= 0) {
+                return ['success' => false, 'message' => 'El rango de fechas no es válido'];
+            }
+            
+            $precio_dia = isset($product_info['precio_alquiler_dia']) && $product_info['precio_alquiler_dia'] > 0 
+                         ? $product_info['precio_alquiler_dia'] 
+                         : 0;
             $total = $precio_dia * $dias;
 
             // Crear alquiler
@@ -308,6 +314,129 @@ class Rental {
             return $result['count'] == 0;
         } catch (PDOException $e) {
             return false;
+        }
+    }
+
+    /**
+     * Obtener fechas ocupadas de un producto para el calendario
+     */
+    public function getBookedDates($product_id, $fecha_desde = null, $fecha_hasta = null) {
+        try {
+            // Verificar que la conexión existe
+            if (!$this->conn) {
+                $this->db = new Database();
+                $this->conn = $this->db->getConnection();
+            }
+            
+            if (!$this->conn) {
+                return ['error' => 'No se pudo conectar a la base de datos'];
+            }
+            
+            $query = "SELECT fecha_inicio, fecha_fin, estado 
+                     FROM alquileres 
+                     WHERE producto_id = :product_id 
+                     AND estado IN ('pendiente', 'confirmado', 'en_curso')";
+            
+            $params = [':product_id' => $product_id];
+            
+            if ($fecha_desde) {
+                $query .= " AND fecha_fin >= :fecha_desde";
+                $params[':fecha_desde'] = $fecha_desde;
+            }
+            
+            if ($fecha_hasta) {
+                $query .= " AND fecha_inicio <= :fecha_hasta";
+                $params[':fecha_hasta'] = $fecha_hasta;
+            }
+            
+            $query .= " ORDER BY fecha_inicio ASC";
+            
+            $stmt = $this->conn->prepare($query);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->execute();
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return ['error' => 'Error de base de datos: ' . $e->getMessage()];
+        } catch (Exception $e) {
+            return ['error' => 'Error: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Obtener alquileres con filtros avanzados para admin (categoría, producto, nombre)
+     */
+    public function getAllRentalsWithFilters($filters = []) {
+        try {
+            $query = "SELECT a.*, p.id as producto_id, p.nombre as producto_nombre, p.imagen_principal, 
+                     c.id as categoria_id, c.nombre as categoria_nombre,
+                     u.nombre as usuario_nombre, u.apellido as usuario_apellido, u.email as usuario_email
+                     FROM alquileres a 
+                     JOIN productos p ON a.producto_id = p.id 
+                     LEFT JOIN categorias c ON p.categoria_id = c.id
+                     JOIN usuarios u ON a.usuario_id = u.id
+                     WHERE 1=1";
+            
+            $params = [];
+            
+            if (isset($filters['estado']) && !empty($filters['estado'])) {
+                $query .= " AND a.estado = :estado";
+                $params[':estado'] = $filters['estado'];
+            }
+            
+            if (isset($filters['categoria_id']) && !empty($filters['categoria_id'])) {
+                $query .= " AND c.id = :categoria_id";
+                $params[':categoria_id'] = $filters['categoria_id'];
+            }
+            
+            if (isset($filters['producto_id']) && !empty($filters['producto_id'])) {
+                $query .= " AND p.id = :producto_id";
+                $params[':producto_id'] = $filters['producto_id'];
+            }
+            
+            if (isset($filters['producto_nombre']) && !empty($filters['producto_nombre'])) {
+                $query .= " AND p.nombre ILIKE :producto_nombre";
+                $params[':producto_nombre'] = '%' . $filters['producto_nombre'] . '%';
+            }
+            
+            if (isset($filters['fecha_desde']) && !empty($filters['fecha_desde'])) {
+                $query .= " AND a.fecha_inicio >= :fecha_desde";
+                $params[':fecha_desde'] = $filters['fecha_desde'];
+            }
+            
+            if (isset($filters['fecha_hasta']) && !empty($filters['fecha_hasta'])) {
+                $query .= " AND a.fecha_fin <= :fecha_hasta";
+                $params[':fecha_hasta'] = $filters['fecha_hasta'];
+            }
+            
+            if (isset($filters['usuario_id']) && !empty($filters['usuario_id'])) {
+                $query .= " AND a.usuario_id = :usuario_id";
+                $params[':usuario_id'] = $filters['usuario_id'];
+            }
+            
+            $query .= " ORDER BY a.fecha_creacion DESC";
+            
+            if (isset($filters['limit'])) {
+                $query .= " LIMIT :limit";
+                $params[':limit'] = (int)$filters['limit'];
+            }
+            
+            if (isset($filters['offset'])) {
+                $query .= " OFFSET :offset";
+                $params[':offset'] = (int)$filters['offset'];
+            }
+            
+            $stmt = $this->conn->prepare($query);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->execute();
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return ['error' => 'Error de base de datos: ' . $e->getMessage()];
         }
     }
 }

@@ -55,6 +55,9 @@ if (isset($_GET['success'])) {
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
     
     <!-- Estilos personalizados para las tarjetas de productos -->
     <style>
@@ -193,6 +196,21 @@ if (isset($_GET['success'])) {
                         <i class="fas fa-heart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
                     </a>
+                    <?php if ($current_user): ?>
+                        <?php if ($current_user['tipo_usuario'] === 'admin'): ?>
+                            <a href="admin-rental-calendar.php" class="btn px-0 ml-2" title="Calendario de Alquileres">
+                                <i class="fas fa-calendar-alt text-dark"></i>
+                            </a>
+                        <?php else: ?>
+                            <button type="button" class="btn px-0 ml-2" onclick="verMiCalendario()" title="Mis Alquileres">
+                                <i class="fas fa-calendar-alt text-dark"></i>
+                            </button>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <a href="login.php" class="btn px-0 ml-2" title="Ver Calendario">
+                            <i class="fas fa-calendar-alt text-dark"></i>
+                        </a>
+                    <?php endif; ?>
                     <a href="cart.php" class="btn px-0 ml-2">
                         <i class="fas fa-shopping-cart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" id="cart-count" style="padding-bottom: 2px;">0</span>
@@ -258,6 +276,21 @@ if (isset($_GET['success'])) {
                                 <span class="badge text-secondary border border-secondary rounded-circle"
                                     style="padding-bottom: 2px;">99</span>
                             </a>
+                            <?php if ($current_user): ?>
+                                <?php if ($current_user['tipo_usuario'] === 'admin'): ?>
+                                    <a href="admin-rental-calendar.php" class="btn px-0 ml-3" title="Calendario de Alquileres">
+                                        <i class="fas fa-calendar-alt text-primary"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <button type="button" class="btn px-0 ml-3" onclick="verMiCalendario()" title="Mis Alquileres">
+                                        <i class="fas fa-calendar-alt text-primary"></i>
+                                    </button>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <a href="login.php" class="btn px-0 ml-3" title="Ver Calendario">
+                                    <i class="fas fa-calendar-alt text-primary"></i>
+                                </a>
+                            <?php endif; ?>
                             <a href="cart.php" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" id="cart-count-header"
@@ -387,9 +420,7 @@ if (isset($_GET['success'])) {
                                     <a class="btn btn-outline-dark btn-square" href="#" onclick="addToFavorites(<?php echo $product['id']; ?>)">
                                         <i class="far fa-heart"></i>
                                     </a>
-                                    <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo $product['id']; ?>">
-                                        <i class="fa fa-search"></i>
-                                    </a>
+                                    <!-- Botón de detalles removido - página no existe -->
                                     <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
                                         <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo $product['id']; ?>" title="Editar producto">
                                             <i class="fas fa-edit"></i>
@@ -401,9 +432,9 @@ if (isset($_GET['success'])) {
                                 </div>
                             </div>
                             <div class="text-center py-4">
-                                <a class="h6 text-decoration-none text-truncate" href="product-detail.php?id=<?php echo $product['id']; ?>">
+                                <h6 class="text-truncate">
                                     <?php echo htmlspecialchars($product['nombre']); ?>
-                                </a>
+                                </h6>
                                 
                                 <!-- Descripción -->
                                 <?php if (!empty($product['descripcion'])): ?>
@@ -455,9 +486,7 @@ if (isset($_GET['success'])) {
                                     <a class="btn btn-outline-dark btn-square" href="#" onclick="addToFavorites(<?php echo $product['id']; ?>)">
                                         <i class="far fa-heart"></i>
                                     </a>
-                                    <a class="btn btn-outline-dark btn-square" href="product-detail.php?id=<?php echo $product['id']; ?>">
-                                        <i class="fa fa-search"></i>
-                                    </a>
+                                    <!-- Botón de detalles removido - página no existe -->
                                     <?php if ($current_user && $current_user['tipo_usuario'] === 'admin'): ?>
                                         <a class="btn btn-outline-dark btn-square" href="edit-product.php?id=<?php echo $product['id']; ?>" title="Editar producto">
                                             <i class="fas fa-edit"></i>
@@ -469,9 +498,9 @@ if (isset($_GET['success'])) {
                                 </div>
                             </div>
                             <div class="text-center py-4">
-                                <a class="h6 text-decoration-none text-truncate" href="product-detail.php?id=<?php echo $product['id']; ?>">
+                                <h6 class="text-truncate">
                                     <?php echo htmlspecialchars($product['nombre']); ?>
-                                </a>
+                                </h6>
                                 
                                 <!-- Descripción -->
                                 <?php if (!empty($product['descripcion'])): ?>
@@ -632,6 +661,35 @@ if (isset($_GET['success'])) {
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
+    <!-- Modal para Ver Mi Calendario de Alquileres -->
+    <div class="modal fade" id="miCalendarioModal" tabindex="-1" role="dialog" aria-labelledby="miCalendarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="miCalendarioModalLabel">
+                        <i class="fas fa-calendar-check mr-2"></i>Mis Alquileres
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="calendar-mis-alquileres" class="mb-3"></div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Leyenda:</strong> Las fechas marcadas muestran tus alquileres activos. Haz clic en un evento para ver más detalles.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="my-rentals.php" class="btn btn-primary">
+                        <i class="fas fa-list mr-2"></i>Ver Lista Completa
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
@@ -640,8 +698,104 @@ if (isset($_GET['success'])) {
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales/es.js"></script>
     
     <script>
+    let calendarMisAlquileres = null;
+
+    // Función para ver mi calendario de alquileres
+    function verMiCalendario() {
+        <?php if (!$current_user): ?>
+            window.location.href = 'login.php';
+            return;
+        <?php endif; ?>
+        
+        $('#miCalendarioModal').modal('show');
+        
+        const loadMyRentals = function(fetchInfo, successCallback, failureCallback) {
+            fetch(`api/rentals.php?fecha_desde=${fetchInfo.startStr}&fecha_hasta=${fetchInfo.endStr}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const events = data.data.map(rental => {
+                            const startDate = new Date(rental.fecha_inicio);
+                            const endDate = new Date(rental.fecha_fin);
+                            endDate.setDate(endDate.getDate() + 1); // Incluir último día
+                            
+                            const estados = {
+                                'pendiente': { color: '#ffc107', title: 'Pendiente' },
+                                'confirmado': { color: '#28a745', title: 'Confirmado' },
+                                'en_curso': { color: '#007bff', title: 'En Curso' },
+                                'finalizado': { color: '#6c757d', title: 'Finalizado' },
+                                'cancelado': { color: '#dc3545', title: 'Cancelado' }
+                            };
+                            
+                            const estadoInfo = estados[rental.estado] || { color: '#6c757d', title: rental.estado };
+                            
+                            return {
+                                id: rental.id,
+                                title: rental.producto_nombre,
+                                start: startDate.toISOString().split('T')[0],
+                                end: endDate.toISOString().split('T')[0],
+                                color: estadoInfo.color,
+                                extendedProps: {
+                                    rental: rental
+                                }
+                            };
+                        });
+                        successCallback(events);
+                    } else {
+                        successCallback([]);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    failureCallback();
+                });
+        };
+        
+        if (calendarMisAlquileres) {
+            calendarMisAlquileres.destroy();
+            calendarMisAlquileres = null;
+        }
+        
+        var calendarEl = document.getElementById('calendar-mis-alquileres');
+        calendarMisAlquileres = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek'
+            },
+            firstDay: 1,
+            height: 'auto',
+            events: loadMyRentals,
+            eventClick: function(info) {
+                const rental = info.event.extendedProps.rental;
+                const fechaInicio = new Date(rental.fecha_inicio).toLocaleDateString('es-ES');
+                const fechaFin = new Date(rental.fecha_fin).toLocaleDateString('es-ES');
+                const estados = {
+                    'pendiente': 'Pendiente',
+                    'confirmado': 'Confirmado',
+                    'en_curso': 'En Curso',
+                    'finalizado': 'Finalizado',
+                    'cancelado': 'Cancelado'
+                };
+                
+                alert(`Alquiler: ${rental.producto_nombre}\n` +
+                      `Fechas: ${fechaInicio} - ${fechaFin}\n` +
+                      `Estado: ${estados[rental.estado] || rental.estado}\n` +
+                      `Total: $${parseFloat(rental.total).toFixed(2)}`);
+            }
+        });
+        
+        calendarMisAlquileres.render();
+    }
+
     // Actualizar contador del carrito
     function updateCartCount() {
         <?php if ($current_user): ?>

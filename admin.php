@@ -170,6 +170,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <a class="nav-link" href="admin-categories.php">
                             <i class="fas fa-tags me-2"></i>Gestionar Categorías
                         </a>
+                        <a class="nav-link" href="admin-rental-calendar.php">
+                            <i class="fas fa-calendar-alt me-2"></i>Calendario de Alquileres
+                        </a>
                         <a class="nav-link active" href="admin.php">
                             <i class="fas fa-plus-circle me-2"></i>Agregar Producto
                         </a>

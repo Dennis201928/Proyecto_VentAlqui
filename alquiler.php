@@ -38,24 +38,15 @@ if (isset($_GET['success'])) {
     <meta content="Alquiler de maquinaria pesada y venta de materiales pétreos" name="keywords">
     <meta content="Sistema de alquiler de maquinaria pesada y venta de materiales pétreos" name="description">
 
-    <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
-
-    <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
-
-    <!-- Font Awesome (v5 para coincidir con la plantilla) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
     <link href="lib/animate/animate.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
 
-    <!-- Estilos personalizados -->
     <style>
         .product-item {transition:.3s;border-radius:10px;overflow:hidden}
         .product-item:hover {transform:translateY(-5px);box-shadow:0 10px 25px rgba(0,0,0,.1)}
@@ -71,7 +62,6 @@ if (isset($_GET['success'])) {
 </head>
 
 <body>
-    <!-- Topbar Start -->
     <div class="container-fluid">
         <div class="row bg-secondary py-1 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
@@ -112,6 +102,21 @@ if (isset($_GET['success'])) {
                         <i class="fas fa-heart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom:2px;">0</span>
                     </a>
+                    <?php if ($current_user): ?>
+                        <?php if ($current_user['tipo_usuario'] === 'admin'): ?>
+                            <a href="admin-rental-calendar.php" class="btn px-0 ml-2" title="Calendario de Alquileres">
+                                <i class="fas fa-calendar-alt text-dark"></i>
+                            </a>
+                        <?php else: ?>
+                            <button type="button" class="btn px-0 ml-2" onclick="verMiCalendario()" title="Mis Alquileres">
+                                <i class="fas fa-calendar-alt text-dark"></i>
+                            </button>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <a href="login.php" class="btn px-0 ml-2" title="Ver Calendario">
+                            <i class="fas fa-calendar-alt text-dark"></i>
+                        </a>
+                    <?php endif; ?>
                     <a href="cart.php" class="btn px-0 ml-2">
                         <i class="fas fa-shopping-cart text-dark"></i>
                         <span class="badge text-dark border border-dark rounded-circle" id="cart-count" style="padding-bottom:2px;">0</span>
@@ -175,6 +180,21 @@ if (isset($_GET['success'])) {
                                 <i class="fas fa-heart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom:2px;">99</span>
                             </a>
+                            <?php if ($current_user): ?>
+                                <?php if ($current_user['tipo_usuario'] === 'admin'): ?>
+                                    <a href="admin-rental-calendar.php" class="btn px-0 ml-3" title="Calendario de Alquileres">
+                                        <i class="fas fa-calendar-alt text-primary"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <button type="button" class="btn px-0 ml-3" onclick="verMiCalendario()" title="Mis Alquileres">
+                                        <i class="fas fa-calendar-alt text-primary"></i>
+                                    </button>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <a href="login.php" class="btn px-0 ml-3" title="Ver Calendario">
+                                    <i class="fas fa-calendar-alt text-primary"></i>
+                                </a>
+                            <?php endif; ?>
                             <a href="cart.php" class="btn px-0 ml-3">
                                 <i class="fas fa-shopping-cart text-primary"></i>
                                 <span class="badge text-secondary border border-secondary rounded-circle" id="cart-count-header" style="padding-bottom:2px;">+100</span>
@@ -396,9 +416,9 @@ if (isset($_GET['success'])) {
                                         </div>
                                     </div>
                                     <div class="text-center py-4">
-                                        <a class="h6 text-decoration-none text-truncate" href="product-detail.php?id=<?php echo (int)$p['id']; ?>">
+                                        <h6 class="text-truncate">
                                             <?php echo htmlspecialchars($p['nombre'] ?? 'Maquinaria'); ?>
-                                        </a>
+                                        </h6>
 
                                         <?php if (!empty($p['descripcion'])): ?>
                                             <div class="product-description">
@@ -411,7 +431,9 @@ if (isset($_GET['success'])) {
 
                                         <div class="d-flex align-items-center justify-content-center mt-2">
                                             <?php
-                                            if (isset($p['tarifa_diaria']) && $p['tarifa_diaria'] !== null) {
+                                            if (isset($p['precio_alquiler_dia']) && $p['precio_alquiler_dia'] > 0) {
+                                                echo '<h5>$'.number_format((float)$p['precio_alquiler_dia'], 2).'</h5><h6 class="text-muted ml-2">/día</h6>';
+                                            } elseif (isset($p['tarifa_diaria']) && $p['tarifa_diaria'] !== null) {
                                                 echo '<h5>$'.number_format((float)$p['tarifa_diaria'], 2).'</h5><h6 class="text-muted ml-2">/día</h6>';
                                             } elseif (isset($p['precio'])) {
                                                 echo '<h5>$'.number_format((float)$p['precio'], 2).'</h5><h6 class="text-muted ml-2">/día</h6>';
@@ -427,6 +449,34 @@ if (isset($_GET['success'])) {
                                                 Disponibles: <?php echo (int)($p['stock_disponible'] ?? 0); ?>
                                             </span>
                                         </div>
+
+                                        <?php 
+                                        $tiene_precio_alquiler = isset($p['precio_alquiler_dia']) && 
+                                                                 ($p['precio_alquiler_dia'] > 0 || 
+                                                                  (isset($p['tarifa_diaria']) && $p['tarifa_diaria'] > 0) ||
+                                                                  (isset($p['precio']) && $p['precio'] > 0));
+                                        
+                                        $es_maquinaria = isset($p['categoria_tipo']) && $p['categoria_tipo'] === 'maquinaria';
+                                        
+                                        if ($tiene_precio_alquiler || $es_maquinaria): 
+                                        ?>
+                                            <div class="mt-3">
+                                                <button type="button" class="btn btn-info btn-block btn-sm mb-2" 
+                                                        onclick="verFechasOcupadas(<?php echo (int)$p['id']; ?>, '<?php echo htmlspecialchars(addslashes($p['nombre'])); ?>')">
+                                                    <i class="fas fa-calendar-check mr-2"></i>Ver Fechas Ocupadas
+                                                </button>
+                                                
+                                                <?php if ($current_user): ?>
+                                                    <a href="product-rental.php?id=<?php echo (int)$p['id']; ?>" class="btn btn-primary btn-block">
+                                                        <i class="fas fa-calendar-alt mr-2"></i>Agendar Alquiler
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="login.php?redirect=<?php echo urlencode('product-rental.php?id='.$p['id']); ?>" class="btn btn-primary btn-block">
+                                                        <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión para Agendar
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
 
                                         <div class="d-flex align-items-center justify-content-center mb-1">
                                             <small class="fa fa-star text-primary mr-1"></small>
@@ -517,19 +567,227 @@ if (isset($_GET['success'])) {
         </div>
     </div>
 
-    <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
-    <!-- JavaScript Libraries -->
+    <div class="modal fade" id="miCalendarioModal" tabindex="-1" role="dialog" aria-labelledby="miCalendarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="miCalendarioModalLabel">
+                        <i class="fas fa-calendar-check mr-2"></i>Mis Alquileres
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="calendar-mis-alquileres" class="mb-3"></div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Leyenda:</strong> Las fechas marcadas muestran tus alquileres activos. Haz clic en un evento para ver más detalles.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="my-rentals.php" class="btn btn-primary">
+                        <i class="fas fa-list mr-2"></i>Ver Lista Completa
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="fechasOcupadasModal" tabindex="-1" role="dialog" aria-labelledby="fechasOcupadasModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fechasOcupadasModalLabel">
+                        <i class="fas fa-calendar-check mr-2"></i>Fechas Ocupadas
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="producto-nombre-modal" class="mb-3">
+                        <h6 class="text-primary"></h6>
+                    </div>
+                    <div id="calendar-ocupadas" class="mb-3"></div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Nota:</strong> Las fechas marcadas en <span style="background-color: #dc3545; color: white; padding: 2px 8px; border-radius: 4px;">rojo</span> indican que el producto ya está reservado para esas fechas.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 
-    <!-- Template Javascript -->
     <script src="js/main.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales/es.js"></script>
+
     <script>
+    let calendarOcupadas = null;
+    let calendarMisAlquileres = null;
+    let currentProductId = null;
+
+    function verFechasOcupadas(productId, nombreProducto) {
+        $('#producto-nombre-modal h6').text(nombreProducto);
+        currentProductId = productId;
+        
+        const loadEvents = function(fetchInfo, successCallback, failureCallback) {
+            fetch(`api/rental-dates.php?producto_id=${productId}&fecha_desde=${fetchInfo.startStr}&fecha_hasta=${fetchInfo.endStr}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error HTTP: ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            successCallback(data.events || []);
+                        } else {
+                            console.warn('API response:', data.message || 'Error desconocido');
+                            successCallback([]);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing JSON:', e, 'Response:', text);
+                        successCallback([]); 
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading dates:', error);
+                    successCallback([]);
+                });
+        };
+        
+        if (calendarOcupadas) {
+            calendarOcupadas.destroy();
+            calendarOcupadas = null;
+        }
+        
+        var calendarEl = document.getElementById('calendar-ocupadas');
+        calendarOcupadas = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek'
+            },
+            firstDay: 1,
+            height: 'auto',
+            validRange: {
+                start: new Date().toISOString().split('T')[0]
+            },
+            events: loadEvents
+        });
+        
+        calendarOcupadas.render();
+        $('#fechasOcupadasModal').modal('show');
+    }
+
+    function verMiCalendario() {
+        <?php if (!$current_user): ?>
+            window.location.href = 'login.php';
+            return;
+        <?php endif; ?>
+        
+        $('#miCalendarioModal').modal('show');
+        
+        const loadMyRentals = function(fetchInfo, successCallback, failureCallback) {
+            fetch(`api/rentals.php?fecha_desde=${fetchInfo.startStr}&fecha_hasta=${fetchInfo.endStr}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const events = data.data.map(rental => {
+                            const startDate = new Date(rental.fecha_inicio);
+                            const endDate = new Date(rental.fecha_fin);
+                            endDate.setDate(endDate.getDate() + 1);
+                            
+                            const estados = {
+                                'pendiente': { color: '#ffc107', title: 'Pendiente' },
+                                'confirmado': { color: '#28a745', title: 'Confirmado' },
+                                'en_curso': { color: '#007bff', title: 'En Curso' },
+                                'finalizado': { color: '#6c757d', title: 'Finalizado' },
+                                'cancelado': { color: '#dc3545', title: 'Cancelado' }
+                            };
+                            
+                            const estadoInfo = estados[rental.estado] || { color: '#6c757d', title: rental.estado };
+                            
+                            return {
+                                id: rental.id,
+                                title: rental.producto_nombre,
+                                start: startDate.toISOString().split('T')[0],
+                                end: endDate.toISOString().split('T')[0],
+                                color: estadoInfo.color,
+                                extendedProps: {
+                                    rental: rental
+                                }
+                            };
+                        });
+                        successCallback(events);
+                    } else {
+                        successCallback([]);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    failureCallback();
+                });
+        };
+        
+        if (calendarMisAlquileres) {
+            calendarMisAlquileres.destroy();
+            calendarMisAlquileres = null;
+        }
+        
+        var calendarEl = document.getElementById('calendar-mis-alquileres');
+        calendarMisAlquileres = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek'
+            },
+            firstDay: 1,
+            height: 'auto',
+            events: loadMyRentals,
+            eventClick: function(info) {
+                const rental = info.event.extendedProps.rental;
+                const fechaInicio = new Date(rental.fecha_inicio).toLocaleDateString('es-ES');
+                const fechaFin = new Date(rental.fecha_fin).toLocaleDateString('es-ES');
+                const estados = {
+                    'pendiente': 'Pendiente',
+                    'confirmado': 'Confirmado',
+                    'en_curso': 'En Curso',
+                    'finalizado': 'Finalizado',
+                    'cancelado': 'Cancelado'
+                };
+                
+                alert(`Alquiler: ${rental.producto_nombre}\n` +
+                      `Fechas: ${fechaInicio} - ${fechaFin}\n` +
+                      `Estado: ${estados[rental.estado] || rental.estado}\n` +
+                      `Total: $${parseFloat(rental.total).toFixed(2)}`);
+            }
+        });
+        
+        calendarMisAlquileres.render();
+    }
+
     // Actualizar contador del carrito (si hay usuario)
     function updateCartCount() {
         <?php if ($current_user): ?>

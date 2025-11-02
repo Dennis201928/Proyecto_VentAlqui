@@ -402,9 +402,9 @@ if (isset($_GET['success'])) {
                                         </div>
                                     </div>
                                     <div class="text-center py-4">
-                                        <a class="h6 text-decoration-none text-truncate" href="product-detail.php?id=<?php echo (int)$p['id']; ?>">
+                                        <h6 class="text-truncate">
                                             <?php echo htmlspecialchars($p['nombre'] ?? 'Producto'); ?>
-                                        </a>
+                                        </h6>
 
                                         <?php if (!empty($p['descripcion'])): ?>
                                             <div class="product-description">
