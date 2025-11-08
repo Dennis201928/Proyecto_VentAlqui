@@ -33,14 +33,25 @@ $request_uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($request_uri, PHP_URL_PATH);
 $path_parts = explode('/', trim($path, '/'));
 
-// Obtener ID del alquiler si está en la URL
-$rental_id = null;
-if (isset($path_parts[2]) && is_numeric($path_parts[2])) {
-    $rental_id = (int)$path_parts[2];
-}
-
 // Obtener parámetros de consulta
 $query_params = $_GET;
+
+// Obtener ID del alquiler si está en la URL o en los parámetros
+$rental_id = null;
+
+// Intentar obtener desde la URL (formato: /api/rentals.php/{id})
+$path_parts_count = count($path_parts);
+for ($i = 0; $i < $path_parts_count; $i++) {
+    if (is_numeric($path_parts[$i])) {
+        $rental_id = (int)$path_parts[$i];
+        break;
+    }
+}
+
+// Si no se encontró en la URL, intentar desde los parámetros de consulta
+if (!$rental_id && isset($query_params['id']) && is_numeric($query_params['id'])) {
+    $rental_id = (int)$query_params['id'];
+}
 
 try {
     switch ($method) {

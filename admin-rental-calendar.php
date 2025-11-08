@@ -291,7 +291,7 @@ if (isset($rentals['error'])) {
 
     <!-- Modal para detalles del alquiler -->
     <div class="modal fade" id="rentalModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Detalles del Alquiler</h5>
@@ -302,7 +302,7 @@ if (isset($rentals['error'])) {
                 <div class="modal-body" id="rentalModalBody">
                     <!-- Contenido dinámico -->
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" id="rentalModalFooter">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -319,6 +319,9 @@ if (isset($rentals['error'])) {
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales/es.js"></script>
 
     <script>
+        let calendar; // Variable global para el calendario
+        let currentRental = null; // Alquiler actualmente seleccionado
+        
         const rentals = <?php echo json_encode($rentals); ?>;
         const rentalColors = {
             'pendiente': '#ffc107',
@@ -348,7 +351,7 @@ if (isset($rentals['error'])) {
                 };
             });
             
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'es',
                 headerToolbar: {
@@ -360,6 +363,7 @@ if (isset($rentals['error'])) {
                 events: calendarEvents,
                 eventClick: function(info) {
                     const rental = info.event.extendedProps.rental;
+                    currentRental = rental;
                     showRentalDetails(rental);
                 },
                 eventDisplay: 'block',
@@ -371,6 +375,7 @@ if (isset($rentals['error'])) {
 
         function showRentalDetails(rental) {
             const modalBody = document.getElementById('rentalModalBody');
+            const modalFooter = document.getElementById('rentalModalFooter');
             
             const estados = {
                 'pendiente': 'Pendiente',
@@ -403,7 +408,7 @@ if (isset($rentals['error'])) {
                     </div>
                     <div class="col-md-6">
                         <h6><strong>Estado:</strong></h6>
-                        <p><span class="badge badge-${getBadgeClass(rental.estado)}">${estados[rental.estado] || rental.estado}</span></p>
+                        <p><span class="badge badge-${getBadgeClass(rental.estado)}" id="rentalEstadoBadge">${estados[rental.estado] || rental.estado}</span></p>
                     </div>
                 </div>
                 <div class="row">
@@ -442,6 +447,42 @@ if (isset($rentals['error'])) {
                 ` : ''}
             `;
             
+            // Actualizar footer con botones de acción según el estado
+            let footerButtons = '';
+            
+            if (rental.estado === 'pendiente') {
+                footerButtons = `
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-danger" onclick="rechazarAlquiler(${rental.id})">
+                        <i class="fas fa-times mr-2"></i>Rechazar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="confirmarAlquiler(${rental.id})">
+                        <i class="fas fa-check mr-2"></i>Confirmar
+                    </button>
+                `;
+            } else if (rental.estado === 'confirmado') {
+                footerButtons = `
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="marcarEnCurso(${rental.id})">
+                        <i class="fas fa-play mr-2"></i>Marcar en Curso
+                    </button>
+                `;
+            } else if (rental.estado === 'en_curso') {
+                footerButtons = `
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-info" onclick="finalizarAlquiler(${rental.id})">
+                        <i class="fas fa-check-circle mr-2"></i>Finalizar
+                    </button>
+                `;
+            } else {
+                // Estados finalizados o cancelados: solo botón cerrar
+                footerButtons = `
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                `;
+            }
+            
+            modalFooter.innerHTML = footerButtons;
+            
             $('#rentalModal').modal('show');
         }
 
@@ -454,6 +495,160 @@ if (isset($rentals['error'])) {
                 'cancelado': 'danger'
             };
             return classes[estado] || 'secondary';
+        }
+
+        function confirmarAlquiler(rentalId) {
+            if (!confirm('¿Estás seguro de que deseas confirmar este alquiler?')) {
+                return;
+            }
+            
+            updateRentalStatus(rentalId, 'confirmado', 'Alquiler confirmado por el administrador');
+        }
+
+        function rechazarAlquiler(rentalId) {
+            const motivo = prompt('¿Cuál es el motivo del rechazo? (opcional)');
+            const observaciones = motivo ? 'Rechazado por el administrador. Motivo: ' + motivo : 'Rechazado por el administrador';
+            
+            if (!confirm('¿Estás seguro de que deseas rechazar este alquiler?')) {
+                return;
+            }
+            
+            updateRentalStatus(rentalId, 'cancelado', observaciones);
+        }
+
+        function marcarEnCurso(rentalId) {
+            if (!confirm('¿Deseas marcar este alquiler como "En Curso"? Esto indicará que el producto ya fue entregado al cliente.')) {
+                return;
+            }
+            
+            updateRentalStatus(rentalId, 'en_curso', 'Alquiler marcado como en curso por el administrador');
+        }
+
+        function finalizarAlquiler(rentalId) {
+            if (!confirm('¿Deseas finalizar este alquiler? Esto indicará que el producto ya fue devuelto y el alquiler ha concluido.')) {
+                return;
+            }
+            
+            updateRentalStatus(rentalId, 'finalizado', 'Alquiler finalizado por el administrador');
+        }
+
+        function updateRentalStatus(rentalId, estado, observaciones) {
+            // Deshabilitar botones mientras se procesa
+            const footer = document.getElementById('rentalModalFooter');
+            footer.innerHTML = `
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" disabled>Cerrar</button>
+                <span class="ml-2"><i class="fas fa-spinner fa-spin"></i> Procesando...</span>
+            `;
+            
+            // Usar formato más compatible: parámetro de consulta o ruta
+            fetch(`api/rentals.php/${rentalId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    estado: estado,
+                    observaciones: observaciones
+                }),
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            throw new Error('Error HTTP: ' + response.status);
+                        }
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Actualizar el estado en el objeto rental actual
+                    if (currentRental) {
+                        currentRental.estado = estado;
+                        currentRental.observaciones = observaciones;
+                    }
+                    $('#rentalModal').modal('hide');
+                    
+                    // Mostrar mensaje de éxito según el estado
+                    let mensaje = '';
+                    switch(estado) {
+                        case 'confirmado':
+                            mensaje = 'Alquiler confirmado exitosamente';
+                            break;
+                        case 'cancelado':
+                            mensaje = 'Alquiler rechazado exitosamente';
+                            break;
+                        case 'en_curso':
+                            mensaje = 'Alquiler marcado como "En Curso" exitosamente';
+                            break;
+                        case 'finalizado':
+                            mensaje = 'Alquiler finalizado exitosamente';
+                            break;
+                        default:
+                            mensaje = 'Estado actualizado exitosamente';
+                    }
+                    alert(mensaje);
+                    
+                    // Recargar la página para actualizar el calendario
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'No se pudo actualizar el estado del alquiler'));
+                    // Restaurar botones según el estado actual
+                    restoreFooterButtons(rentalId);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar el estado del alquiler. Por favor, intenta nuevamente.');
+                // Restaurar botones según el estado actual
+                restoreFooterButtons(rentalId);
+            });
+        }
+
+        function restoreFooterButtons(rentalId) {
+            const footer = document.getElementById('rentalModalFooter');
+            
+            if (!currentRental) {
+                footer.innerHTML = '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>';
+                return;
+            }
+            
+            const estado = currentRental.estado;
+            let footerButtons = '';
+            
+            if (estado === 'pendiente') {
+                footerButtons = `
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-danger" onclick="rechazarAlquiler(${rentalId})">
+                        <i class="fas fa-times mr-2"></i>Rechazar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="confirmarAlquiler(${rentalId})">
+                        <i class="fas fa-check mr-2"></i>Confirmar
+                    </button>
+                `;
+            } else if (estado === 'confirmado') {
+                footerButtons = `
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="marcarEnCurso(${rentalId})">
+                        <i class="fas fa-play mr-2"></i>Marcar en Curso
+                    </button>
+                `;
+            } else if (estado === 'en_curso') {
+                footerButtons = `
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-info" onclick="finalizarAlquiler(${rentalId})">
+                        <i class="fas fa-check-circle mr-2"></i>Finalizar
+                    </button>
+                `;
+            } else {
+                footerButtons = '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>';
+            }
+            
+            footer.innerHTML = footerButtons;
         }
 
         document.getElementById('categoria_id').addEventListener('change', function() {
