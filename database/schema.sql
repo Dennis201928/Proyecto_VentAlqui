@@ -1,11 +1,8 @@
 -- Base de datos para sistema de venta y alquiler de maquinaria y materiales pétreos
 -- PostgreSQL Schema
 
--- Crear la base de datos (ejecutar como superusuario)
+-- Crear la base de datos
 -- CREATE DATABASE venta_alquiler_db;
-
--- Conectar a la base de datos
--- \c venta_alquiler_db;
 
 -- Tabla de usuarios
 CREATE TABLE usuarios (

@@ -18,5 +18,4 @@ CREATE INDEX idx_password_recovery_tokens_token ON password_recovery_tokens(toke
 CREATE INDEX idx_password_recovery_tokens_usuario ON password_recovery_tokens(usuario_id);
 CREATE INDEX idx_password_recovery_tokens_expires ON password_recovery_tokens(expires_at);
 
--- Limpiar tokens expirados (se puede ejecutar como tarea programada)
 -- DELETE FROM password_recovery_tokens WHERE expires_at < NOW() OR used = true;

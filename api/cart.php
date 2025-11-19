@@ -14,8 +14,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
 }
 
-require_once '../includes/cart.php';
-require_once '../includes/auth.php';
+// Cargar autoloader de Composer
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Cargar configuración
+require_once __DIR__ . '/../app/Core/Config.php';
+
+// Usar las clases del nuevo sistema MVC
+use App\Models\Cart;
+use App\Models\Auth;
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $cart = new Cart();
 $auth = new Auth();

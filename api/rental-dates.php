@@ -3,12 +3,12 @@
  * API para obtener fechas ocupadas de productos
  */
 
-// Desactivar errores que puedan interferir con el JSON
+// Configuración de errores
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../logs/php_errors.log');
 
-// Iniciar buffer de salida para capturar cualquier output accidental
 ob_start();
 
 header('Content-Type: application/json; charset=utf-8');
@@ -16,16 +16,22 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// Manejar preflight requests
+// Manejar las peticiones
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
     ob_end_clean();
     exit();
 }
 
+// Cargar configuración
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/Core/Config.php';
+
+// Usar las clases del nuevo sistema MVC
+use App\Models\Rental;
+
 // Incluir archivos necesarios
 try {
-    require_once __DIR__ . '/../includes/rental.php';
     $rental = new Rental();
     
     if (!$rental) {
@@ -122,7 +128,6 @@ try {
     ob_end_clean();
     http_response_code(500);
     $error_msg = 'Error interno: ' . $e->getMessage();
-    // Log del error para debug
     error_log('API rental-dates.php error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
     echo json_encode(['success' => false, 'message' => $error_msg]);
 } catch (Error $e) {

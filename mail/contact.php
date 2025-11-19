@@ -4,7 +4,11 @@
  * Envía mensajes del formulario de contacto al correo personal
  */
 
-require_once __DIR__ . '/../includes/SimpleContactService.php';
+// Cargar configuración
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/Core/Config.php';
+
+use App\Helpers\SimpleContactService;
 
 // Verificar que sea una petición POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

@@ -3,9 +3,11 @@
  * API REST para alquileres
  */
 
-// Desactivar errores que puedan interferir con el JSON
-error_reporting(0);
+// Configuración de errores
+error_reporting(E_ALL);
 ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../logs/php_errors.log');
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -21,8 +23,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once '../includes/rental.php';
-require_once '../includes/auth.php';
+
+// Cargar autoloader de Composer
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Cargar configuración
+require_once __DIR__ . '/../app/Core/Config.php';
+
+// Usar las clases del nuevo sistema MVC
+use App\Models\Rental;
+use App\Models\Auth;
 
 $rental = new Rental();
 $auth = new Auth();
@@ -213,8 +223,25 @@ try {
             echo json_encode(['success' => false, 'message' => 'Método no permitido']);
             break;
     }
-} catch (Exception $e) {
+} catch (\Exception $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Error interno del servidor: ' . $e->getMessage()]);
+    error_log("Error en rentals.php: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Error interno del servidor: ' . $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
+} catch (\Error $e) {
+    http_response_code(500);
+    error_log("Fatal error en rentals.php: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Error fatal: ' . $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
 }
 ?>

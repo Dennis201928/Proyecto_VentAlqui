@@ -1,0 +1,29 @@
+# Configuración para Apache
+RewriteEngine On
+
+# Base path del proyecto
+RewriteBase /Proyecto_VentAlqui/public/
+
+# Permitir acceso a archivos estáticos
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^.*$ - [L]
+
+# Permitir acceso a directorios
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [L]
+
+# Redirigir todo lo demás a index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Configuración de seguridad
+<Files ".htaccess">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Prevenir acceso a archivos sensibles
+<FilesMatch "\.(sql|log|txt|bak)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
