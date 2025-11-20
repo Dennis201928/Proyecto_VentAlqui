@@ -76,15 +76,12 @@ class AdminController extends Controller {
             
             // Verificar si hay errores
             if (isset($categories_all['error'])) {
-                error_log("Error al obtener categorías: " . $categories_all['error']);
                 $categories_all = [];
             }
             if (isset($categories_maq['error'])) {
-                error_log("Error al obtener categorías maquinaria: " . $categories_maq['error']);
                 $categories_maq = [];
             }
             if (isset($categories_mat['error'])) {
-                error_log("Error al obtener categorías material: " . $categories_mat['error']);
                 $categories_mat = [];
             }
             
@@ -98,13 +95,9 @@ class AdminController extends Controller {
             
             $this->view('admin/add-product', $data, 'admin');
         } catch (\Exception $e) {
-            error_log("Error en addProduct: " . $e->getMessage());
-            error_log("Stack: " . $e->getTraceAsString());
             $data['error'] = 'Error al cargar el formulario. Por favor, intente más tarde.';
             $this->view('admin/add-product', $data, 'admin');
         } catch (\Error $e) {
-            error_log("Fatal error en addProduct: " . $e->getMessage());
-            error_log("Stack: " . $e->getTraceAsString());
             $data['error'] = 'Error fatal al cargar el formulario. Por favor, intente más tarde.';
             $this->view('admin/add-product', $data, 'admin');
         }
@@ -134,8 +127,17 @@ class AdminController extends Controller {
             
             $imagen_principal = null;
             if (isset($_FILES['imagen_principal']) && $_FILES['imagen_principal']['error'] == 0) {
-                $imagen_principal = $imageUpload->uploadImage($_FILES['imagen_principal'], 'principal');
+                try {
+                    $imagen_principal = $imageUpload->uploadImage($_FILES['imagen_principal'], 'principal');
+                    // Verificar que la imagen se haya guardado correctamente
+                    if (empty($imagen_principal)) {
+                        throw new \Exception('Error: La ruta de la imagen está vacía después de la subida');
+                    }
+                } catch (\Exception $e) {
+                    throw new \Exception('Error al subir la imagen: ' . $e->getMessage());
+                }
             } else {
+                $error_code = $_FILES['imagen_principal']['error'] ?? 'NO_FILE';
                 throw new \Exception('La imagen principal es requerida');
             }
             
@@ -268,6 +270,10 @@ class AdminController extends Controller {
                 if (isset($_FILES['imagen_principal']) && $_FILES['imagen_principal']['error'] == 0) {
                     try {
                         $imagen_principal = $imageUpload->uploadImage($_FILES['imagen_principal'], 'principal');
+                        // Verificar que la imagen se haya guardado correctamente
+                        if (empty($imagen_principal)) {
+                            throw new \Exception('Error: La ruta de la imagen está vacía después de la subida');
+                        }
                     } catch (\Exception $e) {
                         $data = [
                             'title' => 'Editar Producto',
@@ -319,11 +325,9 @@ class AdminController extends Controller {
             
             // Verificar si hay errores
             if (isset($categories_maq['error'])) {
-                error_log("Error al obtener categorías maquinaria: " . $categories_maq['error']);
                 $categories_maq = [];
             }
             if (isset($categories_mat['error'])) {
-                error_log("Error al obtener categorías material: " . $categories_mat['error']);
                 $categories_mat = [];
             }
             
@@ -337,8 +341,6 @@ class AdminController extends Controller {
             
             $this->view('admin/edit-product', $data, 'admin');
         } catch (\Exception $e) {
-            error_log("Error en editProduct: " . $e->getMessage());
-            error_log("Stack: " . $e->getTraceAsString());
             $auth = new Auth();
             $data = [
                 'title' => 'Editar Producto',
@@ -349,8 +351,6 @@ class AdminController extends Controller {
             ];
             $this->view('admin/edit-product', $data, 'admin');
         } catch (\Error $e) {
-            error_log("Fatal error en editProduct: " . $e->getMessage());
-            error_log("Stack: " . $e->getTraceAsString());
             $auth = new Auth();
             $data = [
                 'title' => 'Editar Producto',
@@ -360,6 +360,18 @@ class AdminController extends Controller {
                 'categorias_material' => []
             ];
             $this->view('admin/edit-product', $data, 'admin');
+        }
+    }
+    
+    public function deleteProduct($id) {
+        $product = new Product();
+        
+        $result = $product->deleteProduct($id);
+        
+        if ($result['success']) {
+            $this->redirect('/admin/productos?message=' . urlencode('Producto eliminado exitosamente'));
+        } else {
+            $this->redirect('/admin/productos?error=' . urlencode($result['message']));
         }
     }
     

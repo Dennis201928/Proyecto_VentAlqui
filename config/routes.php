@@ -34,6 +34,7 @@ $router->get('/admin/productos/create', 'AdminController@addProduct', ['auth', '
 $router->post('/admin/productos', 'AdminController@createProduct', ['auth', 'admin']);
 $router->get('/admin/productos/edit/:id', 'AdminController@editProduct', ['auth', 'admin']);
 $router->post('/admin/productos/edit/:id', 'AdminController@editProduct', ['auth', 'admin']);
+$router->get('/admin/productos/delete/:id', 'AdminController@deleteProduct', ['auth', 'admin']);
 $router->get('/admin/categorias', 'AdminController@categories', ['auth', 'admin']);
 $router->post('/admin/categorias', 'AdminController@categories', ['auth', 'admin']);
 $router->get('/admin/calendario-alquileres', 'AdminController@rentalCalendar', ['auth', 'admin']);

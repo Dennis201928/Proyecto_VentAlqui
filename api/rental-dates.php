@@ -127,15 +127,13 @@ try {
 } catch (Exception $e) {
     ob_end_clean();
     http_response_code(500);
-    $error_msg = 'Error interno: ' . $e->getMessage();
     error_log('API rental-dates.php error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
-    echo json_encode(['success' => false, 'message' => $error_msg]);
+    echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
 } catch (Error $e) {
     ob_end_clean();
     http_response_code(500);
-    $error_msg = 'Error fatal: ' . $e->getMessage();
     error_log('API rental-dates.php fatal error: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
-    echo json_encode(['success' => false, 'message' => $error_msg]);
+    echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
 }
 ?>
 

@@ -4,6 +4,7 @@ namespace App\Helpers;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+use App\Core\EmailConfig;
 
 /**
  * Servicio simple para manejo de formularios de contacto
@@ -67,29 +68,27 @@ class SimpleContactService {
         
         $mail = null;
         try {
-            require_once __DIR__ . '/../../config/email.php';
-            
             $mail = new PHPMailer(true);
             
             // Configuración del servidor SMTP
             $mail->isSMTP();
-            $mail->Host = \EmailConfig::SMTP_HOST;
+            $mail->Host = EmailConfig::SMTP_HOST;
             $mail->SMTPAuth = true;
-            $mail->Username = \EmailConfig::SMTP_USERNAME;
-            $mail->Password = \EmailConfig::SMTP_PASSWORD;
+            $mail->Username = EmailConfig::SMTP_USERNAME;
+            $mail->Password = EmailConfig::SMTP_PASSWORD;
             
             // Configurar SMTPSecure según el puerto
             // Para puerto 587 usar 'tls', para puerto 465 usar 'ssl'
-            if (\EmailConfig::SMTP_PORT == 587) {
+            if (EmailConfig::SMTP_PORT == 587) {
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // 'tls'
-            } elseif (\EmailConfig::SMTP_PORT == 465) {
+            } elseif (EmailConfig::SMTP_PORT == 465) {
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // 'ssl'
             } else {
-                $mail->SMTPSecure = \EmailConfig::SMTP_SECURE ? PHPMailer::ENCRYPTION_STARTTLS : false;
+                $mail->SMTPSecure = EmailConfig::SMTP_SECURE ? PHPMailer::ENCRYPTION_STARTTLS : false;
             }
             
-            $mail->Port = \EmailConfig::SMTP_PORT;
-            $mail->CharSet = \EmailConfig::CHARSET;
+            $mail->Port = EmailConfig::SMTP_PORT;
+            $mail->CharSet = EmailConfig::CHARSET;
             
             // Configuración adicional para Gmail
             $mail->SMTPOptions = array(
@@ -103,9 +102,9 @@ class SimpleContactService {
             // Remitentes
             // IMPORTANTE: Gmail requiere que el FROM sea el mismo que el SMTP_USERNAME
             // o un alias verificado. Usamos SMTP_USERNAME como FROM para evitar problemas.
-            $mail->setFrom(\EmailConfig::SMTP_USERNAME, \EmailConfig::FROM_NAME);
+            $mail->setFrom(EmailConfig::SMTP_USERNAME, EmailConfig::FROM_NAME);
             $mail->addReplyTo($email, $name);
-            $mail->addAddress(\EmailConfig::CONTACT_EMAIL);
+            $mail->addAddress(EmailConfig::CONTACT_EMAIL);
             
             // Contenido
             $mail->isHTML(false);

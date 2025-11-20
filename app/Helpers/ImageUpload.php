@@ -9,14 +9,69 @@ class ImageUpload {
     private $allowed_types;
     private $max_size;
     
-    public function __construct($upload_dir = 'public/assets/img/products/') {
-        $this->upload_dir = $upload_dir;
+    public function __construct($upload_dir = null) {
+        // Si no se proporciona una ruta, usar la ruta absoluta desde la raíz del proyecto
+        if ($upload_dir === null) {
+            // Obtener la ruta absoluta a la raíz del proyecto
+            // __DIR__ = C:\xampp\htdocs\Proyecto_VentAlqui\app\Helpers
+            // dirname(__DIR__) = C:\xampp\htdocs\Proyecto_VentAlqui\app
+            // dirname(dirname(__DIR__)) = C:\xampp\htdocs\Proyecto_VentAlqui
+            $project_root = dirname(dirname(dirname(__DIR__)));
+            
+            // Verificar que la ruta sea correcta buscando public/index.php
+            $public_index = $project_root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'index.php';
+            if (!file_exists($public_index)) {
+                // Si no existe, intentar usar la ruta del script actual
+                if (isset($_SERVER['SCRIPT_FILENAME'])) {
+                    $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+                    // Si el script está en public/, subir un nivel
+                    if (basename($script_dir) === 'public') {
+                        $project_root = dirname($script_dir);
+                    } else {
+                        // Buscar el directorio que contiene 'public'
+                        $current = $script_dir;
+                        while ($current !== dirname($current)) {
+                            if (file_exists($current . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'index.php')) {
+                                $project_root = $current;
+                                break;
+                            }
+                            $current = dirname($current);
+                        }
+                    }
+                }
+            }
+            
+            $this->upload_dir = $project_root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'products' . DIRECTORY_SEPARATOR;
+        } else {
+            // Verificar si es una ruta absoluta (Windows: C:\ o \\, Linux/Unix: /)
+            $is_absolute = (strpos($upload_dir, DIRECTORY_SEPARATOR) === 0) || 
+                          (strlen($upload_dir) > 1 && $upload_dir[1] === ':') || // Windows: C:\
+                          (strpos($upload_dir, '\\\\') === 0); // Windows: \\server
+            
+            if ($is_absolute) {
+                // Es una ruta absoluta, usarla tal cual
+                $this->upload_dir = rtrim($upload_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+            } else {
+                // Es una ruta relativa, convertirla a absoluta desde la raíz del proyecto
+                $project_root = dirname(dirname(dirname(__DIR__)));
+                $normalized_path = str_replace('/', DIRECTORY_SEPARATOR, $upload_dir);
+                $this->upload_dir = $project_root . DIRECTORY_SEPARATOR . rtrim($normalized_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+            }
+        }
+        
         $this->allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $this->max_size = 5 * 1024 * 1024; // 5MB
         
         // Crear directorio si no existe
         if (!file_exists($this->upload_dir)) {
-            mkdir($this->upload_dir, 0755, true);
+            if (!mkdir($this->upload_dir, 0755, true)) {
+                throw new \Exception('No se pudo crear el directorio de subida de imágenes');
+            }
+        }
+        
+        // Verificar permisos de escritura
+        if (!is_writable($this->upload_dir)) {
+            throw new \Exception('El directorio de subida no tiene permisos de escritura');
         }
     }
     
@@ -44,11 +99,75 @@ class ImageUpload {
         $filename = $prefix . '_' . time() . '_' . uniqid() . '.' . $extension;
         $filepath = $this->upload_dir . $filename;
         
+        // Verificar que el archivo temporal existe
+        if (!file_exists($file['tmp_name'])) {
+            throw new Exception('El archivo temporal no existe: ' . $file['tmp_name']);
+        }
+        
+        // Verificar que el directorio de destino existe y es escribible
+        if (!is_dir($this->upload_dir)) {
+            throw new Exception('El directorio de destino no existe: ' . $this->upload_dir);
+        }
+        
+        if (!is_writable($this->upload_dir)) {
+            throw new Exception('El directorio de destino no tiene permisos de escritura: ' . $this->upload_dir);
+        }
+        
         // Mover archivo
-        if (move_uploaded_file($file['tmp_name'], $filepath)) {
-            return $filepath;
+        $moved = @move_uploaded_file($file['tmp_name'], $filepath);
+        
+        if ($moved) {
+            // Verificar que el archivo se haya guardado correctamente
+            if (!file_exists($filepath)) {
+                throw new Exception('El archivo se movió pero no se encuentra en el destino: ' . $filepath);
+            }
+            
+            // Verificar que el archivo tenga contenido
+            if (filesize($filepath) == 0) {
+                throw new Exception('El archivo se guardó pero está vacío: ' . $filepath);
+            }
+            
+            // Devolver ruta relativa desde la raíz del proyecto para guardar en BD
+            // La ruta debe ser: assets/img/products/filename.jpg (sin public/)
+            // Usar la misma lógica que en el constructor para obtener project_root
+            $project_root = dirname(dirname(dirname(__DIR__)));
+            $public_index = $project_root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'index.php';
+            if (!file_exists($public_index) && isset($_SERVER['SCRIPT_FILENAME'])) {
+                $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+                if (basename($script_dir) === 'public') {
+                    $project_root = dirname($script_dir);
+                } else {
+                    $current = $script_dir;
+                    while ($current !== dirname($current)) {
+                        if (file_exists($current . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'index.php')) {
+                            $project_root = $current;
+                            break;
+                        }
+                        $current = dirname($current);
+                    }
+                }
+            }
+            
+            $relative_path = str_replace($project_root . DIRECTORY_SEPARATOR, '', $filepath);
+            // Normalizar separadores de directorio a / para compatibilidad web
+            $relative_path = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
+            
+            // Remover 'public/' del inicio si existe, para que ImageHelper funcione correctamente
+            if (strpos($relative_path, 'public/') === 0) {
+                $relative_path = substr($relative_path, 7); // Remover 'public/'
+            }
+            
+            return $relative_path;
         } else {
-            throw new Exception('Error al mover el archivo al directorio de destino');
+            $error_msg = 'Error al mover el archivo al directorio de destino';
+            $last_error = error_get_last();
+            if ($last_error) {
+                $error_msg .= ': ' . $last_error['message'];
+            }
+            if (!is_writable($this->upload_dir)) {
+                $error_msg .= '. El directorio no tiene permisos de escritura';
+            }
+            throw new Exception($error_msg);
         }
     }
     
@@ -75,7 +194,6 @@ class ImageUpload {
                         $uploaded_files[] = $uploaded;
                     } catch (Exception $e) {
                         // Continuar con otros archivos si uno falla
-                        error_log('Error uploading image: ' . $e->getMessage());
                     }
                 }
             }

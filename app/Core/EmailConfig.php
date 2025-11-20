@@ -1,4 +1,6 @@
 <?php
+namespace App\Core;
+
 /**
  * Configuración de email
  */
@@ -16,3 +18,4 @@ class EmailConfig {
     const SMTP_SECURE = true;
     const SMTP_PORT = 587;
 }
+

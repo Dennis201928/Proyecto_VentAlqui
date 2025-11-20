@@ -27,8 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $conn = new PDO($dsn, $username, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 
-                // Guardar configuración
-                $config_content = "<?php
+                // Actualizar configuración en app/Core/Database.php
+                $database_content = "<?php
+namespace App\\Core;
+
+/**
+ * Clase para manejo de conexión a la base de datos
+ */
 class Database {
     private \$host = '$host';
     private \$db_name = '$dbname';
@@ -37,41 +42,35 @@ class Database {
     private \$port = '$port';
     private \$conn;
 
+    /**
+     * Obtener conexión a la base de datos
+     */
     public function getConnection() {
         \$this->conn = null;
+
         try {
             \$dsn = \"pgsql:host=\" . \$this->host . \";port=\" . \$this->port . \";dbname=\" . \$this->db_name;
-            \$this->conn = new PDO(\$dsn, \$this->username, \$this->password);
-            \$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            \$this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        } catch(PDOException \$exception) {
-            echo \"Error de conexión: \" . \$exception->getMessage();
+            \$this->conn = new \\PDO(\$dsn, \$this->username, \$this->password);
+            \$this->conn->setAttribute(\\PDO::ATTR_ERRMODE, \\PDO::ERRMODE_EXCEPTION);
+            \$this->conn->setAttribute(\\PDO::ATTR_DEFAULT_FETCH_MODE, \\PDO::FETCH_ASSOC);
+        } catch(\\PDOException \$exception) {
+            error_log(\"Error de conexión a la base de datos: \" . \$exception->getMessage());
+            throw new \\Exception(\"Error de conexión a la base de datos\");
         }
+
         return \$this->conn;
     }
 
+    /**
+     * Cerrar conexión
+     */
     public function closeConnection() {
         \$this->conn = null;
     }
 }
-
-class Config {
-    const SITE_NAME = 'AlquiVenta';
-    const SITE_URL = 'http://localhost/Proyecto_VentAlqui';
-    const ADMIN_EMAIL = 'admin@alquivent.com';
-    const CURRENCY = 'USD';
-    const TAX_RATE = 0.19;
-    const MIN_RENTAL_DAYS = 1;
-    const MAX_RENTAL_DAYS = 365;
-    const SESSION_LIFETIME = 3600;
-    const UPLOAD_PATH = 'uploads/';
-    const MAX_FILE_SIZE = 5242880;
-    const PRODUCTS_PER_PAGE = 12;
-    const ORDERS_PER_PAGE = 10;
-}
-?>";
+";
                 
-                file_put_contents('config/database.php', $config_content);
+                file_put_contents('app/Core/Database.php', $database_content);
                 header('Location: install.php?step=2');
                 exit();
             } catch (PDOException $e) {
@@ -81,8 +80,9 @@ class Config {
             
         case 2:
             // Crear tablas
-            require_once 'config/database.php';
-            $db = new Database();
+            // Cargar autoloader y clases con namespace
+            require_once __DIR__ . '/vendor/autoload.php';
+            $db = new \App\Core\Database();
             $conn = $db->getConnection();
             
             if (!$conn) {

@@ -196,27 +196,21 @@ class Router {
             throw new \Exception("Handler inválido: " . gettype($handler));
         } catch (\Exception $e) {
             // Log del error
-            error_log("Error en executeHandler: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
+            error_log("Error en executeHandler: " . $e->getMessage() . " en " . $e->getFile() . ":" . $e->getLine());
             
             http_response_code(500);
             echo "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Error</title></head><body>";
             echo "<h1>500 - Error interno del servidor</h1>";
-            echo "<p><strong>Error:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
-            echo "<p><strong>Archivo:</strong> " . htmlspecialchars($e->getFile()) . "</p>";
-            echo "<p><strong>Línea:</strong> " . $e->getLine() . "</p>";
+            echo "<p>Ha ocurrido un error. Por favor, intente más tarde.</p>";
             echo "</body></html>";
         } catch (\Error $e) {
             // Capturar errores fatales también
-            error_log("Fatal error en executeHandler: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
+            error_log("Fatal error en executeHandler: " . $e->getMessage() . " en " . $e->getFile() . ":" . $e->getLine());
             
             http_response_code(500);
             echo "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Error Fatal</title></head><body>";
             echo "<h1>500 - Error Fatal</h1>";
-            echo "<p><strong>Error:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
-            echo "<p><strong>Archivo:</strong> " . htmlspecialchars($e->getFile()) . "</p>";
-            echo "<p><strong>Línea:</strong> " . $e->getLine() . "</p>";
+            echo "<p>Ha ocurrido un error. Por favor, intente más tarde.</p>";
             echo "</body></html>";
         }
     }

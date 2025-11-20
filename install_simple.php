@@ -19,9 +19,9 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
-        // Usar la configuración existente
-        require_once 'config/database.php';
-        $db = new Database();
+        // Usar la configuración existente con namespace
+        require_once __DIR__ . '/vendor/autoload.php';
+        $db = new \App\Core\Database();
         $conn = $db->getConnection();
         
         if (!$conn) {

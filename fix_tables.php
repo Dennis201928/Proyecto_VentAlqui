@@ -3,10 +3,10 @@
  * Script para crear las tablas faltantes
  */
 
-require_once 'config/database.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 try {
-    $db = new Database();
+    $db = new \App\Core\Database();
     $conn = $db->getConnection();
     
     if (!$conn) {

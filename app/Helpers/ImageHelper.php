@@ -87,20 +87,42 @@ class ImageHelper {
             return $baseUrl . $imagePath;
         }
         
-        // Rutas relativas antiguas
-        // img/products/... -> baseUrl/assets/img/products/...
+        // Rutas que comienzan con public/public/assets/... -> baseUrl/assets/...
+        // Manejar rutas incorrectas con public duplicado (legacy)
+        if (strpos($imagePath, 'public/public/assets/') === 0) {
+            // Remover 'public/public/' del inicio y construir la URL correcta
+            $relativePath = str_replace('public/public/', '', $imagePath);
+            $baseUrl = rtrim($baseUrl, '/');
+            $relativePath = '/' . ltrim($relativePath, '/');
+            return $baseUrl . $relativePath;
+        }
+        
+        // Rutas que comienzan con public/assets/... -> baseUrl/assets/...
+        // Para compatibilidad con rutas antiguas (debe ir antes de assets/)
+        if (strpos($imagePath, 'public/assets/') === 0) {
+            // Remover 'public/' del inicio y construir la URL correcta
+            $relativePath = str_replace('public/', '', $imagePath);
+            $baseUrl = rtrim($baseUrl, '/');
+            $relativePath = '/' . ltrim($relativePath, '/');
+            return $baseUrl . $relativePath;
+        }
+        
+        // Rutas que comienzan con assets/... -> baseUrl/assets/...
+        // Esta es la ruta que se guarda cuando se sube una imagen nueva (sin public/)
+        if (strpos($imagePath, 'assets/') === 0) {
+            $baseUrl = rtrim($baseUrl, '/');
+            $relativePath = '/' . ltrim($imagePath, '/');
+            return $baseUrl . $relativePath;
+        }
+        
+        // Rutas que comienzan con img/products/... -> baseUrl/assets/img/products/...
         if (strpos($imagePath, 'img/products/') === 0) {
             return $baseUrl . '/assets/' . $imagePath;
         }
         
-        // img/... -> baseUrl/assets/img/...
+        // Rutas que comienzan con img/... -> baseUrl/assets/img/...
         if (strpos($imagePath, 'img/') === 0) {
             return $baseUrl . '/assets/' . $imagePath;
-        }
-        
-        // public/assets/... -> baseUrl/assets/...
-        if (strpos($imagePath, 'public/assets/') === 0) {
-            return $baseUrl . '/' . str_replace('public/', '', $imagePath);
         }
         
         // Si no coincide con ningún patrón, asumir que es relativa a assets/img/
@@ -111,13 +133,20 @@ class ImageHelper {
      * Obtener URL completa de una imagen
      */
     public static function getImageUrl($imagePath, $baseUrl = null) {
+        if (empty($imagePath)) {
+            if (!$baseUrl) {
+                $baseUrl = Config::SITE_URL;
+            }
+            return $baseUrl . '/assets/img/reference/product-1.jpg';
+        }
+        
         if (!$baseUrl) {
             $baseUrl = Config::SITE_URL;
         }
         
         $normalized = self::normalizeImagePathWithBase($imagePath, $baseUrl);
         if (!$normalized) {
-            return $baseUrl . '/assets/img/reference/product-1.jpg'; // Imagen por defecto
+            return $baseUrl . '/assets/img/reference/product-1.jpg';
         }
         return $normalized;
     }

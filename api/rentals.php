@@ -225,23 +225,17 @@ try {
     }
 } catch (\Exception $e) {
     http_response_code(500);
-    error_log("Error en rentals.php: " . $e->getMessage());
-    error_log("Stack trace: " . $e->getTraceAsString());
+    error_log("Error en rentals.php: " . $e->getMessage() . " en " . $e->getFile() . ":" . $e->getLine());
     echo json_encode([
         'success' => false, 
-        'message' => 'Error interno del servidor: ' . $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine()
+        'message' => 'Error interno del servidor'
     ]);
 } catch (\Error $e) {
     http_response_code(500);
-    error_log("Fatal error en rentals.php: " . $e->getMessage());
-    error_log("Stack trace: " . $e->getTraceAsString());
+    error_log("Fatal error en rentals.php: " . $e->getMessage() . " en " . $e->getFile() . ":" . $e->getLine());
     echo json_encode([
         'success' => false, 
-        'message' => 'Error fatal: ' . $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine()
+        'message' => 'Error fatal'
     ]);
 }
 ?>

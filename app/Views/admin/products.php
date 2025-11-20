@@ -13,6 +13,20 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
         border-radius: 15px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.08);
     }
+    .btn-group .btn {
+        margin-right: 5px;
+    }
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .table td {
+        vertical-align: middle;
+    }
 </style>
 
 <div class="admin-content-wrapper">
@@ -53,8 +67,8 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                                             <th>ID</th>
                                             <th>Nombre</th>
                                             <th>Categoría</th>
-                                            <th>Precio Venta</th>
-                                            <th>Precio Alquiler</th>
+                                            <!-- <th>Precio Venta</th>
+                                            <th>Precio Alquiler</th> -->
                                             <th>Stock</th>
                                             <th>Estado</th>
                                             <th>Acciones</th>
@@ -66,8 +80,8 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                                                 <td><?php echo $product['id']; ?></td>
                                                 <td><strong><?php echo htmlspecialchars($product['nombre']); ?></strong></td>
                                                 <td><?php echo htmlspecialchars($product['categoria_nombre'] ?? 'N/A'); ?></td>
-                                                <td>$<?php echo number_format($product['precio_venta'] ?? 0, 2); ?></td>
-                                                <td>$<?php echo number_format($product['precio_alquiler_dia'] ?? 0, 2); ?>/día</td>
+                                                <!-- <td>$<?php echo number_format($product['precio_venta'] ?? 0, 2); ?></td>
+                                                <td>$<?php echo number_format($product['precio_alquiler_dia'] ?? 0, 2); ?>/día</td> -->
                                                 <td>
                                                     <span class="badge <?php echo ($product['stock_disponible'] ?? 0) > 0 ? 'badge-success' : 'badge-danger'; ?>">
                                                         <?php echo $product['stock_disponible'] ?? 0; ?>
@@ -79,9 +93,16 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                                                     </span>
                                                 </td>
                                                 <td>
+                                                    <div class="btn-group" role="group">
                                                     <a href="<?php echo $baseUrl; ?>/admin/productos/edit/<?php echo $product['id']; ?>" class="btn btn-sm btn-warning">
                                                         <i class="fas fa-edit"></i> Editar
                                                     </a>
+                                                        <a href="<?php echo $baseUrl; ?>/admin/productos/delete/<?php echo $product['id']; ?>" 
+                                                           class="btn btn-sm btn-danger" 
+                                                           onclick="return confirmDelete('<?php echo htmlspecialchars($product['nombre'], ENT_QUOTES); ?>', <?php echo $product['id']; ?>)">
+                                                            <i class="fas fa-trash"></i> Eliminar
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -103,3 +124,12 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                 <?php endif; ?>
             </div>
 </div>
+
+<script>
+function confirmDelete(nombre, id) {
+    if (confirm('¿Estás seguro de que deseas eliminar el producto "' + nombre + '"?\n\nEsta acción no se puede deshacer.')) {
+        return true;
+    }
+    return false;
+}
+</script>
