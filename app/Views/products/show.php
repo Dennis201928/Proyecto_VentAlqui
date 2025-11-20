@@ -98,9 +98,9 @@
                     <?php endif; ?>
                 <?php else: ?>
                     <?php if ($current_user): ?>
-                        <button class="btn btn-primary px-3" onclick="addToCart(<?php echo $product['id']; ?>, document.getElementById('quantity').value)">
-                            <i class="fa fa-shopping-cart mr-1"></i> Agregar al Carrito
-                        </button>
+                        <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/venta/<?php echo $product['id']; ?>" class="btn btn-primary px-3">
+                            <i class="fa fa-calendar mr-1"></i> Agendar Venta
+                        </a>
                     <?php else: ?>
                         <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/login" class="btn btn-primary px-3">
                             <i class="fa fa-sign-in-alt mr-1"></i> Inicia Sesión para Comprar

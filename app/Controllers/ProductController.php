@@ -77,5 +77,39 @@ class ProductController extends Controller {
         
         $this->view('products/show', $data);
     }
+    
+    public function showSale($id) {
+        $auth = new Auth();
+        $product = new Product();
+        
+        $current_user = $auth->getCurrentUser();
+        if (!$current_user) {
+            $this->redirect('/login');
+        }
+        
+        $product_data = $product->getProductById($id);
+        if (!$product_data || isset($product_data['error'])) {
+            $this->redirect('/venta');
+        }
+        
+        // Verificar que sea un producto de venta (no maquinaria)
+        $es_material = isset($product_data['categoria_tipo']) && $product_data['categoria_tipo'] === 'material';
+        if (!$es_material) {
+            $this->redirect('/producto/' . $id);
+        }
+        
+        if (empty($product_data['precio_venta']) || $product_data['precio_venta'] <= 0) {
+            $product_data['precio_venta'] = 0;
+        }
+        
+        $data = [
+            'title' => 'Agendar Venta',
+            'current_user' => $current_user,
+            'product' => $product_data,
+            'product_id' => $id
+        ];
+        
+        $this->view('sale/show', $data);
+    }
 }
 

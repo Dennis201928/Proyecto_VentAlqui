@@ -20,9 +20,11 @@ $router->get('/logout', 'AuthController@logout');
 $router->get('/mi-perfil', 'UserController@profile', ['auth']);
 $router->get('/mis-alquileres', 'RentalController@index', ['auth']);
 $router->get('/carrito', 'CartController@index', ['auth']);
+$router->get('/carrito/remove/:id', 'CartController@remove', ['auth']);
 $router->get('/checkout', 'CartController@checkout', ['auth']);
 $router->post('/checkout', 'CartController@checkout', ['auth']);
 $router->get('/alquiler/:id', 'RentalController@showRental', ['auth']);
+$router->get('/venta/:id', 'ProductController@showSale', ['auth']);
 $router->get('/pedido-exitoso/:id', 'OrderController@success', ['auth']);
 
 $router->get('/recuperar-contrasena', 'AuthController@showForgotPassword');
@@ -38,3 +40,4 @@ $router->get('/admin/productos/delete/:id', 'AdminController@deleteProduct', ['a
 $router->get('/admin/categorias', 'AdminController@categories', ['auth', 'admin']);
 $router->post('/admin/categorias', 'AdminController@categories', ['auth', 'admin']);
 $router->get('/admin/calendario-alquileres', 'AdminController@rentalCalendar', ['auth', 'admin']);
+$router->get('/admin/calendario-ventas', 'AdminController@saleCalendar', ['auth', 'admin']);

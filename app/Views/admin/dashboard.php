@@ -129,7 +129,12 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                                     </div>
                                     <div class="col-md-3 mb-3">
                                         <a href="<?php echo $baseUrl; ?>/admin/calendario-alquileres" class="btn btn-outline-info w-100">
-                                            <i class="fas fa-calendar-alt me-2"></i>Ver Calendario
+                                            <i class="fas fa-calendar-alt me-2"></i>Calendario Alquileres
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <a href="<?php echo $baseUrl; ?>/admin/calendario-ventas" class="btn btn-outline-warning w-100">
+                                            <i class="fas fa-calendar-check me-2"></i>Calendario Ventas
                                         </a>
                                     </div>
                                     <div class="col-md-3 mb-3">

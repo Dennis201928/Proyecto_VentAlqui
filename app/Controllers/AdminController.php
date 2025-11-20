@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Auth;
 use App\Models\Rental;
+use App\Models\Order;
 
 /**
  * Controlador de administración
@@ -411,6 +412,44 @@ class AdminController extends Controller {
         ];
         
         $this->view('admin/rental-calendar', $data, 'admin');
+    }
+    
+    public function saleCalendar() {
+        $auth = new Auth();
+        $product = new Product();
+        $order = new Order();
+        
+        $filters = [
+            'categoria_id' => $this->get('categoria_id') ? (int)$this->get('categoria_id') : null,
+            'producto_id' => $this->get('producto_id') ? (int)$this->get('producto_id') : null,
+            'producto_nombre' => $this->get('producto_nombre') ? trim($this->get('producto_nombre')) : null,
+            'estado' => $this->get('estado')
+        ];
+        
+        $categories = $product->getCategories();
+        $products = [];
+        
+        if ($filters['categoria_id']) {
+            $products = $product->getProducts(['categoria_id' => $filters['categoria_id']]);
+        } else {
+            $products = $product->getProducts(['limit' => 100]);
+        }
+        
+        $sales = $order->getAllOrdersWithFilters($filters);
+        if (isset($sales['error'])) {
+            $sales = [];
+        }
+        
+        $data = [
+            'title' => 'Calendario de Ventas',
+            'current_user' => $auth->getCurrentUser(),
+            'categories' => $categories,
+            'products' => $products,
+            'sales' => $sales,
+            'filters' => $filters
+        ];
+        
+        $this->view('admin/sale-calendar', $data, 'admin');
     }
 }
 

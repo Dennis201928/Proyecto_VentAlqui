@@ -13,7 +13,9 @@ if (strpos($current_route, '/admin/productos') !== false) {
 } elseif (strpos($current_route, '/admin/categorias') !== false) {
     $active_page = 'categorias';
 } elseif (strpos($current_route, '/admin/calendario-alquileres') !== false) {
-    $active_page = 'calendario';
+    $active_page = 'calendario-alquileres';
+} elseif (strpos($current_route, '/admin/calendario-ventas') !== false) {
+    $active_page = 'calendario-ventas';
 } else {
     $active_page = 'dashboard';
 }
@@ -113,9 +115,13 @@ if (strpos($current_route, '/admin/productos') !== false) {
             <i class="fas fa-tags"></i>
             <span>Categorías</span>
         </a>
-        <a class="nav-link <?php echo $active_page === 'calendario' ? 'active' : ''; ?>" href="<?php echo $baseUrl; ?>/admin/calendario-alquileres">
+        <a class="nav-link <?php echo $active_page === 'calendario-alquileres' ? 'active' : ''; ?>" href="<?php echo $baseUrl; ?>/admin/calendario-alquileres">
             <i class="fas fa-calendar-alt"></i>
             <span>Calendario Alquileres</span>
+        </a>
+        <a class="nav-link <?php echo $active_page === 'calendario-ventas' ? 'active' : ''; ?>" href="<?php echo $baseUrl; ?>/admin/calendario-ventas">
+            <i class="fas fa-calendar-check"></i>
+            <span>Calendario Ventas</span>
         </a>
         
         <div class="divider"></div>

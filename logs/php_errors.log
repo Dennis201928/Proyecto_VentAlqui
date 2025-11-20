@@ -1,3 +1,31 @@
 [19-Nov-2025 01:41:21 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
 [19-Nov-2025 01:41:29 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
 [19-Nov-2025 01:41:33 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:19 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:19 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:19 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:26 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:26 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:26 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:33 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:33 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:27:33 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:29:19 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:29:19 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:29:19 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:29:35 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:29:35 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:29:35 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:32:46 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:32:46 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 19:32:46 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 20:10:52 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 20:10:52 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 20:10:52 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[20-Nov-2025 20:25:41 Europe/Berlin] Fatal error en executeHandler: Class "App\Models\Config" not found en C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Cart.php:171
+[20-Nov-2025 20:29:37 Europe/Berlin] PHP Warning:  Undefined array key "stock_disponible" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Cart.php on line 225
+[20-Nov-2025 20:29:37 Europe/Berlin] Fatal error en executeHandler: Class "App\Models\Exception" not found en C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Order.php:34
+[20-Nov-2025 20:29:47 Europe/Berlin] PHP Warning:  Undefined array key "stock_disponible" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Cart.php on line 225
+[20-Nov-2025 20:29:47 Europe/Berlin] Fatal error en executeHandler: Class "App\Models\Exception" not found en C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Order.php:34
+[20-Nov-2025 20:29:52 Europe/Berlin] PHP Warning:  Undefined array key "stock_disponible" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Cart.php on line 225
+[20-Nov-2025 20:29:52 Europe/Berlin] Fatal error en executeHandler: Class "App\Models\Exception" not found en C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Order.php:34

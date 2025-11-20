@@ -28,7 +28,7 @@ $baseUrl = Config::SITE_URL;
                     <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
                 <?php endif; ?>
                 
-                <form method="POST" action="<?php echo $baseUrl; ?>/checkout">
+                <form method="POST" action="<?php echo $baseUrl; ?>/checkout" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label>Nombre</label>
@@ -47,18 +47,32 @@ $baseUrl = Config::SITE_URL;
                             <input class="form-control" type="text" value="<?php echo htmlspecialchars($current_user['telefono'] ?? ''); ?>" readonly>
                         </div>
                         <div class="col-md-12 form-group">
-                            <label>Dirección de Entrega</label>
-                            <textarea class="form-control" name="direccion_entrega" rows="3" required><?php echo htmlspecialchars($current_user['direccion'] ?? ''); ?></textarea>
-                        </div>
-                        <div class="col-md-12 form-group">
                             <label>Método de Pago</label>
-                            <select class="form-control" name="metodo_pago" required>
+                            <select class="form-control" name="metodo_pago" id="metodo_pago" required>
                                 <option value="">Seleccionar método de pago</option>
                                 <option value="efectivo">Efectivo</option>
                                 <option value="transferencia">Transferencia Bancaria</option>
-                                <option value="tarjeta">Tarjeta de Crédito</option>
-                                <option value="cheque">Cheque</option>
                             </select>
+                        </div>
+                        
+                        <!-- Campo de dirección (solo para transferencia) -->
+                        <div class="col-md-12 form-group" id="direccion_field">
+                            <label>Dirección de Entrega <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="direccion_entrega" id="direccion_entrega" rows="3"><?php echo htmlspecialchars($current_user['direccion'] ?? ''); ?></textarea>
+                        </div>
+                        
+                        <!-- Mensaje para efectivo -->
+                        <div class="col-md-12" id="mensaje_efectivo" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> <strong>Pago en Efectivo:</strong> Deberás retirar tu pedido en el local presentando la nota de venta que recibirás por email.
+                            </div>
+                        </div>
+                        
+                        <!-- Campo para comprobante de transferencia -->
+                        <div class="col-md-12 form-group" id="comprobante_field" style="display: none;">
+                            <label>Comprobante de Pago <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control-file" name="comprobante_pago" id="comprobante_pago" accept="image/*,.pdf">
+                            <small class="form-text text-muted">Sube una imagen o PDF del comprobante de transferencia bancaria. Formatos permitidos: JPG, PNG, PDF (máx. 5MB)</small>
                         </div>
                     </div>
                     
@@ -67,6 +81,48 @@ $baseUrl = Config::SITE_URL;
                         <a href="<?php echo $baseUrl; ?>/carrito" class="btn btn-secondary btn-lg ml-2">Volver al Carrito</a>
                     </div>
                 </form>
+                
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const metodoPago = document.getElementById('metodo_pago');
+                    const mensajeEfectivo = document.getElementById('mensaje_efectivo');
+                    const comprobanteField = document.getElementById('comprobante_field');
+                    const comprobanteInput = document.getElementById('comprobante_pago');
+                    const direccionField = document.getElementById('direccion_field');
+                    const direccionInput = document.getElementById('direccion_entrega');
+                    
+                    function updateFields() {
+                        if (metodoPago.value === 'efectivo') {
+                            // Ocultar dirección y comprobante, mostrar mensaje efectivo
+                            direccionField.style.display = 'none';
+                            direccionInput.removeAttribute('required');
+                            mensajeEfectivo.style.display = 'block';
+                            comprobanteField.style.display = 'none';
+                            comprobanteInput.removeAttribute('required');
+                        } else if (metodoPago.value === 'transferencia') {
+                            // Mostrar dirección y comprobante, ocultar mensaje efectivo
+                            direccionField.style.display = 'block';
+                            direccionInput.setAttribute('required', 'required');
+                            mensajeEfectivo.style.display = 'none';
+                            comprobanteField.style.display = 'block';
+                            comprobanteInput.setAttribute('required', 'required');
+                        } else {
+                            // Ocultar todo
+                            direccionField.style.display = 'none';
+                            direccionInput.removeAttribute('required');
+                            mensajeEfectivo.style.display = 'none';
+                            comprobanteField.style.display = 'none';
+                            comprobanteInput.removeAttribute('required');
+                        }
+                    }
+                    
+                    // Ocultar dirección inicialmente
+                    direccionField.style.display = 'none';
+                    direccionInput.removeAttribute('required');
+                    
+                    metodoPago.addEventListener('change', updateFields);
+                });
+                </script>
             </div>
         </div>
         

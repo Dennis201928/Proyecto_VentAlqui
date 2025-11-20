@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Core\Model;
+use App\Core\Config;
 
 /**
  * Sistema de carrito de compras
@@ -61,7 +62,7 @@ class Cart extends Model {
     public function getCartItems($user_id) {
         try {
             $query = "SELECT c.*, p.nombre, p.precio_venta, p.precio_alquiler_dia, p.imagen_principal, 
-                     cat.nombre as categoria_nombre, cat.tipo as categoria_tipo
+                     p.stock_disponible, cat.nombre as categoria_nombre, cat.tipo as categoria_tipo
                      FROM carrito c 
                      JOIN productos p ON c.producto_id = p.id 
                      LEFT JOIN categorias cat ON p.categoria_id = cat.id
@@ -221,14 +222,23 @@ class Cart extends Model {
                     }
                 } elseif ($item['tipo'] == 'venta') {
                     // Verificar stock para venta
-                    if ($item['stock_disponible'] < $item['cantidad']) {
+                    // Obtener stock actualizado del producto directamente
+                    $product = new Product();
+                    $product_info = $product->getProductById($item['producto_id']);
+                    if ($product_info && isset($product_info['stock_disponible'])) {
+                        $stock_disponible = (int)$product_info['stock_disponible'];
+                        if ($stock_disponible < $item['cantidad']) {
+                            $unavailable_items[] = $item;
+                        }
+                    } else {
+                        // Si no se puede obtener el producto o no tiene stock definido, considerar como no disponible
                         $unavailable_items[] = $item;
                     }
                 }
             }
             
             return $unavailable_items;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return ['error' => 'Error al verificar disponibilidad: ' . $e->getMessage()];
         }
     }

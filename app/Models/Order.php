@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Core\Model;
+use Exception;
 
 /**
  * Sistema de pedidos y ventas
@@ -16,7 +17,7 @@ class Order extends Model {
     /**
      * Crear una nueva venta desde el carrito
      */
-    public function createOrderFromCart($user_id, $metodo_pago, $direccion_entrega = null) {
+    public function createOrderFromCart($user_id, $metodo_pago, $direccion_entrega = null, $comprobante_pago = null) {
         try {
             $this->conn->beginTransaction();
 
@@ -41,14 +42,15 @@ class Order extends Model {
             }
 
             // Crear venta
-            $query = "INSERT INTO ventas (usuario_id, total, impuestos, metodo_pago, direccion_entrega) 
-                     VALUES (:usuario_id, :total, :impuestos, :metodo_pago, :direccion_entrega)";
+            $query = "INSERT INTO ventas (usuario_id, total, impuestos, metodo_pago, direccion_entrega, comprobante_pago) 
+                     VALUES (:usuario_id, :total, :impuestos, :metodo_pago, :direccion_entrega, :comprobante_pago)";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':usuario_id', $user_id);
             $stmt->bindParam(':total', $total_info['total']);
             $stmt->bindParam(':impuestos', $total_info['impuestos']);
             $stmt->bindParam(':metodo_pago', $metodo_pago);
             $stmt->bindParam(':direccion_entrega', $direccion_entrega);
+            $stmt->bindParam(':comprobante_pago', $comprobante_pago);
             $stmt->execute();
 
             $venta_id = $this->conn->lastInsertId();
@@ -307,6 +309,84 @@ class Order extends Model {
                      LIMIT :limit";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            return ['error' => 'Error de base de datos: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Obtener ventas con filtros avanzados para admin (categoría, producto, nombre)
+     */
+    public function getAllOrdersWithFilters($filters = []) {
+        try {
+            $query = "SELECT v.*, 
+                     u.nombre as usuario_nombre, u.apellido as usuario_apellido, u.email as usuario_email,
+                     STRING_AGG(DISTINCT p.nombre, ', ') as productos_nombres,
+                     STRING_AGG(DISTINCT c.nombre, ', ') as categorias_nombres,
+                     COUNT(DISTINCT vd.id) as total_items
+                     FROM ventas v 
+                     JOIN usuarios u ON v.usuario_id = u.id
+                     LEFT JOIN venta_detalles vd ON v.id = vd.venta_id
+                     LEFT JOIN productos p ON vd.producto_id = p.id
+                     LEFT JOIN categorias c ON p.categoria_id = c.id
+                     WHERE 1=1";
+            
+            $params = [];
+            
+            if (isset($filters['estado']) && !empty($filters['estado'])) {
+                $query .= " AND v.estado = :estado";
+                $params[':estado'] = $filters['estado'];
+            }
+            
+            if (isset($filters['categoria_id']) && !empty($filters['categoria_id'])) {
+                $query .= " AND c.id = :categoria_id";
+                $params[':categoria_id'] = $filters['categoria_id'];
+            }
+            
+            if (isset($filters['producto_id']) && !empty($filters['producto_id'])) {
+                $query .= " AND p.id = :producto_id";
+                $params[':producto_id'] = $filters['producto_id'];
+            }
+            
+            if (isset($filters['producto_nombre']) && !empty($filters['producto_nombre'])) {
+                $query .= " AND p.nombre ILIKE :producto_nombre";
+                $params[':producto_nombre'] = '%' . $filters['producto_nombre'] . '%';
+            }
+            
+            if (isset($filters['fecha_desde']) && !empty($filters['fecha_desde'])) {
+                $query .= " AND DATE(v.fecha_creacion) >= :fecha_desde";
+                $params[':fecha_desde'] = $filters['fecha_desde'];
+            }
+            
+            if (isset($filters['fecha_hasta']) && !empty($filters['fecha_hasta'])) {
+                $query .= " AND DATE(v.fecha_creacion) <= :fecha_hasta";
+                $params[':fecha_hasta'] = $filters['fecha_hasta'];
+            }
+            
+            if (isset($filters['usuario_id']) && !empty($filters['usuario_id'])) {
+                $query .= " AND v.usuario_id = :usuario_id";
+                $params[':usuario_id'] = $filters['usuario_id'];
+            }
+            
+            $query .= " GROUP BY v.id, u.nombre, u.apellido, u.email ORDER BY v.fecha_creacion DESC";
+            
+            if (isset($filters['limit'])) {
+                $query .= " LIMIT :limit";
+                $params[':limit'] = (int)$filters['limit'];
+            }
+            
+            if (isset($filters['offset'])) {
+                $query .= " OFFSET :offset";
+                $params[':offset'] = (int)$filters['offset'];
+            }
+            
+            $stmt = $this->conn->prepare($query);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
             $stmt->execute();
             
             return $stmt->fetchAll();

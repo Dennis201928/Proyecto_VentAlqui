@@ -44,12 +44,30 @@ $baseUrl = Config::SITE_URL;
                         <div class="col-md-6">
                             <strong>Método de Pago:</strong><br>
                             <?php echo ucfirst($order_details['order']['metodo_pago']); ?>
+                            <?php if ($order_details['order']['metodo_pago'] === 'efectivo'): ?>
+                                <div class="alert alert-info mt-2 mb-0">
+                                    <small><i class="fas fa-info-circle"></i> Deberás retirar tu pedido en el local presentando esta nota de venta.</small>
+                                </div>
+                            <?php elseif ($order_details['order']['metodo_pago'] === 'transferencia' && !empty($order_details['order']['comprobante_pago'])): ?>
+                                <div class="mt-2">
+                                    <small class="text-muted">Comprobante recibido. Estamos verificando tu pago.</small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-6">
                             <strong>Total:</strong><br>
                             $<?php echo number_format($order_details['order']['total'], 2); ?>
                         </div>
                     </div>
+                    
+                    <?php if ($order_details['order']['metodo_pago'] === 'transferencia' && !empty($order_details['order']['comprobante_pago'])): ?>
+                        <div class="mb-3">
+                            <strong>Comprobante de Pago:</strong><br>
+                            <a href="<?php echo $baseUrl; ?>/<?php echo htmlspecialchars($order_details['order']['comprobante_pago']); ?>" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-file-pdf"></i> Ver Comprobante
+                            </a>
+                        </div>
+                    <?php endif; ?>
                     
                     <?php if (!empty($order_details['order']['direccion_entrega'])): ?>
                         <div class="mb-3">
