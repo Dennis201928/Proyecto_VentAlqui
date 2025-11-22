@@ -29,7 +29,6 @@ abstract class Controller {
      * Redirigir a una URL
      */
     protected function redirect($url) {
-        // Si la URL no comienza con http, usar SITE_URL
         if (strpos($url, 'http') !== 0) {
             $url = \App\Core\Config::SITE_URL . $url;
         }
@@ -38,7 +37,7 @@ abstract class Controller {
     }
 
     /**
-     * Retornar respuesta JSON
+     * Respuesta JSON
      */
     protected function json($data, $statusCode = 200) {
         http_response_code($statusCode);
@@ -48,7 +47,7 @@ abstract class Controller {
     }
 
     /**
-     * Obtener datos POST
+     * Obtener POST
      */
     protected function post($key = null, $default = null) {
         if ($key === null) {
@@ -58,7 +57,7 @@ abstract class Controller {
     }
 
     /**
-     * Obtener datos GET
+     * Obtener GET
      */
     protected function get($key = null, $default = null) {
         if ($key === null) {
@@ -68,14 +67,14 @@ abstract class Controller {
     }
 
     /**
-     * Verificar si es petición POST
+     * POST
      */
     protected function isPost() {
         return $_SERVER['REQUEST_METHOD'] === 'POST';
     }
 
     /**
-     * Verificar si es petición GET
+     * GET
      */
     protected function isGet() {
         return $_SERVER['REQUEST_METHOD'] === 'GET';

@@ -51,11 +51,7 @@ class RentalController extends Controller {
             $this->redirect('/alquiler');
         }
         
-        $es_maquinaria = isset($product_data['categoria_tipo']) && $product_data['categoria_tipo'] === 'maquinaria';
-        if (!$es_maquinaria && (empty($product_data['precio_alquiler_dia']) || $product_data['precio_alquiler_dia'] <= 0)) {
-            $this->redirect('/alquiler?error=producto_no_alquilable');
-        }
-        
+        // Permitir agendar alquiler incluso si el precio es 0
         if (empty($product_data['precio_alquiler_dia']) || $product_data['precio_alquiler_dia'] <= 0) {
             $product_data['precio_alquiler_dia'] = 0;
         }

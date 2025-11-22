@@ -162,13 +162,13 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                                     <i class="fas fa-clock text-info me-2"></i>
                                     <strong>Duración:</strong> <?php echo $dias; ?> día<?php echo $dias != 1 ? 's' : ''; ?>
                                 </div>
-                                <div class="mb-2">
+                                <!-- <div class="mb-2">
                                     <i class="fas fa-dollar-sign text-success me-2"></i>
-                                    <strong>Total:</strong> 
+                                    <strong>Total:</strong>
                                     <span class="h5 text-success mb-0">
                                         $<?php echo number_format($rental['total'] ?? 0, 2); ?>
                                     </span>
-                                </div>
+                                </div> -->
                             </div>
                             
                             <?php if (!empty($rental['observaciones'])): ?>

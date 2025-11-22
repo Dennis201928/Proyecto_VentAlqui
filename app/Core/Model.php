@@ -13,9 +13,6 @@ abstract class Model {
         $this->conn = $this->db->getConnection();
     }
 
-    /**
-     * Obtener conexión a la base de datos
-     */
     public function getConnection() {
         return $this->conn;
     }

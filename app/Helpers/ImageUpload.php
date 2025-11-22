@@ -10,25 +10,16 @@ class ImageUpload {
     private $max_size;
     
     public function __construct($upload_dir = null) {
-        // Si no se proporciona una ruta, usar la ruta absoluta desde la raíz del proyecto
         if ($upload_dir === null) {
-            // Obtener la ruta absoluta a la raíz del proyecto
-            // __DIR__ = C:\xampp\htdocs\Proyecto_VentAlqui\app\Helpers
-            // dirname(__DIR__) = C:\xampp\htdocs\Proyecto_VentAlqui\app
-            // dirname(dirname(__DIR__)) = C:\xampp\htdocs\Proyecto_VentAlqui
             $project_root = dirname(dirname(dirname(__DIR__)));
             
-            // Verificar que la ruta sea correcta buscando public/index.php
             $public_index = $project_root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'index.php';
             if (!file_exists($public_index)) {
-                // Si no existe, intentar usar la ruta del script actual
                 if (isset($_SERVER['SCRIPT_FILENAME'])) {
                     $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
-                    // Si el script está en public/, subir un nivel
                     if (basename($script_dir) === 'public') {
                         $project_root = dirname($script_dir);
                     } else {
-                        // Buscar el directorio que contiene 'public'
                         $current = $script_dir;
                         while ($current !== dirname($current)) {
                             if (file_exists($current . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'index.php')) {
@@ -43,16 +34,13 @@ class ImageUpload {
             
             $this->upload_dir = $project_root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'products' . DIRECTORY_SEPARATOR;
         } else {
-            // Verificar si es una ruta absoluta (Windows: C:\ o \\, Linux/Unix: /)
             $is_absolute = (strpos($upload_dir, DIRECTORY_SEPARATOR) === 0) || 
-                          (strlen($upload_dir) > 1 && $upload_dir[1] === ':') || // Windows: C:\
-                          (strpos($upload_dir, '\\\\') === 0); // Windows: \\server
+                          (strlen($upload_dir) > 1 && $upload_dir[1] === ':') ||
+                          (strpos($upload_dir, '\\\\') === 0);
             
             if ($is_absolute) {
-                // Es una ruta absoluta, usarla tal cual
                 $this->upload_dir = rtrim($upload_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
             } else {
-                // Es una ruta relativa, convertirla a absoluta desde la raíz del proyecto
                 $project_root = dirname(dirname(dirname(__DIR__)));
                 $normalized_path = str_replace('/', DIRECTORY_SEPARATOR, $upload_dir);
                 $this->upload_dir = $project_root . DIRECTORY_SEPARATOR . rtrim($normalized_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
@@ -127,9 +115,7 @@ class ImageUpload {
                 throw new Exception('El archivo se guardó pero está vacío: ' . $filepath);
             }
             
-            // Devolver ruta relativa desde la raíz del proyecto para guardar en BD
-            // La ruta debe ser: assets/img/products/filename.jpg (sin public/)
-            // Usar la misma lógica que en el constructor para obtener project_root
+            // Devolver ruta para guardar en BD
             $project_root = dirname(dirname(dirname(__DIR__)));
             $public_index = $project_root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'index.php';
             if (!file_exists($public_index) && isset($_SERVER['SCRIPT_FILENAME'])) {
@@ -149,10 +135,8 @@ class ImageUpload {
             }
             
             $relative_path = str_replace($project_root . DIRECTORY_SEPARATOR, '', $filepath);
-            // Normalizar separadores de directorio a / para compatibilidad web
             $relative_path = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
             
-            // Remover 'public/' del inicio si existe, para que ImageHelper funcione correctamente
             if (strpos($relative_path, 'public/') === 0) {
                 $relative_path = substr($relative_path, 7); // Remover 'public/'
             }
@@ -193,7 +177,6 @@ class ImageUpload {
                         $uploaded = $this->uploadImage($file, $prefix . '_' . $i);
                         $uploaded_files[] = $uploaded;
                     } catch (Exception $e) {
-                        // Continuar con otros archivos si uno falla
                     }
                 }
             }
@@ -281,7 +264,6 @@ class ImageUpload {
                 break;
         }
         
-        // Liberar memoria
         imagedestroy($source_image);
         imagedestroy($resized_image);
         

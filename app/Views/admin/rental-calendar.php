@@ -192,7 +192,16 @@ $baseUrl = Config::SITE_URL;
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         
-        const calendarEvents = rentals.map(rental => {
+        // Quita los cancelados del calendario
+        const estadoFiltro = '<?php echo htmlspecialchars($filters['estado'] ?? ''); ?>';
+        const rentalsFiltrados = rentals.filter(rental => {
+            if (estadoFiltro) {
+                return rental.estado === estadoFiltro;
+            }
+            return rental.estado !== 'cancelado';
+        });
+        
+        const calendarEvents = rentalsFiltrados.map(rental => {
             const startDate = new Date(rental.fecha_inicio);
             const endDate = new Date(rental.fecha_fin);
             endDate.setDate(endDate.getDate() + 1);
@@ -284,10 +293,10 @@ $baseUrl = Config::SITE_URL;
                     <h6><strong>Precio por día:</strong></h6>
                     <p>$${parseFloat(rental.precio_dia).toFixed(2)}</p>
                 </div>
-                <div class="col-md-6">
-                    <h6><strong>Total:</strong></h6>
-                    <p class="h5 text-primary">$${parseFloat(rental.total).toFixed(2)}</p>
-                </div>
+                // <div class="col-md-6">
+                //     <h6><strong>Total:</strong></h6>
+                //     <p class="h5 text-primary">$${parseFloat(rental.total).toFixed(2)}</p>
+                // </div>
             </div>
             <div class="row">
                 <div class="col-12">

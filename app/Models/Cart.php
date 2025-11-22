@@ -214,15 +214,12 @@ class Cart extends Model {
             
             foreach ($items as $item) {
                 if ($item['tipo'] == 'alquiler' && $item['fecha_inicio'] && $item['fecha_fin']) {
-                    // Verificar disponibilidad para alquiler
                     $product = new Product();
                     $available = $product->checkAvailability($item['producto_id'], $item['fecha_inicio'], $item['fecha_fin']);
                     if (!$available) {
                         $unavailable_items[] = $item;
                     }
                 } elseif ($item['tipo'] == 'venta') {
-                    // Verificar stock para venta
-                    // Obtener stock actualizado del producto directamente
                     $product = new Product();
                     $product_info = $product->getProductById($item['producto_id']);
                     if ($product_info && isset($product_info['stock_disponible'])) {
@@ -231,7 +228,6 @@ class Cart extends Model {
                             $unavailable_items[] = $item;
                         }
                     } else {
-                        // Si no se puede obtener el producto o no tiene stock definido, considerar como no disponible
                         $unavailable_items[] = $item;
                     }
                 }

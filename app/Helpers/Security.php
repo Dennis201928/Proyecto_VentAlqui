@@ -28,7 +28,6 @@ class Security {
      * Validar contraseña
      */
     public static function validatePassword($password) {
-        // Mínimo 6 caracteres, al menos una letra y un número
         return strlen($password) >= 6 && 
                preg_match('/[a-zA-Z]/', $password) && 
                preg_match('/\d/', $password);
@@ -74,7 +73,6 @@ class Security {
         $data = $_SESSION[$key];
         $time_since_last = time() - $data['last_attempt'];
         
-        // Resetear si ha pasado el tiempo de ventana
         if ($time_since_last > $time_window) {
             $_SESSION[$key] = ['attempts' => 0, 'last_attempt' => 0];
             return true;

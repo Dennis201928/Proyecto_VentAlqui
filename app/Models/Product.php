@@ -185,7 +185,7 @@ class Product extends Model {
             $stmt->bindParam(':stock_minimo', $data['stock_minimo']);
             $stmt->bindParam(':imagen_principal', $data['imagen_principal']);
             
-            // Manejar array de imágenes adicionales
+            // Buscar dentro de un array de imagenes la imagen que le pertenece
             $imagenes_adicionales = $this->arrayToPostgresArray($data['imagenes_adicionales'] ?? []);
             $stmt->bindParam(':imagenes_adicionales', $imagenes_adicionales);
             
@@ -301,22 +301,20 @@ class Product extends Model {
     }
 
     /**
-     * Verificar disponibilidad para alquiler
+     * Verificar disponibilidad para alquiler considerando stock
      */
     public function checkAvailability($product_id, $fecha_inicio, $fecha_fin) {
         try {
-            $query = "SELECT COUNT(*) as count FROM alquileres 
-                     WHERE producto_id = :product_id 
-                     AND estado IN ('confirmado', 'en_curso') 
-                     AND ((fecha_inicio <= :fecha_fin AND fecha_fin >= :fecha_inicio))";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':product_id', $product_id);
-            $stmt->bindParam(':fecha_inicio', $fecha_inicio);
-            $stmt->bindParam(':fecha_fin', $fecha_fin);
-            $stmt->execute();
+            // Obtener stock disponible del producto
+            $product_info = $this->getProductById($product_id);
+            if (!$product_info || !isset($product_info['stock_disponible'])) {
+                return false;
+            }
             
-            $result = $stmt->fetch();
-            return $result['count'] == 0;
+            $stock_disponible = (int)$product_info['stock_disponible'];
+            
+            // Si el stock es mayor a 0 se puede seleccionar cualquier día
+            return $stock_disponible > 0;
         } catch (\PDOException $e) {
             return false;
         }

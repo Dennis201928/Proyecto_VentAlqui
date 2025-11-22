@@ -43,28 +43,20 @@ class View {
         include $viewPath;
         $content = ob_get_clean();
 
-        // Si hay layout, incluirlo
         if ($layout) {
             $layoutPath = $this->basePath . '/layouts/' . $layout . '.php';
             if (file_exists($layoutPath)) {
-                // Asegurar que current_user esté definido para el layout
                 if (!isset($data['current_user'])) {
                     $auth = new \App\Models\Auth();
                     $data['current_user'] = $auth->getCurrentUser();
                 }
-                // Asegurar que baseUrl esté definido
                 if (!isset($data['baseUrl'])) {
                     $data['baseUrl'] = \App\Core\Config::SITE_URL;
                 }
-                // Agregar el contenido de la vista a los datos
                 $data['content'] = $content;
-                // Extraer variables nuevamente para el layout (incluyendo baseUrl, current_user y content)
                 extract($data);
-                
-                // Incluir el layout con el contenido
                 include $layoutPath;
             } else {
-                // Layout no encontrado, mostrar solo el contenido
                 echo $content;
             }
         } else {
@@ -76,10 +68,8 @@ class View {
      * Incluir una vista parcial
      */
     public function partial($partial, $data = []) {
-        // Combinar datos actuales con los pasados (los pasados tienen prioridad)
         $partialData = array_merge($this->currentData, $data);
         
-        // Asegurar que baseUrl esté definido
         if (!isset($partialData['baseUrl'])) {
             $partialData['baseUrl'] = \App\Core\Config::SITE_URL;
         }

@@ -13,14 +13,11 @@ class Config {
     const MIN_RENTAL_DAYS = 1;
     const MAX_RENTAL_DAYS = 365;
     
-    // Configuración de sesiones
-    const SESSION_LIFETIME = 3600; // 1 hora
+    const SESSION_LIFETIME = 3600;
     
-    // Configuración de archivos
     const UPLOAD_PATH = 'uploads/';
-    const MAX_FILE_SIZE = 5242880; // 5MB
+    const MAX_FILE_SIZE = 5242880;
     
-    // Configuración de paginación
     const PRODUCTS_PER_PAGE = 12;
     const ORDERS_PER_PAGE = 10;
 }

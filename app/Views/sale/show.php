@@ -133,10 +133,10 @@ $baseUrl = Config::SITE_URL;
                     </div>
                     <hr style="border-color: rgba(255,255,255,0.3);">
                     <div class="mb-3">
-                        <h4 class="mb-0">
+                        <!-- <h4 class="mb-0">
                             <span>Total:</span>
                             <span class="float-right" id="total-calc">$<?php echo number_format((float)$product['precio_venta'], 2); ?></span>
-                        </h4>
+                        </h4> -->
                     </div>
                     <?php else: ?>
                     <div class="mb-2">

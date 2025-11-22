@@ -3,7 +3,6 @@
  * API para obtener fechas ocupadas de productos
  */
 
-// Configuración de errores
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
@@ -23,14 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
 }
 
-// Cargar configuración
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/Core/Config.php';
 
-// Usar las clases del nuevo sistema MVC
 use App\Models\Rental;
 
-// Incluir archivos necesarios
 try {
     $rental = new Rental();
     
@@ -59,12 +55,11 @@ try {
             exit();
         }
         
-        // Limpiar fechas - pueden venir en formato ISO con timezone
+        // Limpiar fechas
         $fecha_desde = null;
         $fecha_hasta = null;
         
         if ($fecha_desde_raw) {
-            // Extraer solo la parte de fecha (Y-m-d) si viene en formato ISO
             if (preg_match('/^(\d{4}-\d{2}-\d{2})/', $fecha_desde_raw, $matches)) {
                 $fecha_desde = $matches[1];
             } else {
@@ -73,7 +68,6 @@ try {
         }
         
         if ($fecha_hasta_raw) {
-            // Extraer solo la parte de fecha (Y-m-d) si viene en formato ISO
             if (preg_match('/^(\d{4}-\d{2}-\d{2})/', $fecha_hasta_raw, $matches)) {
                 $fecha_hasta = $matches[1];
             } else {
@@ -81,44 +75,84 @@ try {
             }
         }
         
-        $booked_dates = $rental->getBookedDates($product_id, $fecha_desde, $fecha_hasta);
+        $booked_data = $rental->getBookedDates($product_id, $fecha_desde, $fecha_hasta);
         
-        if (isset($booked_dates['error'])) {
+        if (isset($booked_data['error'])) {
             ob_end_clean();
             http_response_code(500);
-            echo json_encode(['success' => false, 'message' => $booked_dates['error']]);
+            echo json_encode(['success' => false, 'message' => $booked_data['error']]);
             exit();
         }
         
-        // Formatear fechas para el calendario
+        $stock_disponible = isset($booked_data['stock_disponible']) ? (int)$booked_data['stock_disponible'] : 0;
+        $alquileres = isset($booked_data['alquileres']) ? $booked_data['alquileres'] : [];
+        
+        // Mostrar alquileres activos en el calendario y marcar fechas como agotadas cuando el stock es 0
         $formatted_dates = [];
-        if (is_array($booked_dates)) {
-            foreach ($booked_dates as $booking) {
-                if (!isset($booking['fecha_inicio']) || !isset($booking['fecha_fin'])) {
-                    continue;
+        foreach ($alquileres as $booking) {
+            if (!isset($booking['fecha_inicio']) || !isset($booking['fecha_fin'])) {
+                continue;
+            }
+            
+            if (isset($booking['estado']) && $booking['estado'] == 'cancelado') {
+                continue;
+            }
+            
+            try {
+                $endDate = new DateTime($booking['fecha_fin']);
+                $endDate->modify('+1 day');
+                
+                $estado_texto = '';
+                switch ($booking['estado']) {
+                    case 'pendiente':
+                        $estado_texto = 'Pendiente';
+                        $color = '#ffc107';
+                        break;
+                    case 'confirmado':
+                        $estado_texto = 'Confirmado';
+                        $color = '#17a2b8';
+                        break;
+                    case 'en_curso':
+                        $estado_texto = 'En curso';
+                        $color = '#28a745';
+                        break;
+                    default:
+                        $estado_texto = 'Ocupado';
+                        $color = '#6c757d';
                 }
                 
-                // FullCalendar necesita que la fecha fin sea exclusiva (un día después)
-                try {
-                    $endDate = new DateTime($booking['fecha_fin']);
-                    $endDate->modify('+1 day');
-                    
-                    $formatted_dates[] = [
-                        'start' => $booking['fecha_inicio'],
-                        'end' => $endDate->format('Y-m-d'),
-                        'title' => 'Ocupado',
-                        'color' => '#dc3545',
-                        'display' => 'background'
-                    ];
-                } catch (Exception $e) {
-                    // Ignorar fechas inválidas
-                    continue;
-                }
+                $formatted_dates[] = [
+                    'start' => $booking['fecha_inicio'],
+                    'end' => $endDate->format('Y-m-d'),
+                    'title' => 'Alquiler ' . $estado_texto,
+                    'color' => $color,
+                    'display' => 'background'
+                ];
+            } catch (Exception $e) {
+                continue;
             }
         }
         
+        // Si el stock es 0, también marcar todas las fechas como sin stock
+        if ($stock_disponible <= 0) {
+            $fecha_inicio_rango = $fecha_desde ? new DateTime($fecha_desde) : new DateTime();
+            $fecha_fin_rango = $fecha_hasta ? new DateTime($fecha_hasta) : (clone $fecha_inicio_rango)->modify('+2 years');
+            $formatted_dates[] = [
+                'start' => $fecha_inicio_rango->format('Y-m-d'),
+                'end' => $fecha_fin_rango->modify('+1 day')->format('Y-m-d'),
+                'title' => 'Sin stock disponible',
+                'color' => '#dc3545',
+                'display' => 'background'
+            ];
+        }
+        
+        
         ob_end_clean();
-        echo json_encode(['success' => true, 'events' => $formatted_dates]);
+        echo json_encode([
+            'success' => true, 
+            'events' => $formatted_dates,
+            'stock_disponible' => $stock_disponible
+        ]);
     } else {
         ob_end_clean();
         http_response_code(405);
@@ -136,4 +170,3 @@ try {
     echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
 }
 ?>
-

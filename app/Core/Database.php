@@ -1,9 +1,6 @@
 <?php
 namespace App\Core;
 
-/**
- * Clase para manejo de conexión a la base de datos
- */
 class Database {
     private $host = 'localhost';
     private $db_name = 'venta_alquiler_db';
@@ -12,9 +9,6 @@ class Database {
     private $port = '5432';
     private $conn;
 
-    /**
-     * Obtener conexión a la base de datos
-     */
     public function getConnection() {
         $this->conn = null;
 
@@ -31,9 +25,6 @@ class Database {
         return $this->conn;
     }
 
-    /**
-     * Cerrar conexión
-     */
     public function closeConnection() {
         $this->conn = null;
     }

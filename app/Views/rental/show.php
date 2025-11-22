@@ -126,10 +126,10 @@ $baseUrl = Config::SITE_URL;
                 </div>
                 <hr style="border-color: rgba(255,255,255,0.3);">
                 <div class="mb-3">
-                    <h4 class="mb-0">
+                    <!-- <h4 class="mb-0">
                         <span>Total:</span>
                         <span class="float-right" id="total-calc">$0.00</span>
-                    </h4>
+                    </h4> -->
                 </div>
                 <button class="btn btn-light btn-block btn-lg" id="btn-reservar" onclick="confirmarReserva()">
                     <i class="fas fa-check mr-2"></i>Confirmar Reserva
@@ -146,6 +146,7 @@ $baseUrl = Config::SITE_URL;
     const productId = <?php echo $product_id; ?>;
     const precioDia = <?php echo (float)($product['precio_alquiler_dia'] ?? 0); ?>;
     const bookedDates = [];
+    let stockDisponible = 0;
     
     <?php if (empty($product['precio_alquiler_dia']) || $product['precio_alquiler_dia'] <= 0): ?>
     document.addEventListener('DOMContentLoaded', function() {
@@ -187,6 +188,9 @@ $baseUrl = Config::SITE_URL;
                             const data = JSON.parse(text);
                             if (data.success) {
                                 bookedDates.length = 0;
+                                stockDisponible = data.stock_disponible || 0;
+                                
+                                // Solo guardar fechas completamente agotadas (sin stock disponible)
                                 if (data.events && Array.isArray(data.events)) {
                                     data.events.forEach(event => {
                                         if (event.start && event.end) {
@@ -213,17 +217,18 @@ $baseUrl = Config::SITE_URL;
                 const startDate = selectInfo.startStr;
                 const endDate = selectInfo.endStr;
                 
-                const isBooked = bookedDates.some(booking => {
+                // Verificar si las fechas seleccionadas están completamente agotadas (sin stock)
+                const isFullyBooked = bookedDates.some(booking => {
                     const bookingStart = new Date(booking.start);
                     const bookingEnd = new Date(booking.end);
-                    const selectedStart = new Date(startDate);
-                    const selectedEnd = new Date(endDate);
+                    const selectedStartDate = new Date(startDate);
+                    const selectedEndDate = new Date(endDate);
                     
-                    return (selectedStart <= bookingEnd && selectedEnd >= bookingStart);
+                    return (selectedStartDate <= bookingEnd && selectedEndDate >= bookingStart);
                 });
                 
-                if (isBooked) {
-                    alert('Las fechas seleccionadas están ocupadas. Por favor, selecciona otras fechas.');
+                if (isFullyBooked) {
+                    alert('Las fechas seleccionadas están completamente agotadas (sin stock disponible). Por favor, selecciona otras fechas.');
                     calendar.unselect();
                     return;
                 }
@@ -248,7 +253,8 @@ $baseUrl = Config::SITE_URL;
             dateClick: function(info) {
                 const clickedDate = info.dateStr;
                 
-                const isBooked = bookedDates.some(booking => {
+                // Verificar si la fecha está completamente agotada (sin stock)
+                const isFullyBooked = bookedDates.some(booking => {
                     const bookingStart = new Date(booking.start);
                     const bookingEnd = new Date(booking.end);
                     const clicked = new Date(clickedDate);
@@ -256,8 +262,8 @@ $baseUrl = Config::SITE_URL;
                     return (clicked >= bookingStart && clicked <= bookingEnd);
                 });
                 
-                if (isBooked) {
-                    alert('Esta fecha está ocupada.');
+                if (isFullyBooked) {
+                    alert('Esta fecha está completamente agotada (sin stock disponible).');
                     return;
                 }
                 
@@ -276,7 +282,8 @@ $baseUrl = Config::SITE_URL;
                         selectedEnd = clickedDate;
                     }
                     
-                    const isBooked = bookedDates.some(booking => {
+                    // Verificar si el rango incluye fechas completamente agotadas
+                    const rangeIsFullyBooked = bookedDates.some(booking => {
                         const bookingStart = new Date(booking.start);
                         const bookingEnd = new Date(booking.end);
                         const rangeStart = new Date(selectedStart);
@@ -285,8 +292,8 @@ $baseUrl = Config::SITE_URL;
                         return (rangeStart <= bookingEnd && rangeEnd >= bookingStart);
                     });
                     
-                    if (isBooked) {
-                        alert('El rango seleccionado incluye fechas ocupadas.');
+                    if (rangeIsFullyBooked) {
+                        alert('El rango seleccionado incluye fechas completamente agotadas (sin stock disponible).');
                         selectedStart = clickedDate;
                         selectedEnd = clickedDate;
                     }
@@ -310,21 +317,34 @@ $baseUrl = Config::SITE_URL;
         const diffTime = Math.abs(endDate - startDate);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
         
-        document.getElementById('fecha-inicio-display').textContent = formatDate(startDate);
-        document.getElementById('fecha-fin-display').textContent = formatDate(endDate);
-        document.getElementById('dias-display').textContent = diffDays + ' día(s)';
+        // Actualizar fechas seleccionadas
+        const fechaInicioDisplay = document.getElementById('fecha-inicio-display');
+        const fechaFinDisplay = document.getElementById('fecha-fin-display');
+        const diasDisplay = document.getElementById('dias-display');
+        const selectedDates = document.getElementById('selected-dates');
         
-        document.getElementById('selected-dates').style.display = 'block';
-        document.getElementById('dias-calc').textContent = diffDays;
+        if (fechaInicioDisplay) fechaInicioDisplay.textContent = formatDate(startDate);
+        if (fechaFinDisplay) fechaFinDisplay.textContent = formatDate(endDate);
+        if (diasDisplay) diasDisplay.textContent = diffDays + ' día(s)';
+        if (selectedDates) selectedDates.style.display = 'block';
         
-        if (precioDia > 0) {
-            const total = precioDia * diffDays;
-            document.getElementById('total-calc').textContent = '$' + total.toFixed(2);
-        } else {
-            document.getElementById('total-calc').textContent = 'Consultar';
+        // Actualizar calculadora de precio
+        const diasCalc = document.getElementById('dias-calc');
+        const totalCalc = document.getElementById('total-calc');
+        const priceCalculator = document.getElementById('price-calculator');
+        
+        if (diasCalc) diasCalc.textContent = diffDays;
+        
+        if (totalCalc) {
+            if (precioDia > 0) {
+                const total = precioDia * diffDays;
+                totalCalc.textContent = '$' + total.toFixed(2);
+            } else {
+                totalCalc.textContent = 'Consultar';
+            }
         }
         
-        document.getElementById('price-calculator').style.display = 'block';
+        if (priceCalculator) priceCalculator.style.display = 'block';
     }
 
     function formatDate(date) {

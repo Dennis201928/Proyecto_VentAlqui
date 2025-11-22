@@ -269,10 +269,10 @@ $baseUrl = Config::SITE_URL;
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
-                    <h6><strong>Total:</strong></h6>
-                    <p class="h5 text-primary">$${parseFloat(sale.total).toFixed(2)}</p>
-                </div>
+                // <div class="col-md-6">
+                //     <h6><strong>Total:</strong></h6>
+                //     <p class="h5 text-primary">$${parseFloat(sale.total).toFixed(2)}</p>
+                // </div>
                 <div class="col-md-6">
                     <h6><strong>Método de Pago:</strong></h6>
                     <p>${sale.metodo_pago || 'N/A'}</p>
