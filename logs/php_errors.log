@@ -50,3 +50,8 @@
 [22-Nov-2025 02:41:22 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
 [22-Nov-2025 02:41:22 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
 [22-Nov-2025 02:41:22 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[25-Nov-2025 02:04:50 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[25-Nov-2025 02:04:50 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[25-Nov-2025 02:04:50 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
+[25-Nov-2025 02:24:54 Europe/Berlin] Fatal error en orders.php: Class "App\Helpers\OrderNotificationService" not found en C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Order.php:323
+[25-Nov-2025 02:25:33 Europe/Berlin] Fatal error en executeHandler: Class "App\Helpers\OrderNotificationService" not found en C:\xampp\htdocs\Proyecto_VentAlqui\app\Models\Order.php:112

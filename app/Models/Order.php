@@ -90,6 +90,41 @@ class Order extends Model {
             $cart->clearCart($user_id);
 
             $this->conn->commit();
+            
+            // Enviar correo de notificación al administrador
+            try {
+                // Obtener información del usuario
+                $query_user = "SELECT nombre, apellido, email FROM usuarios WHERE id = :user_id";
+                $stmt_user = $this->conn->prepare($query_user);
+                $stmt_user->bindParam(':user_id', $user_id);
+                $stmt_user->execute();
+                $user_info = $stmt_user->fetch();
+                
+                if ($user_info) {
+                    $usuario_nombre = trim(($user_info['nombre'] ?? '') . ' ' . ($user_info['apellido'] ?? ''));
+                    $usuario_email = $user_info['email'] ?? null;
+                    
+                    // Obtener detalles de la venta para el correo
+                    $orderDetails = $this->getOrderDetails($venta_id);
+                    $productos = $orderDetails['details'] ?? $cart_items;
+                    
+                    // Enviar correo de notificación al administrador
+                    $notificationService = new \App\Helpers\OrderNotificationService();
+                    $notificationService->sendNewOrderNotificationToAdmin(
+                        $usuario_nombre,
+                        $usuario_email,
+                        $venta_id,
+                        $productos,
+                        $total_info['total'],
+                        $metodo_pago,
+                        $direccion_entrega
+                    );
+                }
+            } catch (\Exception $e) {
+                // No fallar la creación de la venta si el correo falla
+                error_log("Error al enviar notificación de nueva venta al administrador: " . $e->getMessage());
+            }
+            
             return ['success' => true, 'venta_id' => $venta_id, 'message' => 'Pedido creado exitosamente'];
 
         } catch (Exception $e) {
@@ -243,12 +278,76 @@ class Order extends Model {
             $stmt->bindParam(':order_id', $order_id);
             
             if ($stmt->execute()) {
+                if ($estado === 'enviada') {
+                    $this->sendShippedNotification($order_id);
+                }
+
                 return ['success' => true, 'message' => 'Estado actualizado exitosamente'];
             } else {
                 return ['success' => false, 'message' => 'Error al actualizar estado'];
             }
         } catch (\PDOException $e) {
             return ['success' => false, 'message' => 'Error de base de datos: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Envía notificación por correo cuando un pedido se marca como enviado
+     */
+    private function sendShippedNotification($order_id) {
+        try {
+            // Obtener detalles del pedido
+            $orderDetails = $this->getOrderDetails($order_id);
+            
+            if (!$orderDetails || isset($orderDetails['error']) || !$orderDetails['order']) {
+                error_log("No se pudieron obtener los detalles del pedido #{$order_id} para enviar notificación");
+                return false;
+            }
+            
+            $order = $orderDetails['order'];
+            $details = $orderDetails['details'];
+            
+            // Preparar datos para el correo
+            $usuario_nombre = trim(($order['usuario_nombre'] ?? '') . ' ' . ($order['usuario_apellido'] ?? ''));
+            $usuario_email = $order['usuario_email'] ?? null;
+            $productos = $details;
+            $total = $order['total'] ?? 0;
+            $direccion_entrega = $order['direccion_entrega'] ?? null;
+            
+            if (!$usuario_email) {
+                error_log("No se encontró el correo del usuario para el pedido #{$order_id}");
+                return false;
+            }
+            
+            // Enviar correo usando el servicio de notificaciones
+            $notificationService = new \App\Helpers\OrderNotificationService();
+            $emailSent = $notificationService->sendOrderShippedNotification(
+                $usuario_nombre,
+                $usuario_email,
+                $order_id,
+                $productos,
+                $total,
+                $direccion_entrega
+            );
+            
+            // Guardar en log como respaldo
+            $notificationService->saveOrderNotification(
+                $usuario_nombre,
+                $usuario_email,
+                $order_id,
+                $productos,
+                $total
+            );
+            
+            if (!$emailSent) {
+                error_log("No se pudo enviar el correo de notificación para el pedido #{$order_id}");
+            }
+            
+            return $emailSent;
+            
+        } catch (\Exception $e) {
+            error_log("Error al enviar notificación de pedido enviado #{$order_id}: " . $e->getMessage());
+            return false;
         }
     }
 
@@ -339,6 +438,8 @@ class Order extends Model {
             if (isset($filters['estado']) && !empty($filters['estado'])) {
                 $query .= " AND v.estado = :estado";
                 $params[':estado'] = $filters['estado'];
+            } else {
+                $query .= " AND v.estado != 'cancelada'";
             }
             
             if (isset($filters['categoria_id']) && !empty($filters['categoria_id'])) {
