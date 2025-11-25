@@ -92,6 +92,12 @@
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
 
+            <div class="mb-3 text-right">
+                <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/recuperar-contrasena" class="text-primary" style="text-decoration: none;">
+                    <i class="fas fa-key mr-1"></i>¿Olvidaste tu contraseña?
+                </a>
+            </div>
+
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="remember" name="remember">
                 <label class="form-check-label" for="remember">Recordarme</label>

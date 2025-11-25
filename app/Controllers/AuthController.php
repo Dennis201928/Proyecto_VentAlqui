@@ -13,7 +13,6 @@ class AuthController extends Controller {
     public function showLogin() {
         $auth = new Auth();
         
-        // Si ya está logueado, redirigir
         if ($auth->isAuthenticated()) {
             $this->redirect('/');
         }
@@ -22,10 +21,10 @@ class AuthController extends Controller {
             'title' => 'Iniciar Sesión - AlquiVenta',
             'error' => $_GET['error'] ?? '',
             'success' => $_GET['success'] ?? '',
-            'current_user' => null // Asegurar que esté definido
+            'current_user' => null
         ];
         
-        $this->view('auth/login', $data, null); // null = sin layout
+        $this->view('auth/login', $data, null);
     }
     
     public function login() {
@@ -49,7 +48,6 @@ class AuthController extends Controller {
     public function showRegister() {
         $auth = new Auth();
         
-        // Si ya está logueado, redirigir
         if ($auth->isAuthenticated()) {
             $this->redirect('/');
         }
@@ -58,10 +56,10 @@ class AuthController extends Controller {
             'title' => 'Registro - AlquiVenta',
             'error' => $_GET['error'] ?? '',
             'success' => $_GET['success'] ?? '',
-            'current_user' => null // Asegurar que esté definido
+            'current_user' => null
         ];
         
-        $this->view('auth/register', $data, null); // null = sin layout
+        $this->view('auth/register', $data, null);
     }
     
     public function register() {
@@ -102,10 +100,11 @@ class AuthController extends Controller {
         $data = [
             'title' => 'Recuperar Contraseña',
             'error' => $_GET['error'] ?? '',
-            'success' => $_GET['success'] ?? ''
+            'success' => $_GET['success'] ?? '',
+            'current_user' => null
         ];
         
-        $this->view('auth/forgot-password', $data);
+        $this->view('auth/forgot-password', $data, null);
     }
     
     public function forgotPassword() {
@@ -122,7 +121,6 @@ class AuthController extends Controller {
             $this->redirect('/recuperar-contrasena?error=' . urlencode('El email es requerido'));
         }
         
-        // Si se está cambiando la contraseña
         if (!empty($new_password)) {
             if ($new_password !== $confirm_password) {
                 $this->redirect('/recuperar-contrasena?error=' . urlencode('Las contraseñas no coinciden'));
@@ -132,7 +130,6 @@ class AuthController extends Controller {
                 $this->redirect('/recuperar-contrasena?error=' . urlencode('La contraseña debe tener al menos 8 caracteres'));
             }
             
-            // Cambiar contraseña directamente (versión simplificada)
             $conn = $auth->getConnection();
             $query = "SELECT id FROM usuarios WHERE email = :email AND activo = true";
             $stmt = $conn->prepare($query);
@@ -156,7 +153,6 @@ class AuthController extends Controller {
                 $this->redirect('/recuperar-contrasena?error=' . urlencode('Email no encontrado o cuenta inactiva'));
             }
         } else {
-            // Solo verificar email (mostrar formulario de cambio)
             $this->redirect('/recuperar-contrasena?email=' . urlencode($email));
         }
     }
