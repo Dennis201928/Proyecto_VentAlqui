@@ -23,7 +23,7 @@ if (strpos($current_route, '/admin/productos') !== false) {
 <style>
     .admin-sidebar {
         min-height: calc(100vh - 60px);
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #dadd0aff 0%, #5b5b5cff 100%);
         position: sticky;
         top: 0;
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
@@ -46,7 +46,7 @@ if (strpos($current_route, '/admin/productos') !== false) {
         padding: 0 15px;
     }
     .admin-sidebar .nav-link {
-        color: rgba(255,255,255,0.8);
+        color: rgba(12, 11, 11, 0.8);
         padding: 12px 20px;
         border-radius: 8px;
         margin: 5px 0;

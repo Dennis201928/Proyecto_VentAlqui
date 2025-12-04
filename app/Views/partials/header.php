@@ -39,18 +39,23 @@
             </div>
         </div>
     </div>
-    <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
-        <div class="col-lg-4">
-            <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/" class="text-decoration-none">
-                <span class="h1 text-uppercase text-primary bg-dark px-2">Alqui</span>
-                <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Venta</span>
-            </a>
-        </div>
-        <div class="col-lg-4 col-6 text-right">
-            <p class="m-0">Contáctanos</p>
-            <h5 class="m-0">+012 345 6789</h5>
-        </div>
+  <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
+  <div class="col-lg-4">
+    <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/" class="text-decoration-none">
+      <span class="h1 text-uppercase text-primary bg-dark px-2">Alqui</span>
+      <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Venta</span>
+    </a>
+  </div>
+
+  <!-- Contáctanos empujado a la derecha -->
+  <div class="col-lg-4 d-flex align-items-center ml-auto justify-content-end text-right">
+    <div>
+      <p class="m-0">Contáctanos</p>
+      <h5 class="m-0">+012 345 6789</h5>
     </div>
+  </div>
+</div>
+
 </div>
 <!-- Topbar End -->
 
@@ -78,7 +83,7 @@
                         <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/contacto" class="nav-item nav-link <?php echo (isset($current_page) && $current_page === 'contacto') ? 'active' : ''; ?>">Contáctanos</a>
                         <?php if (isset($current_user) && $current_user && $current_user['tipo_usuario'] === 'admin'): ?>
                             <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/admin" class="nav-item nav-link text-warning">
-                                <i class="fas fa-tools me-1"></i>Admin
+                                <i class="fas fa-tools me-1"></i>Administrador
                             </a>
                         <?php endif; ?>
                     </div>
@@ -88,7 +93,7 @@
                         <?php endif; ?>
                         <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/carrito" class="btn px-0 ml-3">
                             <i class="fas fa-shopping-cart text-primary"></i>
-                            <span class="badge text-secondary border border-secondary rounded-circle" id="cart-count-header" style="padding-bottom: 2px;">0</span>
+                            <span class="badge text-secondary border border-secondary rounded-circle" id="cart-count-header" style="padding-bottom: 2px;"></span>
                         </a>
                     </div>
                 </div>

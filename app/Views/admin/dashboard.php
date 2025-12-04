@@ -22,7 +22,7 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
 <div class="admin-content-wrapper">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="mb-0">
-                        <i class="fas fa-tachometer-alt text-primary me-2"></i>Panel de Administración
+                        <i class="fas fa-tachometer-alt text-primary me-2"></i> Panel de Administración
                     </h2>
                     <div>
                         <span class="text-muted">Bienvenido, </span>
@@ -113,33 +113,33 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header bg-white">
-                                <h5 class="mb-0"><i class="fas fa-bolt text-primary me-2"></i>Acciones Rápidas</h5>
+                                <h5 class="mb-0"><i class="fas fa-bolt text-primary me-2"></i> Acciones Rápidas</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-3 mb-3">
                                         <a href="<?php echo $baseUrl; ?>/admin/productos" class="btn btn-outline-primary w-100">
-                                            <i class="fas fa-box me-2"></i>Gestionar Productos
+                                            <i class="fas fa-box me-2"></i> Gestionar Productos
                                         </a>
                                     </div>
                                     <div class="col-md-3 mb-3">
                                         <a href="<?php echo $baseUrl; ?>/admin/categorias" class="btn btn-outline-success w-100">
-                                            <i class="fas fa-tags me-2"></i>Gestionar Categorías
+                                            <i class="fas fa-tags me-2"></i> Gestionar Categorías
                                         </a>
                                     </div>
                                     <div class="col-md-3 mb-3">
                                         <a href="<?php echo $baseUrl; ?>/admin/calendario-alquileres" class="btn btn-outline-info w-100">
-                                            <i class="fas fa-calendar-alt me-2"></i>Calendario Alquileres
+                                            <i class="fas fa-calendar-alt me-2"></i> Calendario Alquileres
                                         </a>
                                     </div>
                                     <div class="col-md-3 mb-3">
                                         <a href="<?php echo $baseUrl; ?>/admin/calendario-ventas" class="btn btn-outline-warning w-100">
-                                            <i class="fas fa-calendar-check me-2"></i>Calendario Ventas
+                                            <i class="fas fa-calendar-check me-2"></i> Calendario Ventas
                                         </a>
                                     </div>
                                     <div class="col-md-3 mb-3">
                                         <a href="<?php echo $baseUrl; ?>/" class="btn btn-outline-secondary w-100">
-                                            <i class="fas fa-home me-2"></i>Ir al Sitio
+                                            <i class="fas fa-home me-2"></i> Ir al Sitio
                                         </a>
                                     </div>
                                 </div>
@@ -153,7 +153,7 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                     <div class="col-md-6 mb-3">
                         <div class="card">
                             <div class="card-header bg-white">
-                                <h5 class="mb-0"><i class="fas fa-info-circle text-primary me-2"></i>Información del Sistema</h5>
+                                <h5 class="mb-0"><i class="fas fa-info-circle text-primary me-2"></i> Información del Sistema</h5>
                             </div>
                             <div class="card-body">
                                 <ul class="list-unstyled mb-0">
@@ -176,7 +176,7 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                     <div class="col-md-6 mb-3">
                         <div class="card">
                             <div class="card-header bg-white">
-                                <h5 class="mb-0"><i class="fas fa-user-shield text-primary me-2"></i>Tu Cuenta</h5>
+                                <h5 class="mb-0"><i class="fas fa-user-shield text-primary me-2"></i> Tu Cuenta</h5>
                             </div>
                             <div class="card-body">
                                 <ul class="list-unstyled mb-0">

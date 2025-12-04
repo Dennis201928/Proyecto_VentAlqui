@@ -13,7 +13,7 @@
             box-sizing: border-box;
         }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg,  #bfc228ff 0%, #7a7a7aff 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -38,7 +38,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg,   #bfc228ff 0%, #7a7a7aff 100%);
         }
         .logo {
             text-align: center;
@@ -71,7 +71,7 @@
             font-weight: 500;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg,  #bfc228ff 0%, #7a7a7aff 100%);
             border: none;
             transition: all 0.3s ease;
         }

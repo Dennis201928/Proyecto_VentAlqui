@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg,  #bfc228ff 0%, #7a7a7aff 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,7 +24,7 @@
             width: 100%;
         }
         .register-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg,  #bfc228ff 0%, #7a7a7aff 100%);
             color: white;
             padding: 2rem;
             text-align: center;
@@ -62,7 +62,7 @@
             <div class="col-md-8">
                 <div class="register-container">
                     <div class="register-header">
-                        <h2 class="mb-0"><i class="fas fa-user-plus me-2"></i>Registro</h2>
+                        <h2 class="mb-0"><i class="fas fa-user-plus me-2"></i> Registro</h2>
                         <p class="mb-0 mt-2">Crea tu cuenta para acceder al sistema</p>
                     </div>
                     <div class="register-body">

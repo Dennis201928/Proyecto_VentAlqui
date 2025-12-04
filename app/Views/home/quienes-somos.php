@@ -18,148 +18,152 @@
         <div class="col-lg-12">
             <div class="bg-light p-30 mb-5">
                 <h2 class="mb-4">Quiénes Somos</h2>
-                
+
+                <!-- Historia / Misión / Visión -->
                 <div class="row mb-4">
-                    <div class="col-md-6">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
                         <h4 class="mb-3">Nuestra Historia</h4>
                         <p class="mb-3">
-                            AlquiVenta es una empresa especializada en el alquiler de maquinaria pesada y la venta de materiales pétreos para la construcción. 
-                            Con años de experiencia en el sector, nos hemos consolidado como un referente en la industria, ofreciendo soluciones integrales 
-                            para proyectos de construcción de cualquier envergadura.
+                            AlquiVenta nace con el objetivo de facilitar el acceso a maquinaria pesada
+                            y materiales pétreos de alta calidad para la construcción. A lo largo de los años
+                            hemos consolidado relaciones con proveedores y clientes, optimizando logística y
+                            mantenimiento para asegurar disponibilidad real y entregas puntuales.
                         </p>
-                        <p class="mb-3">
-                            Nuestro compromiso es brindar a nuestros clientes equipos de alta calidad, materiales de primera línea y un servicio 
-                            excepcional que garantice el éxito de sus proyectos.
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <h4 class="mb-3">Nuestra Misión</h4>
-                        <p class="mb-3">
-                            Proporcionar servicios de alquiler de maquinaria pesada y venta de materiales pétreos de la más alta calidad, 
-                            contribuyendo al desarrollo de proyectos de construcción exitosos mediante soluciones eficientes, confiables y 
-                            económicamente viables.
-                        </p>
-                        <h4 class="mb-3 mt-4">Nuestra Visión</h4>
-                        <p class="mb-3">
-                            Ser la empresa líder en el mercado de alquiler de maquinaria pesada y distribución de materiales pétreos, 
-                            reconocida por nuestra excelencia en el servicio, la calidad de nuestros productos y el compromiso con la 
-                            satisfacción total de nuestros clientes.
+                        <p class="mb-0">
+                            Hoy acompañamos a constructoras, contratistas y municipios, aportando equipos confiables,
+                            stock verificado y soporte técnico especializado durante cada proyecto.
                         </p>
                     </div>
-                </div>
 
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <h4 class="mb-3">Nuestros Valores</h4>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-check-circle text-primary mr-2 fa-2x"></i>
-                                    <div>
-                                        <h5>Calidad</h5>
-                                        <p class="mb-0">Garantizamos equipos y materiales de la más alta calidad.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-handshake text-primary mr-2 fa-2x"></i>
-                                    <div>
-                                        <h5>Confianza</h5>
-                                        <p class="mb-0">Construimos relaciones duraderas basadas en la confianza mutua.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-users text-primary mr-2 fa-2x"></i>
-                                    <div>
-                                        <h5>Servicio</h5>
-                                        <p class="mb-0">Atención personalizada y soporte continuo para nuestros clientes.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-clock text-primary mr-2 fa-2x"></i>
-                                    <div>
-                                        <h5>Puntualidad</h5>
-                                        <p class="mb-0">Cumplimos con los tiempos acordados en cada proyecto.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-shield-alt text-primary mr-2 fa-2x"></i>
-                                    <div>
-                                        <h5>Seguridad</h5>
-                                        <p class="mb-0">Priorizamos la seguridad en todas nuestras operaciones.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-dollar-sign text-primary mr-2 fa-2x"></i>
-                                    <div>
-                                        <h5>Precios Justos</h5>
-                                        <p class="mb-0">Ofrecemos precios competitivos y transparentes.</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="col-lg-6">
+                        <div class="border rounded p-3 mb-3">
+                            <h4 class="mb-2">Nuestra Misión</h4>
+                            <p class="mb-0">
+                                Proveer soluciones integrales de <strong>alquiler de maquinaria</strong> y
+                                <strong>venta de materiales</strong> con estándares de calidad, seguridad y
+                                sostenibilidad, maximizando el éxito operativo de nuestros clientes.
+                            </p>
+                        </div>
+                        <div class="border rounded p-3">
+                            <h4 class="mb-2">Nuestra Visión</h4>
+                            <p class="mb-0">
+                                Ser referentes a nivel nacional por la <strong>excelencia en servicio</strong>, la
+                                <strong>confiabilidad del inventario</strong> y la <strong>innovación</strong> en
+                                procesos de abastecimiento y gestión de flota.
+                            </p>
                         </div>
                     </div>
                 </div>
-
+                
+                <!-- Proyectos (Galería con imagen + descripción) -->
                 <div class="row">
                     <div class="col-12">
-                        <h4 class="mb-3">Nuestros Servicios</h4>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <h5 class="card-title">
-                                            <i class="fas fa-tools text-primary mr-2"></i>
-                                            Alquiler de Maquinaria Pesada
-                                        </h5>
-                                        <p class="card-text">
-                                            Ofrecemos una amplia gama de maquinaria pesada para alquiler, incluyendo excavadoras, 
-                                            grúas, bulldozers, compactadoras y más. Todos nuestros equipos están en excelente estado 
-                                            y son mantenidos regularmente por nuestro equipo técnico especializado.
-                                        </p>
-                                    </div>
-                                </div>
+                        <h4 class="mb-3">Proyectos Realizados</h4>
+                    </div>
+
+                    <!-- Proyecto 1 -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-1.jpg"
+                                 class="card-img-top" alt="Movimiento de tierras - Vía Norte">
+                            <div class="card-body">
+                                <h5 class="card-title">Movimiento de Tierras – Vía Norte</h5>
+                                <p class="card-text mb-0">
+                                    Excavación, perfilado y nivelación con excavadoras y volquetas coordinadas.
+                                    Control de calidad del material removido y disposición autorizada.
+                                </p>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <h5 class="card-title">
-                                            <i class="fas fa-cube text-primary mr-2"></i>
-                                            Venta de Materiales Pétreos
-                                        </h5>
-                                        <p class="card-text">
-                                            Distribuimos materiales pétreos de alta calidad para construcción, incluyendo arena, grava, 
-                                            piedra triturada, cemento y otros materiales esenciales. Contamos con stock disponible y 
-                                            entregas oportunas.
-                                        </p>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+
+                    <!-- Proyecto 2 -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-2.jpg"
+                                 class="card-img-top" alt="Suministro de agregados para hormigón">
+                            <div class="card-body">
+                                <h5 class="card-title">Suministro de Agregados</h5>
+                                <p class="card-text mb-0">
+                                    Entrega programada de arena y grava para planta de hormigón con certificación
+                                    de granulometría y trazabilidad de lotes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proyecto 3 -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-3.jpg"
+                                 class="card-img-top" alt="Compactación de subrasante">
+                            <div class="card-body">
+                                <h5 class="card-title">Compactación de Subrasante</h5>
+                                <p class="card-text mb-0">
+                                    Compactadores y rodillos para alcanzar densidades óptimas en plataforma
+                                    industrial, con informes de laboratorio.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proyecto 4 -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-4.jpg"
+                                 class="card-img-top" alt="Estabilización de taludes">
+                            <div class="card-body">
+                                <h5 class="card-title">Estabilización de Taludes</h5>
+                                <p class="card-text mb-0">
+                                    Conformación y protección de taludes con mezcla seleccionada y control de pendientes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proyecto 5 -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-5.jpg"
+                                 class="card-img-top" alt="Carguío y transporte en cantera">
+                            <div class="card-body">
+                                <h5 class="card-title">Carguío y Transporte</h5>
+                                <p class="card-text mb-0">
+                                    Operación continua en cantera, optimizando ciclos de cargadores frontales y volquetas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proyecto 6 -->
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-6.jpg"
+                                 class="card-img-top" alt="Base granular para pavimento">
+                            <div class="card-body">
+                                <h5 class="card-title">Base Granular para Pavimento</h5>
+                                <p class="card-text mb-0">
+                                    Producción y extendido de material base cumpliendo especificaciones municipales.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- CTA -->
                 <div class="row mt-4">
                     <div class="col-12 text-center">
-                        <h4 class="mb-3">¿Necesitas más información?</h4>
-                        <p class="mb-4">Estamos aquí para ayudarte. Contáctanos y te responderemos a la brevedad.</p>
+                        <h4 class="mb-3">¿Listo para tu próximo proyecto?</h4>
+                        <p class="mb-4">Escríbenos para recibir una cotización y asesoría técnica.</p>
                         <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/contacto" class="btn btn-primary btn-lg">
                             <i class="fas fa-envelope mr-2"></i>Contáctanos
                         </a>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 <!-- About End -->
+
 
