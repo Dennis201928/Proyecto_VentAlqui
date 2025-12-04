@@ -61,7 +61,9 @@ $baseUrl = Config::SITE_URL;
                     <ul class="mb-0 mt-2">
                         <li>Haz clic en una fecha para seleccionar el inicio del alquiler</li>
                         <li>Haz clic en otra fecha para establecer el fin del alquiler</li>
-                        <li>Las fechas marcadas en <span style="background-color: #dc3545; color: white; padding: 2px 8px; border-radius: 4px;">rojo</span> están ocupadas y no puedes seleccionarlas</li>
+                        <li>Puedes seleccionar cualquier fecha siempre que haya stock disponible</li>
+                        <li>Las fechas marcadas en <span style="background-color: #dc3545; color: white; padding: 2px 8px; border-radius: 4px;">rojo</span> indican que no hay stock disponible</li>
+                        <li>Los colores amarillo, azul y verde muestran alquileres existentes pero no bloquean la selección si hay stock</li>
                     </ul>
                 </div>
                 
@@ -190,13 +192,16 @@ $baseUrl = Config::SITE_URL;
                                 bookedDates.length = 0;
                                 stockDisponible = data.stock_disponible || 0;
                                 
-                                // Solo guardar fechas completamente agotadas (sin stock disponible)
+                                // Guardar todos los eventos para referencia
+                                // Los eventos con classNames 'no-stock' indican que no hay stock disponible
                                 if (data.events && Array.isArray(data.events)) {
+                                    bookedDates.length = 0; // Limpiar array anterior
                                     data.events.forEach(event => {
                                         if (event.start && event.end) {
                                             bookedDates.push({
                                                 start: event.start,
-                                                end: event.end
+                                                end: event.end,
+                                                classNames: event.classNames || []
                                             });
                                         }
                                     });
@@ -217,18 +222,15 @@ $baseUrl = Config::SITE_URL;
                 const startDate = selectInfo.startStr;
                 const endDate = selectInfo.endStr;
                 
-                // Verificar si las fechas seleccionadas están completamente agotadas (sin stock)
-                const isFullyBooked = bookedDates.some(booking => {
-                    const bookingStart = new Date(booking.start);
-                    const bookingEnd = new Date(booking.end);
-                    const selectedStartDate = new Date(startDate);
-                    const selectedEndDate = new Date(endDate);
-                    
-                    return (selectedStartDate <= bookingEnd && selectedEndDate >= bookingStart);
+                // Solo verificar si el stock es 0 (completamente agotado)
+                // Si hay stock disponible, se permite seleccionar incluso si hay alquileres en esas fechas
+                const isNoStock = bookedDates.some(booking => {
+                    // Verificar si es un evento de "sin stock"
+                    return booking.classNames && booking.classNames.includes('no-stock');
                 });
                 
-                if (isFullyBooked) {
-                    alert('Las fechas seleccionadas están completamente agotadas (sin stock disponible). Por favor, selecciona otras fechas.');
+                if (isNoStock || stockDisponible <= 0) {
+                    alert('No hay stock disponible para este producto. Por favor, selecciona otro producto o contacta con nosotros.');
                     calendar.unselect();
                     return;
                 }
@@ -253,17 +255,24 @@ $baseUrl = Config::SITE_URL;
             dateClick: function(info) {
                 const clickedDate = info.dateStr;
                 
-                // Verificar si la fecha está completamente agotada (sin stock)
-                const isFullyBooked = bookedDates.some(booking => {
-                    const bookingStart = new Date(booking.start);
-                    const bookingEnd = new Date(booking.end);
-                    const clicked = new Date(clickedDate);
-                    
-                    return (clicked >= bookingStart && clicked <= bookingEnd);
+
+                const isNoStock = bookedDates.some(booking => {
+                    // Verificar si es un evento de "sin stock"
+                    return booking.classNames && booking.classNames.includes('no-stock');
                 });
                 
-                if (isFullyBooked) {
-                    alert('Esta fecha está completamente agotada (sin stock disponible).');
+                if (isNoStock || stockDisponible <= 0) {
+                    alert('No hay stock disponible para este producto.');
+                    return;
+                }
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const clicked = new Date(clickedDate);
+                clicked.setHours(0, 0, 0, 0);
+                
+                if (clicked < today) {
+                    alert('No puedes seleccionar fechas pasadas.');
                     return;
                 }
                 
@@ -279,22 +288,6 @@ $baseUrl = Config::SITE_URL;
                         selectedEnd = selectedStart;
                         selectedStart = clickedDate;
                     } else {
-                        selectedEnd = clickedDate;
-                    }
-                    
-                    // Verificar si el rango incluye fechas completamente agotadas
-                    const rangeIsFullyBooked = bookedDates.some(booking => {
-                        const bookingStart = new Date(booking.start);
-                        const bookingEnd = new Date(booking.end);
-                        const rangeStart = new Date(selectedStart);
-                        const rangeEnd = new Date(selectedEnd);
-                        
-                        return (rangeStart <= bookingEnd && rangeEnd >= bookingStart);
-                    });
-                    
-                    if (rangeIsFullyBooked) {
-                        alert('El rango seleccionado incluye fechas completamente agotadas (sin stock disponible).');
-                        selectedStart = clickedDate;
                         selectedEnd = clickedDate;
                     }
                     

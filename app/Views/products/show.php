@@ -98,7 +98,7 @@
                     <?php endif; ?>
                 <?php else: ?>
                     <?php if ($current_user): ?>
-                        <a href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/venta/<?php echo $product['id']; ?>" class="btn btn-primary px-3">
+                        <a href="#" onclick="irAVenta(<?php echo $product['id']; ?>); return false;" class="btn btn-primary px-3">
                             <i class="fa fa-calendar mr-1"></i> Agendar Venta
                         </a>
                     <?php else: ?>
@@ -201,6 +201,12 @@ function addToCart(productId, quantity) {
     .catch(error => {
         alert('Error al agregar el producto al carrito');
     });
+}
+
+function irAVenta(productId) {
+    const quantity = document.getElementById('quantity').value || 1;
+    const baseUrl = '<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>';
+    window.location.href = baseUrl + '/venta/' + productId + '?cantidad=' + encodeURIComponent(quantity);
 }
 </script>
 

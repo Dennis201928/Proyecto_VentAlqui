@@ -102,11 +102,23 @@ class ProductController extends Controller {
             $product_data['precio_venta'] = 0;
         }
         
+        // Obtener la cantidad del parámetro GET, validar y establecer valor por defecto
+        $cantidad = isset($_GET['cantidad']) ? (int)$_GET['cantidad'] : 1;
+        if ($cantidad < 1) {
+            $cantidad = 1;
+        }
+        // Limitar la cantidad al stock disponible
+        $stock_disponible = (int)($product_data['stock_disponible'] ?? 0);
+        if ($cantidad > $stock_disponible && $stock_disponible > 0) {
+            $cantidad = $stock_disponible;
+        }
+        
         $data = [
             'title' => 'Agendar Venta',
             'current_user' => $current_user,
             'product' => $product_data,
-            'product_id' => $id
+            'product_id' => $id,
+            'cantidad' => $cantidad
         ];
         
         $this->view('sale/show', $data);

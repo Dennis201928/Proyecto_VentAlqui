@@ -87,7 +87,8 @@ try {
         $stock_disponible = isset($booked_data['stock_disponible']) ? (int)$booked_data['stock_disponible'] : 0;
         $alquileres = isset($booked_data['alquileres']) ? $booked_data['alquileres'] : [];
         
-        // Mostrar alquileres activos en el calendario y marcar fechas como agotadas cuando el stock es 0
+        // Mostrar alquileres activos en el calendario como información visual (no bloqueantes)
+        // Solo se marcan como agotadas cuando realmente no hay stock disponible
         $formatted_dates = [];
         foreach ($alquileres as $booking) {
             if (!isset($booking['fecha_inicio']) || !isset($booking['fecha_fin'])) {
@@ -121,19 +122,23 @@ try {
                         $color = '#6c757d';
                 }
                 
+                // Mostrar alquileres como información visual (display: 'background' con opacidad)
+                // No bloquean la selección si hay stock disponible
                 $formatted_dates[] = [
                     'start' => $booking['fecha_inicio'],
                     'end' => $endDate->format('Y-m-d'),
-                    'title' => 'Alquiler ' . $estado_texto,
+                    'title' => 'Alquiler ' . $estado_texto . ' (Stock: ' . $stock_disponible . ')',
                     'color' => $color,
-                    'display' => 'background'
+                    'display' => 'background',
+                    'classNames' => ['rental-info'] // Clase para identificar que es solo información
                 ];
             } catch (Exception $e) {
                 continue;
             }
         }
         
-        // Si el stock es 0, también marcar todas las fechas como sin stock
+        // Solo marcar fechas como completamente agotadas cuando el stock es 0
+        // Esto bloquea la selección completamente
         if ($stock_disponible <= 0) {
             $fecha_inicio_rango = $fecha_desde ? new DateTime($fecha_desde) : new DateTime();
             $fecha_fin_rango = $fecha_hasta ? new DateTime($fecha_hasta) : (clone $fecha_inicio_rango)->modify('+2 years');
@@ -142,7 +147,8 @@ try {
                 'end' => $fecha_fin_rango->modify('+1 day')->format('Y-m-d'),
                 'title' => 'Sin stock disponible',
                 'color' => '#dc3545',
-                'display' => 'background'
+                'display' => 'background',
+                'classNames' => ['no-stock'] // Clase para identificar que está sin stock
             ];
         }
         

@@ -193,8 +193,10 @@ $baseUrl = Config::SITE_URL;
         var calendarEl = document.getElementById('calendar');
         
         const calendarEvents = sales.map(sale => {
-            const fechaCreacion = new Date(sale.fecha_creacion);
-            const fechaStr = fechaCreacion.toISOString().split('T')[0];
+            // Usar fecha_entrega si existe, sino usar fecha_creacion como fallback
+            const fechaMostrar = sale.fecha_entrega || sale.fecha_creacion;
+            const fecha = new Date(fechaMostrar);
+            const fechaStr = fecha.toISOString().split('T')[0];
             
             return {
                 id: sale.id,

@@ -41,9 +41,18 @@ class Order extends Model {
                 throw new Exception('Error al calcular total');
             }
 
+            // Obtener la fecha seleccionada del carrito (del primer item de tipo 'venta')
+            $fecha_entrega = null;
+            foreach ($cart_items as $item) {
+                if ($item['tipo'] == 'venta' && isset($item['fecha_inicio']) && $item['fecha_inicio']) {
+                    $fecha_entrega = $item['fecha_inicio'];
+                    break; // Usar la fecha del primer item de venta
+                }
+            }
+
             // Crear venta
-            $query = "INSERT INTO ventas (usuario_id, total, impuestos, metodo_pago, direccion_entrega, comprobante_pago) 
-                     VALUES (:usuario_id, :total, :impuestos, :metodo_pago, :direccion_entrega, :comprobante_pago)";
+            $query = "INSERT INTO ventas (usuario_id, total, impuestos, metodo_pago, direccion_entrega, comprobante_pago, fecha_entrega) 
+                     VALUES (:usuario_id, :total, :impuestos, :metodo_pago, :direccion_entrega, :comprobante_pago, :fecha_entrega)";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':usuario_id', $user_id);
             $stmt->bindParam(':total', $total_info['total']);
@@ -51,6 +60,7 @@ class Order extends Model {
             $stmt->bindParam(':metodo_pago', $metodo_pago);
             $stmt->bindParam(':direccion_entrega', $direccion_entrega);
             $stmt->bindParam(':comprobante_pago', $comprobante_pago);
+            $stmt->bindParam(':fecha_entrega', $fecha_entrega);
             $stmt->execute();
 
             $venta_id = $this->conn->lastInsertId();

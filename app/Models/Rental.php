@@ -283,8 +283,16 @@ class Rental extends Model {
                 $stmt->bindParam(':producto_id', $producto_id);
                 $stmt->execute();
             }
+            // Si se finaliza desde cualquier estado activo, restaurar stock
+            // El producto vuelve al inventario cuando el alquiler termina
+            elseif ($estado == 'finalizado' && in_array($estado_anterior, ['pendiente', 'confirmado', 'en_curso'])) {
+                $query = "UPDATE productos SET stock_disponible = stock_disponible + 1 
+                         WHERE id = :producto_id";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':producto_id', $producto_id);
+                $stmt->execute();
+            }
             // Si se confirma desde pendiente, el stock ya fue reducido al crear
-            // Si se finaliza, no cambiamos el stock (ya fue reducido)
             
             $this->conn->commit();
             return ['success' => true, 'message' => 'Estado actualizado exitosamente'];

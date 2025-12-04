@@ -117,7 +117,7 @@ $baseUrl = Config::SITE_URL;
                     <div class="input-group-prepend">
                         <span class="input-group-text">Cantidad</span>
                     </div>
-                    <input type="number" class="form-control" id="quantity" value="1" min="1" max="<?php echo (int)$product['stock_disponible']; ?>">
+                    <input type="number" class="form-control" id="quantity" value="<?php echo isset($cantidad) ? (int)$cantidad : 1; ?>" min="1" max="<?php echo (int)$product['stock_disponible']; ?>">
                 </div>
                 
                 <div class="price-calculator" id="price-calculator" style="display: none;">
@@ -129,7 +129,7 @@ $baseUrl = Config::SITE_URL;
                     </div>
                     <div class="mb-2">
                         <span>Cantidad:</span>
-                        <span class="float-right" id="cantidad-calc">1</span>
+                        <span class="float-right" id="cantidad-calc"><?php echo isset($cantidad) ? (int)$cantidad : 1; ?></span>
                     </div>
                     <hr style="border-color: rgba(255,255,255,0.3);">
                     <div class="mb-3">
@@ -141,7 +141,7 @@ $baseUrl = Config::SITE_URL;
                     <?php else: ?>
                     <div class="mb-2">
                         <span>Cantidad:</span>
-                        <span class="float-right" id="cantidad-calc">1</span>
+                        <span class="float-right" id="cantidad-calc"><?php echo isset($cantidad) ? (int)$cantidad : 1; ?></span>
                     </div>
                     <hr style="border-color: rgba(255,255,255,0.3);">
                     <div class="mb-3">
@@ -167,6 +167,15 @@ $baseUrl = Config::SITE_URL;
     const productId = <?php echo $product_id; ?>;
     const precioVenta = <?php echo (float)($product['precio_venta'] ?? 0); ?>;
     const stockDisponible = <?php echo (int)($product['stock_disponible'] ?? 0); ?>;
+    const cantidadInicial = <?php echo isset($cantidad) ? (int)$cantidad : 1; ?>;
+    
+    // Inicializar la cantidad en el resumen al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        const cantidadCalc = document.getElementById('cantidad-calc');
+        if (cantidadCalc) {
+            cantidadCalc.textContent = cantidadInicial;
+        }
+    });
     
     <?php if (empty($product['precio_venta']) || $product['precio_venta'] <= 0): ?>
     document.addEventListener('DOMContentLoaded', function() {

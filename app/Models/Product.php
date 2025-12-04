@@ -302,6 +302,7 @@ class Product extends Model {
 
     /**
      * Verificar disponibilidad para alquiler considerando stock
+     * Permite múltiples alquileres en el mismo día si hay stock disponible
      */
     public function checkAvailability($product_id, $fecha_inicio, $fecha_fin) {
         try {
@@ -313,8 +314,30 @@ class Product extends Model {
             
             $stock_disponible = (int)$product_info['stock_disponible'];
             
-            // Si el stock es mayor a 0 se puede seleccionar cualquier día
-            return $stock_disponible > 0;
+            // Si no hay stock, no está disponible
+            if ($stock_disponible <= 0) {
+                return false;
+            }
+            
+            // Contar alquileres activos que se solapan con el rango de fechas solicitado
+            $query = "SELECT COUNT(*) as total_alquileres
+                     FROM alquileres 
+                     WHERE producto_id = :producto_id 
+                     AND estado IN ('pendiente', 'confirmado', 'en_curso')
+                     AND fecha_inicio <= :fecha_fin 
+                     AND fecha_fin >= :fecha_inicio";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':producto_id', $product_id);
+            $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+            $stmt->bindParam(':fecha_fin', $fecha_fin);
+            $stmt->execute();
+            
+            $result = $stmt->fetch();
+            $alquileres_activos = (int)($result['total_alquileres'] ?? 0);
+            
+            // Si hay menos alquileres activos que stock disponible, hay disponibilidad
+            return $alquileres_activos < $stock_disponible;
         } catch (\PDOException $e) {
             return false;
         }
