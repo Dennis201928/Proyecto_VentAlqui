@@ -128,7 +128,7 @@ $baseUrl = Config::SITE_URL;
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="categoria_id" >Categoría *</label>
-                                    <select class="form-control" id="categoria_id" name="categoria_id" required>
+                                    <select class="form-control" id="categoria_id" name="categoria_id" required onchange="actualizarTipoVenta()">
                                         <option value="" disabled>Seleccionar categoría</option>
                                         <?php 
                                         $categorias_maquinaria = $categorias_maquinaria ?? [];
@@ -143,10 +143,11 @@ $baseUrl = Config::SITE_URL;
                                         }
                                         
                                         if (!empty($categorias_maquinaria) && is_array($categorias_maquinaria)): ?>
-                                            <optgroup label="Maquinaria">
+                                            <optgroup label="Maquinaria" id="optgroup-maquinaria">
                                                 <?php foreach ($categorias_maquinaria as $cat): ?>
                                                     <?php if (is_array($cat) && isset($cat['id'])): ?>
                                                         <option value="<?php echo $cat['id']; ?>" 
+                                                                data-tipo="maquinaria"
                                                                 <?php echo (isset($product['categoria_id']) && $product['categoria_id'] == $cat['id']) ? 'selected' : ''; ?>>
                                                             <?php echo htmlspecialchars($cat['nombre'] ?? ''); ?>
                                                         </option>
@@ -155,10 +156,11 @@ $baseUrl = Config::SITE_URL;
                                             </optgroup>
                                         <?php endif; ?>
                                         <?php if (!empty($categorias_material) && is_array($categorias_material)): ?>
-                                            <optgroup label="Materiales Pétreos">
+                                            <optgroup label="Materiales Pétreos" id="optgroup-material">
                                                 <?php foreach ($categorias_material as $cat): ?>
                                                     <?php if (is_array($cat) && isset($cat['id'])): ?>
                                                         <option value="<?php echo $cat['id']; ?>" 
+                                                                data-tipo="material"
                                                                 <?php echo (isset($product['categoria_id']) && $product['categoria_id'] == $cat['id']) ? 'selected' : ''; ?>>
                                                             <?php echo htmlspecialchars($cat['nombre'] ?? ''); ?>
                                                         </option>
@@ -168,10 +170,67 @@ $baseUrl = Config::SITE_URL;
                                         <?php endif; ?>
                                     </select>
                                 </div>
+                                <!-- Dropdown para tipo de venta (solo para Materiales Pétreos) -->
+                                <div class="col-md-6 mb-3" id="tipo-venta-container" style="display: none;">
+                                    <label for="tipo_venta">Tipo de Venta *</label>
+                                    <select class="form-control" id="tipo_venta" name="tipo_venta" onchange="mostrarCamposVenta()">
+                                        <option value="">Seleccionar tipo</option>
+                                        <?php 
+                                        // Determinar tipo de venta basado en los precios existentes
+                                        $tiene_precio_venta = !empty($product['precio_venta']) && $product['precio_venta'] > 0;
+                                        $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                                        $tipo_venta_actual = '';
+                                        if ($tiene_precio_kg && !$tiene_precio_venta) {
+                                            $tipo_venta_actual = 'kilogramos';
+                                        } elseif ($tiene_precio_venta) {
+                                            $tipo_venta_actual = 'stock';
+                                        }
+                                        ?>
+                                        <option value="stock" <?php echo $tipo_venta_actual === 'stock' ? 'selected' : ''; ?>>Por Stock (Unidades)</option>
+                                        <option value="kilogramos" <?php echo $tipo_venta_actual === 'kilogramos' ? 'selected' : ''; ?>>Por Kilogramos</option>
+                                    </select>
+                                    <small class="text-muted">Selecciona cómo se vende este producto</small>
+                                </div>
                                 <div class="col-12 mb-3">
                                     <label for="descripcion" >Descripción</label>
                                     <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
                                               placeholder="Describe las características y usos del producto"><?php echo htmlspecialchars($product['descripcion'] ?? ''); ?></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Precios -->
+                            <div class="row mb-4" id="precios-container" style="display: none;">
+                                <div class="col-12">
+                                    <h5 class="text-primary mb-3">
+                                        <i class="fas fa-dollar-sign me-2"></i>Precios
+                                    </h5>
+                                </div>
+                                <!-- Campos para venta por stock -->
+                                <div id="precios-stock-container" style="display: none;">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="precio_venta">Precio de Venta por Unidad</label>
+                                        <input type="number" class="form-control" id="precio_venta" name="precio_venta" 
+                                               step="0.01" min="0" placeholder="0.00" value="<?php echo isset($product['precio_venta']) ? number_format((float)$product['precio_venta'], 2, '.', '') : ''; ?>">
+                                        <small class="text-muted">Precio por unidad cuando se vende por stock</small>
+                                    </div>
+                                </div>
+                                <!-- Campos para venta por kilogramos -->
+                                <div id="precios-kg-container" style="display: none;">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="precio_por_kg">Precio por Kilogramo</label>
+                                        <input type="number" class="form-control" id="precio_por_kg" name="precio_por_kg" 
+                                               step="0.01" min="0" placeholder="0.00" value="<?php echo isset($product['precio_por_kg']) ? number_format((float)$product['precio_por_kg'], 2, '.', '') : ''; ?>">
+                                        <small class="text-muted">Precio por kilogramo cuando se vende por peso</small>
+                                    </div>
+                                </div>
+                                <!-- Precio de alquiler (solo para maquinaria) -->
+                                <div id="precio-alquiler-container" style="display: none;">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="precio_alquiler_dia">Precio de Alquiler por Día</label>
+                                        <input type="number" class="form-control" id="precio_alquiler_dia" name="precio_alquiler_dia" 
+                                               step="0.01" min="0" placeholder="0.00" value="<?php echo isset($product['precio_alquiler_dia']) ? number_format((float)$product['precio_alquiler_dia'], 2, '.', '') : ''; ?>">
+                                        <small class="text-muted">Dejar en 0 si solo es para venta</small>
+                                    </div>
                                 </div>
                             </div>
 
@@ -182,10 +241,18 @@ $baseUrl = Config::SITE_URL;
                                         <i class="fas fa-boxes me-2"></i>Stock y Estado
                                     </h5>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="stock_disponible" >Stock Disponible</label>
+                                <!-- Stock solo para venta por stock o maquinaria -->
+                                <div class="col-md-6 mb-3" id="stock-container">
+                                    <label for="stock_disponible">Stock Disponible</label>
                                     <input type="number" class="form-control" id="stock_disponible" name="stock_disponible" 
                                            min="0" value="<?php echo $product['stock_disponible'] ?? 0; ?>">
+                                    <small class="text-muted" id="stock-help-text">Cantidad disponible en inventario</small>
+                                </div>
+                                <div class="col-md-6 mb-3" id="stock-minimo-container">
+                                    <label for="stock_minimo">Stock Mínimo</label>
+                                    <input type="number" class="form-control" id="stock_minimo" name="stock_minimo" 
+                                           min="0" value="<?php echo $product['stock_minimo'] ?? 0; ?>">
+                                    <small class="text-muted">Cantidad mínima antes de alerta</small>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="estado" >Estado</label>
@@ -259,6 +326,92 @@ $baseUrl = Config::SITE_URL;
         }
     }
 
+    // Función para actualizar el tipo de venta según la categoría seleccionada
+    function actualizarTipoVenta() {
+        const categoriaSelect = document.getElementById('categoria_id');
+        const tipoVentaContainer = document.getElementById('tipo-venta-container');
+        const preciosContainer = document.getElementById('precios-container');
+        const precioAlquilerContainer = document.getElementById('precio-alquiler-container');
+        const stockContainer = document.getElementById('stock-container');
+        const stockMinimoContainer = document.getElementById('stock-minimo-container');
+        const tipoVentaSelect = document.getElementById('tipo_venta');
+        
+        const selectedOption = categoriaSelect.options[categoriaSelect.selectedIndex];
+        const tipoCategoria = selectedOption ? selectedOption.getAttribute('data-tipo') : null;
+        
+        // Ocultar todo primero
+        tipoVentaContainer.style.display = 'none';
+        preciosContainer.style.display = 'none';
+        precioAlquilerContainer.style.display = 'none';
+        document.getElementById('precios-stock-container').style.display = 'none';
+        document.getElementById('precios-kg-container').style.display = 'none';
+        
+        if (tipoCategoria === 'material') {
+            // Mostrar dropdown de tipo de venta para Materiales Pétreos
+            tipoVentaContainer.style.display = 'block';
+            stockContainer.style.display = 'block';
+            stockMinimoContainer.style.display = 'block';
+            document.getElementById('stock-help-text').textContent = 'Cantidad disponible en inventario';
+            // Mostrar precios si ya hay un tipo seleccionado
+            if (tipoVentaSelect && tipoVentaSelect.value) {
+                mostrarCamposVenta();
+            }
+        } else if (tipoCategoria === 'maquinaria') {
+            // Para maquinaria, mostrar precio de alquiler y stock
+            preciosContainer.style.display = 'block';
+            precioAlquilerContainer.style.display = 'block';
+            stockContainer.style.display = 'block';
+            stockMinimoContainer.style.display = 'block';
+            document.getElementById('stock-help-text').textContent = 'Cantidad disponible en inventario';
+        } else {
+            // Si no hay categoría seleccionada, ocultar todo
+            stockContainer.style.display = 'block';
+            stockMinimoContainer.style.display = 'block';
+        }
+    }
+
+    // Función para mostrar campos según el tipo de venta seleccionado
+    function mostrarCamposVenta() {
+        const tipoVenta = document.getElementById('tipo_venta').value;
+        const preciosContainer = document.getElementById('precios-container');
+        const preciosStockContainer = document.getElementById('precios-stock-container');
+        const preciosKgContainer = document.getElementById('precios-kg-container');
+        const stockContainer = document.getElementById('stock-container');
+        const stockMinimoContainer = document.getElementById('stock-minimo-container');
+        
+        // Mostrar contenedor de precios
+        preciosContainer.style.display = 'block';
+        
+        if (tipoVenta === 'stock') {
+            // Mostrar campos para venta por stock
+            preciosStockContainer.style.display = 'block';
+            preciosKgContainer.style.display = 'none';
+            stockContainer.style.display = 'block';
+            stockMinimoContainer.style.display = 'block';
+            document.getElementById('stock-help-text').textContent = 'Cantidad disponible en inventario (unidades)';
+            
+            // Hacer requerido precio_venta
+            document.getElementById('precio_venta').required = true;
+            document.getElementById('precio_por_kg').required = false;
+        } else if (tipoVenta === 'kilogramos') {
+            // Mostrar campos para venta por kilogramos
+            preciosStockContainer.style.display = 'none';
+            preciosKgContainer.style.display = 'block';
+            stockContainer.style.display = 'none';
+            stockMinimoContainer.style.display = 'none';
+            
+            // Hacer requerido precio_por_kg
+            document.getElementById('precio_por_kg').required = true;
+            document.getElementById('precio_venta').required = false;
+        } else {
+            // Ocultar todo si no hay selección
+            preciosStockContainer.style.display = 'none';
+            preciosKgContainer.style.display = 'none';
+            stockContainer.style.display = 'block';
+            stockMinimoContainer.style.display = 'block';
+        }
+    }
+
     document.getElementById('productForm').addEventListener('submit', function(e) {
         const nombre = document.getElementById('nombre').value.trim();
         const categoria = document.getElementById('categoria_id').value;
@@ -267,6 +420,16 @@ $baseUrl = Config::SITE_URL;
             e.preventDefault();
             alert('Por favor completa todos los campos obligatorios correctamente.');
             return false;
+        }
+    });
+
+    // Inicializar al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        actualizarTipoVenta();
+        // Si ya hay un tipo de venta seleccionado, mostrar los campos correspondientes
+        const tipoVentaSelect = document.getElementById('tipo_venta');
+        if (tipoVentaSelect && tipoVentaSelect.value) {
+            mostrarCamposVenta();
         }
     });
 </script>

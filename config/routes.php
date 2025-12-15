@@ -11,6 +11,8 @@ $router->get('/contacto', 'ContactController@index');
 $router->post('/contacto', 'ContactController@index');
 $router->get('/quienes-somos', 'HomeController@quienesSomos');
 
+$router->post('/chat/message', 'ChatController@processMessage');
+
 $router->get('/login', 'AuthController@showLogin');
 $router->post('/login', 'AuthController@login');
 $router->get('/register', 'AuthController@showRegister');

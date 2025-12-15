@@ -63,8 +63,20 @@
                     <h3 class="font-weight-semi-bold mb-4 text-muted">Consultar precio</h3>
                 <?php endif; ?>
             <?php else: ?>
-                <?php if (!empty($product['precio_venta']) && $product['precio_venta'] > 0): ?>
-                    <h3 class="font-weight-semi-bold mb-4">$<?php echo number_format($product['precio_venta'], 2); ?></h3>
+                <?php 
+                $tiene_precio_venta = !empty($product['precio_venta']) && $product['precio_venta'] > 0;
+                $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                $stock_disponible = (int)($product['stock_disponible'] ?? 0);
+                
+                // Si no hay stock pero tiene precio por kg, mostrar precio por kg
+                if ($stock_disponible == 0 && $tiene_precio_kg): ?>
+                    <h3 class="font-weight-semi-bold mb-4">$<?php echo number_format($product['precio_por_kg'], 2); ?>/KG</h3>
+                    <p class="text-info mb-2"><i class="fa fa-info-circle"></i> Este producto se vende por kilogramos</p>
+                <?php elseif ($tiene_precio_venta): ?>
+                    <h3 class="font-weight-semi-bold mb-4">$<?php echo number_format($product['precio_venta'], 2); ?>/unidad</h3>
+                <?php elseif ($tiene_precio_kg): ?>
+                    <h3 class="font-weight-semi-bold mb-4">$<?php echo number_format($product['precio_por_kg'], 2); ?>/KG</h3>
+                    <p class="text-info mb-2"><i class="fa fa-info-circle"></i> Este producto se vende por kilogramos</p>
                 <?php else: ?>
                     <h3 class="font-weight-semi-bold mb-4 text-muted">Consultar precio</h3>
                 <?php endif; ?>
@@ -73,18 +85,30 @@
             <p class="mb-4"><?php echo nl2br(htmlspecialchars($product['descripcion'] ?? 'Sin descripción disponible.')); ?></p>
             
             <div class="d-flex align-items-center mb-4 pt-2">
-                <div class="input-group quantity mr-3" style="width: 130px;">
+                <?php 
+                $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                $stock_disponible = (int)($product['stock_disponible'] ?? 0);
+                $categoria_tipo = $product['categoria_tipo'] ?? '';
+                $es_por_kg = ($categoria_tipo === 'material' && $tiene_precio_kg && $stock_disponible == 0) || ($categoria_tipo === 'material' && $tiene_precio_kg);
+                ?>
+                <div class="input-group quantity mr-3" style="width: <?php echo $es_por_kg ? '180px' : '130px'; ?>;">
                     <div class="input-group-btn">
                         <button class="btn btn-primary btn-minus">
                             <i class="fa fa-minus"></i>
                         </button>
                     </div>
-                    <input type="text" class="form-control bg-secondary text-center" value="1" id="quantity">
+                    <input type="text" class="form-control bg-secondary text-center" value="<?php echo $es_por_kg ? '1.000' : '1'; ?>" id="quantity" 
+                           <?php if ($es_por_kg): ?>step="0.001" min="0.001"<?php else: ?>min="1" max="<?php echo $stock_disponible; ?>"<?php endif; ?>>
                     <div class="input-group-btn">
                         <button class="btn btn-primary btn-plus">
                             <i class="fa fa-plus"></i>
                         </button>
                     </div>
+                    <?php if ($es_por_kg): ?>
+                        <div class="input-group-append">
+                            <span class="input-group-text">KG</span>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <?php if ($product['categoria_tipo'] == 'maquinaria'): ?>
                     <?php if ($current_user): ?>
@@ -110,10 +134,28 @@
             </div>
             
             <div class="d-flex pt-2">
-                <strong class="text-dark mr-2">Stock disponible:</strong>
-                <span class="badge badge-<?php echo $product['stock_disponible'] > 0 ? 'success' : 'danger'; ?>">
-                    <?php echo $product['stock_disponible']; ?> unidades
-                </span>
+                <strong class="text-dark mr-2">
+                    <?php 
+                    $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                    $stock_disponible = (int)($product['stock_disponible'] ?? 0);
+                    $categoria_tipo = $product['categoria_tipo'] ?? '';
+                    
+                    if ($categoria_tipo === 'material' && $tiene_precio_kg && $stock_disponible == 0):
+                        echo 'Tipo de venta:';
+                    else:
+                        echo 'Stock disponible:';
+                    endif;
+                    ?>
+                </strong>
+                <?php if ($categoria_tipo === 'material' && $tiene_precio_kg && $stock_disponible == 0): ?>
+                    <span class="badge badge-warning">
+                        <i class="fa fa-weight"></i> Por Kilogramos (KG)
+                    </span>
+                <?php else: ?>
+                    <span class="badge badge-<?php echo $stock_disponible > 0 ? 'success' : 'danger'; ?>">
+                        <?php echo $stock_disponible; ?> unidades
+                    </span>
+                <?php endif; ?>
             </div>
             
             <?php if (!empty($product['especificaciones'])): ?>

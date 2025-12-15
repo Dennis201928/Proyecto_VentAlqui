@@ -176,10 +176,23 @@
                             <?php endif; ?>
                             <div class="mb-2">
                                 <span class="stock-badge">
-                                    <i class="fas fa-box"></i>Stock: <?php echo $product['stock_disponible']; ?>
+                                    <i class="fas fa-box"></i>
+                                    <?php 
+                                    $tipo_venta = $product['tipo_venta'] ?? 'stock';
+                                    if ($tipo_venta === 'kilogramos'): 
+                                        echo 'Disponible por KG';
+                                    else: 
+                                        echo 'Stock: ' . $product['stock_disponible'];
+                                    endif; 
+                                    ?>
                                 </span>
                             </div>
-                            <?php if ($product['precio_venta']): ?>
+                            <?php 
+                            $tipo_venta = $product['tipo_venta'] ?? 'stock';
+                            if ($tipo_venta === 'kilogramos' && !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0): 
+                                ?>
+                                <h5 class="text-primary">$<?php echo number_format($product['precio_por_kg'], 2); ?>/KG</h5>
+                            <?php elseif ($product['precio_venta']): ?>
                                 <h5 class="text-primary">$<?php echo number_format($product['precio_venta'], 2); ?></h5>
                             <?php endif; ?>
                         </div>

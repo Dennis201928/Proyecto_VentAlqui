@@ -67,12 +67,38 @@ class Order extends Model {
 
             // Crear detalles de venta
             foreach ($cart_items as $item) {
-                $precio = ($item['tipo'] == 'alquiler') ? $item['precio_alquiler_dia'] : $item['precio_venta'];
-                $subtotal = $precio * $item['cantidad'];
-                
-                if ($item['tipo'] == 'alquiler' && $item['fecha_inicio'] && $item['fecha_fin']) {
-                    $dias = (strtotime($item['fecha_fin']) - strtotime($item['fecha_inicio'])) / (60 * 60 * 24);
-                    $subtotal = $precio * $item['cantidad'] * $dias;
+                if ($item['tipo'] == 'alquiler') {
+                    $precio = $item['precio_alquiler_dia'];
+                    $subtotal = $precio * $item['cantidad'];
+                    
+                    if ($item['fecha_inicio'] && $item['fecha_fin']) {
+                        $dias = (strtotime($item['fecha_fin']) - strtotime($item['fecha_inicio'])) / (60 * 60 * 24);
+                        $subtotal = $precio * $item['cantidad'] * $dias;
+                    }
+                    // Asegurar que cantidad_detalle sea entero (venta_detalles.cantidad es INTEGER)
+                    $cantidad_detalle = (int)$item['cantidad'];
+                } elseif ($item['tipo'] == 'venta') {
+                    // Verificar si es venta por kilogramos usando tipo_venta
+                    $tipo_venta = $item['tipo_venta'] ?? 'stock';
+                    if ($tipo_venta === 'kilogramos') {
+                        // Para venta por kilogramos, usar precio_por_kg
+                        $precio = $item['precio_por_kg'];
+                        $cantidad_kg = (float)$item['cantidad'];
+                        $subtotal = $precio * $cantidad_kg;
+                        // Para kilogramos, cantidad en detalles será 1 (representa 1 transacción de kg)
+                        $cantidad_detalle = 1;
+                    } else {
+                        // Para venta por stock, usar precio_venta
+                        $precio = $item['precio_venta'];
+                        $subtotal = $precio * $item['cantidad'];
+                        // Asegurar que cantidad_detalle sea entero (venta_detalles.cantidad es INTEGER)
+                        $cantidad_detalle = (int)$item['cantidad'];
+                    }
+                } else {
+                    $precio = 0;
+                    $subtotal = 0;
+                    // Asegurar que cantidad_detalle sea entero
+                    $cantidad_detalle = (int)($item['cantidad'] ?? 1);
                 }
 
                 $query = "INSERT INTO venta_detalles (venta_id, producto_id, cantidad, precio_unitario, subtotal) 
@@ -80,19 +106,24 @@ class Order extends Model {
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':venta_id', $venta_id);
                 $stmt->bindParam(':producto_id', $item['producto_id']);
-                $stmt->bindParam(':cantidad', $item['cantidad']);
+                $stmt->bindParam(':cantidad', $cantidad_detalle, \PDO::PARAM_INT);
                 $stmt->bindParam(':precio_unitario', $precio);
                 $stmt->bindParam(':subtotal', $subtotal);
                 $stmt->execute();
 
-                // Actualizar stock para ventas
+                // Actualizar stock solo para ventas por stock (no para kilogramos)
                 if ($item['tipo'] == 'venta') {
-                    $query = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
-                             WHERE id = :producto_id";
-                    $stmt = $this->conn->prepare($query);
-                    $stmt->bindParam(':cantidad', $item['cantidad']);
-                    $stmt->bindParam(':producto_id', $item['producto_id']);
-                    $stmt->execute();
+                    $tipo_venta = $item['tipo_venta'] ?? 'stock';
+                    if ($tipo_venta !== 'kilogramos') {
+                        // Convertir cantidad a entero para stock (stock_disponible es INTEGER)
+                        $cantidad_stock = (int)$item['cantidad'];
+                        $query = "UPDATE productos SET stock_disponible = stock_disponible - :cantidad 
+                                 WHERE id = :producto_id";
+                        $stmt = $this->conn->prepare($query);
+                        $stmt->bindParam(':cantidad', $cantidad_stock, \PDO::PARAM_INT);
+                        $stmt->bindParam(':producto_id', $item['producto_id']);
+                        $stmt->execute();
+                    }
                 }
             }
 

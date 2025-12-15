@@ -21,6 +21,9 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/assets/css/style.css" rel="stylesheet">
     
+    <!-- Chatbot CSS -->
+    <link href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/assets/css/chatbot.css" rel="stylesheet">
+    
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
     
@@ -121,6 +124,9 @@
     <script src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/assets/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales/es.js"></script>
+    
+    <script> window.baseUrl = '<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>';</script>
+    <script src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/assets/js/chatbot.js"></script>
     
     <?php if (isset($extra_js)): ?>
         <?php foreach ($extra_js as $js): ?>

@@ -8,7 +8,7 @@ ini_set('display_errors', 1);
 
 // Verificar si ya está instalado
 if (file_exists('config/installed.txt')) {
-    echo "<h1>✅ Sistema ya instalado</h1>";
+    echo "<h1>Sistema ya instalado</h1>";
     echo "<p>El sistema ya está instalado. <a href='index.php'>Haz clic aquí</a> para acceder.</p>";
     echo "<p>Si quieres reinstalar, elimina el archivo <code>config/installed.txt</code></p>";
     exit;
@@ -143,28 +143,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <div class="container">
-        <h1>🔧 Instalador de AlquiVenta</h1>
+        <h1>Instalador de AlquiVenta</h1>
         
         <?php if ($error): ?>
             <div class="alert alert-danger">
-                <strong>❌ Error:</strong> <?php echo htmlspecialchars($error); ?>
+                <strong>Error:</strong> <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
         
         <?php if ($success): ?>
             <div class="alert alert-success">
-                <strong>✅ Éxito:</strong> <?php echo htmlspecialchars($success); ?>
+                <strong>Éxito:</strong> <?php echo htmlspecialchars($success); ?>
             </div>
             <div class="text-center">
-                <a href="index.php" class="btn btn-block">🚀 Acceder al Sistema</a>
+                <a href="index.php" class="btn btn-block">Acceder al Sistema</a>
             </div>
         <?php else: ?>
             <div class="info">
-                <strong>ℹ️ Información:</strong> Este instalador configurará la base de datos y creará todas las tablas necesarias para el sistema.
+                <strong>Información:</strong> Este instalador configurará la base de datos y creará todas las tablas necesarias para el sistema.
             </div>
             
             <div class="step">
-                <h3>📋 Configuración actual:</h3>
+                <h3>Configuración actual:</h3>
                 <ul>
                     <li><strong>Base de datos:</strong> PostgreSQL</li>
                     <li><strong>Host:</strong> localhost</li>
@@ -176,12 +176,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <form method="POST">
                 <div class="text-center">
-                    <button type="submit" class="btn btn-block">🚀 Instalar Sistema</button>
+                    <button type="submit" class="btn btn-block">Instalar Sistema</button>
                 </div>
             </form>
             
             <div class="text-center" style="margin-top: 20px;">
-                <a href="test.php" class="btn" style="background: #6c757d;">🔍 Ver Diagnóstico</a>
+                <a href="test.php" class="btn" style="background: #6c757d;">Ver Diagnóstico</a>
             </div>
         <?php endif; ?>
     </div>

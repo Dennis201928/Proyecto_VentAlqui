@@ -29,21 +29,21 @@ class Cart extends Model {
             $existing_item = $stmt->fetch();
             
             if ($existing_item) {
-                // Actualizar cantidad
-                $new_quantity = $existing_item['cantidad'] + $cantidad;
+                // Actualizar cantidad (puede ser decimal para kilogramos)
+                $new_quantity = (float)$existing_item['cantidad'] + (float)$cantidad;
                 $query = "UPDATE carrito SET cantidad = :cantidad WHERE id = :id";
                 $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':cantidad', $new_quantity);
+                $stmt->bindValue(':cantidad', $new_quantity, \PDO::PARAM_STR);
                 $stmt->bindParam(':id', $existing_item['id']);
                 $stmt->execute();
             } else {
-                // Agregar nuevo item
+                // Agregar nuevo item (cantidad puede ser decimal para kilogramos)
                 $query = "INSERT INTO carrito (usuario_id, producto_id, cantidad, tipo, fecha_inicio, fecha_fin) 
                          VALUES (:usuario_id, :producto_id, :cantidad, :tipo, :fecha_inicio, :fecha_fin)";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':usuario_id', $user_id);
                 $stmt->bindParam(':producto_id', $product_id);
-                $stmt->bindParam(':cantidad', $cantidad);
+                $stmt->bindValue(':cantidad', (float)$cantidad, \PDO::PARAM_STR);
                 $stmt->bindParam(':tipo', $tipo);
                 $stmt->bindParam(':fecha_inicio', $fecha_inicio);
                 $stmt->bindParam(':fecha_fin', $fecha_fin);
@@ -61,8 +61,8 @@ class Cart extends Model {
      */
     public function getCartItems($user_id) {
         try {
-            $query = "SELECT c.*, p.nombre, p.precio_venta, p.precio_alquiler_dia, p.imagen_principal, 
-                     p.stock_disponible, cat.nombre as categoria_nombre, cat.tipo as categoria_tipo
+            $query = "SELECT c.*, p.nombre, p.precio_venta, p.precio_alquiler_dia, p.precio_por_kg, p.imagen_principal, 
+                     p.stock_disponible, p.tipo_venta, cat.nombre as categoria_nombre, cat.tipo as categoria_tipo
                      FROM carrito c 
                      JOIN productos p ON c.producto_id = p.id 
                      LEFT JOIN categorias cat ON p.categoria_id = cat.id
@@ -87,10 +87,13 @@ class Cart extends Model {
                 return $this->removeFromCart($user_id, $item_id);
             }
             
+            // Asegurar que cantidad sea tratada como decimal (puede ser para kilogramos)
+            $cantidad = (float)$cantidad;
+            
             $query = "UPDATE carrito SET cantidad = :cantidad 
                      WHERE id = :item_id AND usuario_id = :usuario_id";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':cantidad', $cantidad);
+            $stmt->bindValue(':cantidad', $cantidad, \PDO::PARAM_STR);
             $stmt->bindParam(':item_id', $item_id);
             $stmt->bindParam(':usuario_id', $user_id);
             
@@ -158,12 +161,30 @@ class Cart extends Model {
             $impuestos = 0;
             
             foreach ($items as $item) {
-                $precio = ($item['tipo'] == 'alquiler') ? $item['precio_alquiler_dia'] : $item['precio_venta'];
-                $item_total = $precio * $item['cantidad'];
-                
-                if ($item['tipo'] == 'alquiler' && $item['fecha_inicio'] && $item['fecha_fin']) {
-                    $dias = (strtotime($item['fecha_fin']) - strtotime($item['fecha_inicio'])) / (60 * 60 * 24);
-                    $item_total = $precio * $item['cantidad'] * $dias;
+                if ($item['tipo'] == 'alquiler') {
+                    $precio = $item['precio_alquiler_dia'];
+                    $item_total = $precio * $item['cantidad'];
+                    
+                    if ($item['fecha_inicio'] && $item['fecha_fin']) {
+                        $dias = (strtotime($item['fecha_fin']) - strtotime($item['fecha_inicio'])) / (60 * 60 * 24);
+                        $item_total = $precio * $item['cantidad'] * $dias;
+                    }
+                } elseif ($item['tipo'] == 'venta') {
+                    // Verificar si es venta por kilogramos usando tipo_venta
+                    $tipo_venta = $item['tipo_venta'] ?? 'stock';
+                    if ($tipo_venta === 'kilogramos') {
+                        // Para venta por kilogramos, usar precio_por_kg
+                        $precio = $item['precio_por_kg'];
+                        // La cantidad en el carrito para kg se almacena como decimal
+                        $cantidad_kg = (float)$item['cantidad'];
+                        $item_total = $precio * $cantidad_kg;
+                    } else {
+                        // Para venta por stock, usar precio_venta
+                        $precio = $item['precio_venta'];
+                        $item_total = $precio * $item['cantidad'];
+                    }
+                } else {
+                    $item_total = 0;
                 }
                 
                 $subtotal += $item_total;
@@ -220,9 +241,33 @@ class Cart extends Model {
                         $unavailable_items[] = $item;
                     }
                 } elseif ($item['tipo'] == 'venta') {
+                    // Obtener información completa del producto desde la base de datos
                     $product = new Product();
                     $product_info = $product->getProductById($item['producto_id']);
-                    if ($product_info && isset($product_info['stock_disponible'])) {
+                    
+                    if (!$product_info) {
+                        $unavailable_items[] = $item;
+                        continue;
+                    }
+                    
+                    // Verificar si el producto se vende por kilogramos
+                    $tipo_venta = $product_info['tipo_venta'] ?? null;
+                    $tiene_precio_kg = !empty($product_info['precio_por_kg']) && (float)$product_info['precio_por_kg'] > 0;
+                    $stock_disponible = (int)($product_info['stock_disponible'] ?? 0);
+                    
+                    // Determinar si es venta por kilogramos:
+                    // 1. Si tipo_venta es 'kilogramos' (prioridad)
+                    // 2. O si tiene precio_por_kg y no tiene stock (fallback para productos antiguos sin tipo_venta)
+                    $es_por_kg = ($tipo_venta === 'kilogramos') || 
+                                ($tiene_precio_kg && $stock_disponible == 0);
+                    
+                    if ($es_por_kg) {
+                        // Los productos vendidos por kilogramos no tienen restricción de stock
+                        continue;
+                    }
+                    
+                    // Para productos vendidos por stock, verificar disponibilidad
+                    if (isset($product_info['stock_disponible'])) {
                         $stock_disponible = (int)$product_info['stock_disponible'];
                         if ($stock_disponible < $item['cantidad']) {
                             $unavailable_items[] = $item;

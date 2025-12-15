@@ -118,12 +118,29 @@ class AdminController extends Controller {
             $categoria_id = (int)$this->post('categoria_id', 0);
             $precio_venta = (float)$this->post('precio_venta', 0);
             $precio_alquiler_dia = (float)$this->post('precio_alquiler_dia', 0);
+            $precio_por_kg = (float)$this->post('precio_por_kg', 0);
+            $tipo_venta = $this->post('tipo_venta', '');
             $stock_disponible = (int)$this->post('stock_disponible', 0);
             $stock_minimo = (int)$this->post('stock_minimo', 0);
             $estado = $this->post('estado', 'disponible');
             
             if (empty($nombre) || $categoria_id <= 0) {
                 throw new \Exception('Los campos nombre y categoría son obligatorios');
+            }
+            
+            // Validar tipo de venta para Materiales Pétreos
+            $category = new \App\Models\Category();
+            $categoria = $category->getCategoryById($categoria_id);
+            if ($categoria && isset($categoria['tipo']) && $categoria['tipo'] === 'material') {
+                if (empty($tipo_venta)) {
+                    throw new \Exception('Debe seleccionar el tipo de venta (Stock o Kilogramos)');
+                }
+                if ($tipo_venta === 'stock' && $precio_venta <= 0) {
+                    throw new \Exception('El precio de venta por unidad es obligatorio cuando se vende por stock');
+                }
+                if ($tipo_venta === 'kilogramos' && $precio_por_kg <= 0) {
+                    throw new \Exception('El precio por kilogramo es obligatorio cuando se vende por kilogramos');
+                }
             }
             
             $imagen_principal = null;
@@ -148,12 +165,14 @@ class AdminController extends Controller {
                 'categoria_id' => $categoria_id,
                 'precio_venta' => $precio_venta,
                 'precio_alquiler_dia' => $precio_alquiler_dia,
+                'precio_por_kg' => $precio_por_kg,
                 'stock_disponible' => $stock_disponible,
                 'stock_minimo' => $stock_minimo,
                 'imagen_principal' => $imagen_principal,
                 'imagenes_adicionales' => [],
                 'especificaciones' => '{}',
-                'estado' => $estado
+                'estado' => $estado,
+                'tipo_venta' => $tipo_venta
             ];
             
             $result = $product->createProduct($product_data);
@@ -250,7 +269,12 @@ class AdminController extends Controller {
                 $nombre = trim($this->post('nombre', ''));
                 $descripcion = trim($this->post('descripcion', ''));
                 $categoria_id = (int)$this->post('categoria_id', 0);
+                $precio_venta = (float)$this->post('precio_venta', 0);
+                $precio_alquiler_dia = (float)$this->post('precio_alquiler_dia', 0);
+                $precio_por_kg = (float)$this->post('precio_por_kg', 0);
+                $tipo_venta = $this->post('tipo_venta', '');
                 $stock_disponible = (int)$this->post('stock_disponible', 0);
+                $stock_minimo = (int)$this->post('stock_minimo', 0);
                 $estado = $this->post('estado', 'disponible');
                 
                 if (empty($nombre) || $categoria_id <= 0) {
@@ -264,6 +288,38 @@ class AdminController extends Controller {
                     ];
                     $this->view('admin/edit-product', $data, 'admin');
                     return;
+                }
+                
+                // Validar tipo de venta para Materiales Pétreos
+                $category = new \App\Models\Category();
+                $categoria = $category->getCategoryById($categoria_id);
+                if ($categoria && isset($categoria['tipo']) && $categoria['tipo'] === 'material') {
+                    if (!empty($tipo_venta)) {
+                        if ($tipo_venta === 'stock' && $precio_venta <= 0) {
+                            $data = [
+                                'title' => 'Editar Producto',
+                                'current_user' => $current_user,
+                                'product' => $product_data,
+                                'categorias_maquinaria' => $product->getCategories('maquinaria'),
+                                'categorias_material' => $product->getCategories('material'),
+                                'error' => 'El precio de venta por unidad es obligatorio cuando se vende por stock'
+                            ];
+                            $this->view('admin/edit-product', $data, 'admin');
+                            return;
+                        }
+                        if ($tipo_venta === 'kilogramos' && $precio_por_kg <= 0) {
+                            $data = [
+                                'title' => 'Editar Producto',
+                                'current_user' => $current_user,
+                                'product' => $product_data,
+                                'categorias_maquinaria' => $product->getCategories('maquinaria'),
+                                'categorias_material' => $product->getCategories('material'),
+                                'error' => 'El precio por kilogramo es obligatorio cuando se vende por kilogramos'
+                            ];
+                            $this->view('admin/edit-product', $data, 'admin');
+                            return;
+                        }
+                    }
                 }
                 
                 $imagen_principal = $product_data['imagen_principal'];
@@ -293,13 +349,15 @@ class AdminController extends Controller {
                     'nombre' => $nombre,
                     'descripcion' => $descripcion,
                     'categoria_id' => $categoria_id,
-                    'precio_venta' => $product_data['precio_venta'] ?? 0,
-                    'precio_alquiler_dia' => $product_data['precio_alquiler_dia'] ?? 0,
+                    'precio_venta' => $precio_venta,
+                    'precio_alquiler_dia' => $precio_alquiler_dia,
+                    'precio_por_kg' => $precio_por_kg,
                     'stock_disponible' => $stock_disponible,
-                    'stock_minimo' => $product_data['stock_minimo'] ?? 0,
+                    'stock_minimo' => $stock_minimo,
                     'imagen_principal' => $imagen_principal,
                     'imagenes_adicionales' => [],
                     'especificaciones' => $product_data['especificaciones'] ?? '{}',
+                    'tipo_venta' => $tipo_venta,
                     'estado' => $estado
                 ];
                 

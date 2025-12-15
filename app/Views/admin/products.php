@@ -67,8 +67,7 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                                             <th>ID</th>
                                             <th>Nombre</th>
                                             <th>Categoría</th>
-                                            <!-- <th>Precio Venta</th>
-                                            <th>Precio Alquiler</th> -->
+                                            <th>Precio/Tipo</th>
                                             <th>Stock</th>
                                             <th>Estado</th>
                                             <th>Acciones</th>
@@ -80,12 +79,50 @@ $baseUrl = $baseUrl ?? '/Proyecto_VentAlqui/public';
                                                 <td><?php echo $product['id']; ?></td>
                                                 <td><strong><?php echo htmlspecialchars($product['nombre']); ?></strong></td>
                                                 <td><?php echo htmlspecialchars($product['categoria_nombre'] ?? 'N/A'); ?></td>
-                                                <!-- <td>$<?php echo number_format($product['precio_venta'] ?? 0, 2); ?></td>
-                                                <td>$<?php echo number_format($product['precio_alquiler_dia'] ?? 0, 2); ?>/día</td> -->
                                                 <td>
-                                                    <span class="badge <?php echo ($product['stock_disponible'] ?? 0) > 0 ? 'badge-success' : 'badge-danger'; ?>">
-                                                        <?php echo $product['stock_disponible'] ?? 0; ?>
-                                                    </span>
+                                                    <?php 
+                                                    $categoria_tipo = $product['categoria_tipo'] ?? '';
+                                                    if ($categoria_tipo === 'maquinaria'): 
+                                                        if (!empty($product['precio_alquiler_dia']) && $product['precio_alquiler_dia'] > 0):
+                                                    ?>
+                                                        <span class="badge badge-info">$<?php echo number_format($product['precio_alquiler_dia'], 2); ?>/día</span>
+                                                    <?php 
+                                                        else: 
+                                                    ?>
+                                                        <span class="badge badge-secondary">Sin precio</span>
+                                                    <?php 
+                                                        endif;
+                                                    elseif ($categoria_tipo === 'material'):
+                                                        $tiene_precio_venta = !empty($product['precio_venta']) && $product['precio_venta'] > 0;
+                                                        $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                                                        if ($tiene_precio_kg && !$tiene_precio_venta):
+                                                    ?>
+                                                        <span class="badge badge-warning">$<?php echo number_format($product['precio_por_kg'], 2); ?>/KG</span>
+                                                    <?php elseif ($tiene_precio_venta): ?>
+                                                        <span class="badge badge-success">$<?php echo number_format($product['precio_venta'], 2); ?>/unidad</span>
+                                                    <?php else: ?>
+                                                        <span class="badge badge-secondary">Sin precio</span>
+                                                    <?php 
+                                                        endif;
+                                                    else: 
+                                                    ?>
+                                                        <span class="badge badge-secondary">-</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
+                                                    <?php 
+                                                    $stock_disponible = $product['stock_disponible'] ?? 0;
+                                                    $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                                                    $categoria_tipo = $product['categoria_tipo'] ?? '';
+                                                    
+                                                    if ($categoria_tipo === 'material' && $tiene_precio_kg && $stock_disponible == 0):
+                                                    ?>
+                                                        <span class="badge badge-warning">Venta por KG</span>
+                                                    <?php else: ?>
+                                                        <span class="badge <?php echo $stock_disponible > 0 ? 'badge-success' : 'badge-danger'; ?>">
+                                                            <?php echo $stock_disponible; ?> unidades
+                                                        </span>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td>
                                                     <span class="badge <?php echo ($product['estado'] ?? 'disponible') === 'disponible' ? 'badge-success' : 'badge-secondary'; ?>">

@@ -81,7 +81,12 @@
                                 <div class="text-center py-4">
                                     <a class="h6 text-decoration-none text-truncate" href="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/producto/<?php echo $product['id']; ?>"><?php echo htmlspecialchars($product['nombre']); ?></a>
                                     <div class="d-flex align-items-center justify-content-center mt-2">
-                                        <?php if (!empty($product['precio_venta']) && $product['precio_venta'] > 0): ?>
+                                        <?php 
+                                        $tipo_venta = $product['tipo_venta'] ?? 'stock';
+                                        if ($tipo_venta === 'kilogramos' && !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0): 
+                                            ?>
+                                            <h6>$<?php echo number_format($product['precio_por_kg'], 2); ?>/KG</h6>
+                                        <?php elseif (!empty($product['precio_venta']) && $product['precio_venta'] > 0): ?>
                                             <h6>$<?php echo number_format($product['precio_venta'], 2); ?></h6>
                                         <?php else: ?>
                                             <h6 class="text-muted">Consultar precio</h6>
@@ -96,7 +101,15 @@
                                     </div>
                                     <div class="mb-2">
                                         <span class="badge badge-info">
-                                            <i class="fas fa-box"></i> Stock: <?php echo $product['stock_disponible']; ?>
+                                            <i class="fas fa-box"></i>
+                                            <?php 
+                                            $tipo_venta = $product['tipo_venta'] ?? 'stock';
+                                            if ($tipo_venta === 'kilogramos'): 
+                                                echo 'Disponible por KG';
+                                            else: 
+                                                echo 'Stock: ' . $product['stock_disponible'];
+                                            endif; 
+                                            ?>
                                         </span>
                                     </div>
                                 </div>

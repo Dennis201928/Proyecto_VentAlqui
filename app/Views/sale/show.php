@@ -97,32 +97,96 @@ $baseUrl = Config::SITE_URL;
                 
                 <div class="mb-3">
                     <strong>Precio:</strong> 
-                    <?php if (!empty($product['precio_venta']) && $product['precio_venta'] > 0): ?>
-                        <h5 class="text-primary">$<?php echo number_format((float)$product['precio_venta'], 2); ?></h5>
+                    <?php 
+                    $tiene_precio_venta = !empty($product['precio_venta']) && $product['precio_venta'] > 0;
+                    $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                    $stock_disponible = (int)($product['stock_disponible'] ?? 0);
+                    
+                    // Si no hay stock pero tiene precio por kg, mostrar precio por kg
+                    if ($stock_disponible == 0 && $tiene_precio_kg): ?>
+                        <h5 class="text-primary">$<?php echo number_format((float)$product['precio_por_kg'], 2); ?>/KG</h5>
+                        <small class="text-info"><i class="fas fa-info-circle"></i> Venta por kilogramos</small>
+                    <?php elseif ($tiene_precio_venta): ?>
+                        <h5 class="text-primary">$<?php echo number_format((float)$product['precio_venta'], 2); ?>/unidad</h5>
+                    <?php elseif ($tiene_precio_kg): ?>
+                        <h5 class="text-primary">$<?php echo number_format((float)$product['precio_por_kg'], 2); ?>/KG</h5>
+                        <small class="text-info"><i class="fas fa-info-circle"></i> Venta por kilogramos</small>
                     <?php else: ?>
                         <h5 class="text-warning">Consultar precio</h5>
                     <?php endif; ?>
                 </div>
                 
                 <div class="mb-3">
-                    <strong>Stock disponible:</strong> 
-                    <span class="badge badge-<?php echo $product['stock_disponible'] > 0 ? 'success' : 'danger'; ?>">
-                        <?php echo (int)$product['stock_disponible']; ?> unidades
-                    </span>
+                    <strong>
+                        <?php 
+                        if ($tiene_precio_kg && $stock_disponible == 0):
+                            echo 'Tipo de venta:';
+                        else:
+                            echo 'Stock disponible:';
+                        endif;
+                        ?>
+                    </strong> 
+                    <?php if ($tiene_precio_kg && $stock_disponible == 0): ?>
+                        <span class="badge badge-warning">
+                            <i class="fas fa-weight"></i> Por Kilogramos (KG)
+                        </span>
+                    <?php else: ?>
+                        <span class="badge badge-<?php echo $stock_disponible > 0 ? 'success' : 'danger'; ?>">
+                            <?php echo $stock_disponible; ?> unidades
+                        </span>
+                    <?php endif; ?>
                 </div>
             </div>
             
             <div class="product-info-card">
+                <?php 
+                $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                $stock_disponible = (int)($product['stock_disponible'] ?? 0);
+                $es_por_kg = ($tiene_precio_kg && $stock_disponible == 0) || ($tiene_precio_kg && !empty($product['precio_por_kg']));
+                ?>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text">Cantidad</span>
+                        <span class="input-group-text"><?php echo $es_por_kg ? 'Kilogramos' : 'Cantidad'; ?></span>
                     </div>
-                    <input type="number" class="form-control" id="quantity" value="<?php echo isset($cantidad) ? (int)$cantidad : 1; ?>" min="1" max="<?php echo (int)$product['stock_disponible']; ?>">
+                    <input type="number" class="form-control" id="quantity" 
+                           value="<?php echo isset($cantidad) ? ($es_por_kg ? number_format((float)$cantidad, 3, '.', '') : (int)$cantidad) : ($es_por_kg ? '1.000' : '1'); ?>" 
+                           <?php if ($es_por_kg): ?>
+                               step="0.001" min="0.001"
+                           <?php else: ?>
+                               min="1" max="<?php echo $stock_disponible; ?>"
+                           <?php endif; ?>>
+                    <?php if ($es_por_kg): ?>
+                        <div class="input-group-append">
+                            <span class="input-group-text">KG</span>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="price-calculator" id="price-calculator" style="display: none;">
                     <h5 class="mb-3"><i class="fas fa-calculator mr-2"></i>Resumen de la Venta</h5>
-                    <?php if (!empty($product['precio_venta']) && $product['precio_venta'] > 0): ?>
+                    <?php 
+                    $tiene_precio_venta = !empty($product['precio_venta']) && $product['precio_venta'] > 0;
+                    $tiene_precio_kg = !empty($product['precio_por_kg']) && $product['precio_por_kg'] > 0;
+                    $stock_disponible = (int)($product['stock_disponible'] ?? 0);
+                    $es_por_kg = ($tiene_precio_kg && $stock_disponible == 0) || ($tiene_precio_kg && !empty($product['precio_por_kg']));
+                    
+                    if ($es_por_kg && $tiene_precio_kg): ?>
+                    <div class="mb-2">
+                        <span>Precio por kilogramo:</span>
+                        <span class="float-right">$<?php echo number_format((float)$product['precio_por_kg'], 2); ?></span>
+                    </div>
+                    <div class="mb-2">
+                        <span>Kilogramos:</span>
+                        <span class="float-right" id="cantidad-calc"><?php echo isset($cantidad) ? number_format((float)$cantidad, 3, '.', '') : '1.000'; ?> KG</span>
+                    </div>
+                    <hr style="border-color: rgba(255,255,255,0.3);">
+                    <div class="mb-3">
+                        <!-- <h4 class="mb-0">
+                            <span>Total:</span>
+                            <span class="float-right" id="total-calc">$<?php echo number_format((float)$product['precio_por_kg'], 2); ?></span>
+                        </h4> -->
+                    </div>
+                    <?php elseif ($tiene_precio_venta): ?>
                     <div class="mb-2">
                         <span>Precio unitario:</span>
                         <span class="float-right">$<?php echo number_format((float)$product['precio_venta'], 2); ?></span>
@@ -140,8 +204,8 @@ $baseUrl = Config::SITE_URL;
                     </div>
                     <?php else: ?>
                     <div class="mb-2">
-                        <span>Cantidad:</span>
-                        <span class="float-right" id="cantidad-calc"><?php echo isset($cantidad) ? (int)$cantidad : 1; ?></span>
+                        <span><?php echo $es_por_kg ? 'Kilogramos:' : 'Cantidad:'; ?></span>
+                        <span class="float-right" id="cantidad-calc"><?php echo isset($cantidad) ? ($es_por_kg ? number_format((float)$cantidad, 3, '.', '') . ' KG' : (int)$cantidad) : ($es_por_kg ? '1.000 KG' : '1'); ?></span>
                     </div>
                     <hr style="border-color: rgba(255,255,255,0.3);">
                     <div class="mb-3">
@@ -166,14 +230,20 @@ $baseUrl = Config::SITE_URL;
     let selectedDate = null;
     const productId = <?php echo $product_id; ?>;
     const precioVenta = <?php echo (float)($product['precio_venta'] ?? 0); ?>;
+    const precioPorKg = <?php echo (float)($product['precio_por_kg'] ?? 0); ?>;
     const stockDisponible = <?php echo (int)($product['stock_disponible'] ?? 0); ?>;
-    const cantidadInicial = <?php echo isset($cantidad) ? (int)$cantidad : 1; ?>;
+    const cantidadInicial = <?php echo isset($cantidad) ? (float)$cantidad : 1; ?>;
+    const esPorKg = <?php echo ($tiene_precio_kg && $stock_disponible == 0) || ($tiene_precio_kg && !empty($product['precio_por_kg'])) ? 'true' : 'false'; ?>;
     
     // Inicializar la cantidad en el resumen al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
         const cantidadCalc = document.getElementById('cantidad-calc');
         if (cantidadCalc) {
-            cantidadCalc.textContent = cantidadInicial;
+            if (esPorKg) {
+                cantidadCalc.textContent = cantidadInicial.toFixed(3) + ' KG';
+            } else {
+                cantidadCalc.textContent = Math.floor(cantidadInicial);
+            }
         }
     });
     
@@ -298,27 +368,38 @@ $baseUrl = Config::SITE_URL;
     }
 
     function updatePrice() {
-        const cantidad = parseInt(document.getElementById('quantity').value) || 1;
-        
-        if (cantidad > stockDisponible) {
-            alert('La cantidad seleccionada excede el stock disponible.');
-            document.getElementById('quantity').value = stockDisponible;
-            return;
-        }
-        
         const cantidadCalc = document.getElementById('cantidad-calc');
-        if (cantidadCalc) {
-            cantidadCalc.textContent = cantidad;
-        }
-        
         const totalCalc = document.getElementById('total-calc');
-        if (totalCalc) {
-            if (precioVenta > 0) {
+        
+        if (esPorKg) {
+            const cantidadKg = parseFloat(document.getElementById('quantity').value) || 0;
+            if (cantidadKg <= 0) {
+                if (cantidadCalc) cantidadCalc.textContent = '0.000 KG';
+                return;
+            }
+            if (cantidadCalc) {
+                cantidadCalc.textContent = cantidadKg.toFixed(3) + ' KG';
+            }
+            if (totalCalc && precioPorKg > 0) {
+                const total = precioPorKg * cantidadKg;
+                totalCalc.textContent = '$' + total.toFixed(2);
+            }
+        } else {
+            const cantidad = parseInt(document.getElementById('quantity').value) || 1;
+            
+            if (cantidad > stockDisponible && stockDisponible > 0) {
+                alert('La cantidad seleccionada excede el stock disponible.');
+                document.getElementById('quantity').value = stockDisponible;
+                return;
+            }
+            
+            if (cantidadCalc) {
+                cantidadCalc.textContent = cantidad;
+            }
+            
+            if (totalCalc && precioVenta > 0) {
                 const total = precioVenta * cantidad;
                 totalCalc.textContent = '$' + total.toFixed(2);
-            } else {
-                // Si no hay precio, el mensaje ya está en el HTML
-                // Solo actualizamos la cantidad
             }
         }
     }
@@ -334,19 +415,32 @@ $baseUrl = Config::SITE_URL;
             return;
         }
         
-        const cantidad = parseInt(document.getElementById('quantity').value) || 1;
+        let cantidad = 0;
+        let cantidadKg = null;
+        let precio = 0;
         
-        if (cantidad <= 0) {
-            alert('La cantidad debe ser mayor a 0.');
-            return;
+        if (esPorKg) {
+            cantidadKg = parseFloat(document.getElementById('quantity').value) || 0;
+            if (cantidadKg <= 0) {
+                alert('La cantidad en kilogramos debe ser mayor a 0.');
+                return;
+            }
+            cantidad = 1; // Para kilogramos, cantidad siempre es 1
+            precio = precioPorKg;
+        } else {
+            cantidad = parseInt(document.getElementById('quantity').value) || 1;
+            if (cantidad <= 0) {
+                alert('La cantidad debe ser mayor a 0.');
+                return;
+            }
+            if (cantidad > stockDisponible && stockDisponible > 0) {
+                alert('La cantidad seleccionada excede el stock disponible.');
+                return;
+            }
+            precio = precioVenta;
         }
         
-        if (cantidad > stockDisponible) {
-            alert('La cantidad seleccionada excede el stock disponible.');
-            return;
-        }
-        
-        if (precioVenta <= 0) {
+        if (precio <= 0) {
             if (!confirm('Este producto no tiene precio configurado. La venta se agendará y nos contactaremos contigo para acordar el precio. ¿Deseas continuar?')) {
                 return;
             }
@@ -356,19 +450,28 @@ $baseUrl = Config::SITE_URL;
             }
         }
         
-        // Agregar al carrito con las fechas (igual que alquiler pero usando carrito)
+        // Agregar al carrito con las fechas y tipo de venta
+        const bodyData = {
+            producto_id: productId,
+            cantidad: cantidad,
+            tipo: 'venta',
+            fecha_inicio: selectedDate,
+            fecha_fin: selectedDate
+        };
+        
+        if (esPorKg && cantidadKg !== null) {
+            bodyData.cantidad_kg = cantidadKg;
+            bodyData.tipo_venta = 'kilogramos';
+        } else {
+            bodyData.tipo_venta = 'stock';
+        }
+        
         fetch('/Proyecto_VentAlqui/api/cart.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                producto_id: productId,
-                cantidad: cantidad,
-                tipo: 'venta',
-                fecha_inicio: selectedDate,
-                fecha_fin: selectedDate
-            })
+            body: JSON.stringify(bodyData)
         })
         .then(response => {
             if (!response.ok) {

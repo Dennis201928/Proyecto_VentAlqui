@@ -69,10 +69,17 @@ try {
             }
             
             $producto_id = $input['producto_id'];
-            $cantidad = isset($input['cantidad']) ? $input['cantidad'] : 1;
             $tipo = isset($input['tipo']) ? $input['tipo'] : 'venta';
             $fecha_inicio = isset($input['fecha_inicio']) ? $input['fecha_inicio'] : null;
             $fecha_fin = isset($input['fecha_fin']) ? $input['fecha_fin'] : null;
+            
+            // Si viene cantidad_kg, usar esa; sino usar cantidad normal
+            $cantidad = 1;
+            if (isset($input['cantidad_kg']) && $input['tipo_venta'] === 'kilogramos') {
+                $cantidad = (float)$input['cantidad_kg']; // Almacenar kilogramos como decimal
+            } elseif (isset($input['cantidad'])) {
+                $cantidad = (int)$input['cantidad'];
+            }
             
             $result = $cart->addToCart($user_id, $producto_id, $cantidad, $tipo, $fecha_inicio, $fecha_fin);
             if ($result['success']) {

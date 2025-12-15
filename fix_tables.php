@@ -10,10 +10,10 @@ try {
     $conn = $db->getConnection();
     
     if (!$conn) {
-        die("❌ No se pudo conectar a la base de datos");
+        die("No se pudo conectar a la base de datos");
     }
     
-    echo "<h1>🔧 Creando tablas faltantes</h1>";
+    echo "<h1>Creando tablas faltantes</h1>";
     
     // Crear tabla pedidos
     $sql_pedidos = "
@@ -31,7 +31,7 @@ try {
     ";
     
     $conn->exec($sql_pedidos);
-    echo "✅ Tabla 'pedidos' creada exitosamente<br>";
+    echo "Tabla 'pedidos' creada exitosamente<br>";
     
     // Crear tabla pedido_detalles
     $sql_pedido_detalles = "
@@ -51,7 +51,7 @@ try {
     ";
     
     $conn->exec($sql_pedido_detalles);
-    echo "✅ Tabla 'pedido_detalles' creada exitosamente<br>";
+    echo "Tabla 'pedido_detalles' creada exitosamente<br>";
     
     // Crear índices para mejorar el rendimiento
     $indices = [
@@ -65,7 +65,7 @@ try {
     foreach ($indices as $indice) {
         $conn->exec($indice);
     }
-    echo "✅ Índices creados exitosamente<br>";
+    echo "Índices creados exitosamente<br>";
     
     // Verificar que las tablas existen
     $tables = ['pedidos', 'pedido_detalles'];
@@ -73,16 +73,16 @@ try {
         $stmt = $conn->query("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '$table')");
         $exists = $stmt->fetchColumn();
         if ($exists) {
-            echo "✅ Verificación: Tabla '$table' existe<br>";
+            echo "Verificación: Tabla '$table' existe<br>";
         } else {
-            echo "❌ Error: Tabla '$table' NO existe<br>";
+            echo "Error: Tabla '$table' NO existe<br>";
         }
     }
     
-    echo "<br><h2>🎉 ¡Instalación completada!</h2>";
+    echo "<br><h2>¡Instalación completada!</h2>";
     echo "<p>El sistema está listo para usar. <a href='index.php'>Haz clic aquí</a> para acceder al sistema.</p>";
     
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage();
+    echo "Error: " . $e->getMessage();
 }
 ?>

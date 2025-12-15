@@ -139,21 +139,41 @@ $baseUrl = Config::SITE_URL;
                     
                     <?php if (!empty($cart_items) && !isset($cart_items['error'])): ?>
                         <?php foreach ($cart_items as $item): ?>
-                            <div class="d-flex justify-content-between">
-                                <p><?php echo htmlspecialchars($item['nombre']); ?> x<?php echo $item['cantidad']; ?></p>
-                                <p>
-                                    <?php 
-                                    $precio = ($item['tipo'] == 'alquiler') ? $item['precio_alquiler_dia'] : $item['precio_venta'];
+                            <?php 
+                            if ($item['tipo'] == 'alquiler') {
+                                $precio = $item['precio_alquiler_dia'] ?? 0;
+                                $cantidad_display = $item['cantidad'];
+                                $unidad = '';
+                                if ($item['fecha_inicio'] && $item['fecha_fin']) {
+                                    $dias = (strtotime($item['fecha_fin']) - strtotime($item['fecha_inicio'])) / (60 * 60 * 24);
+                                    $subtotal = $precio * $item['cantidad'] * $dias;
+                                    $cantidad_display = $item['cantidad'] . ' x ' . $dias . ' días';
+                                } else {
                                     $subtotal = $precio * $item['cantidad'];
-                                    
-                                    if ($item['tipo'] == 'alquiler' && isset($item['fecha_inicio']) && isset($item['fecha_fin'])) {
-                                        $dias = (strtotime($item['fecha_fin']) - strtotime($item['fecha_inicio'])) / (60 * 60 * 24);
-                                        $subtotal = $precio * $item['cantidad'] * $dias;
-                                    }
-                                    
-                                    echo '$' . number_format($subtotal, 2);
-                                    ?>
-                                </p>
+                                }
+                            } elseif ($item['tipo'] == 'venta') {
+                                $tipo_venta = $item['tipo_venta'] ?? 'stock';
+                                if ($tipo_venta === 'kilogramos') {
+                                    $precio = $item['precio_por_kg'] ?? 0;
+                                    $cantidad_display = number_format((float)$item['cantidad'], 3, '.', '') . ' KG';
+                                    $unidad = '';
+                                    $subtotal = $precio * (float)$item['cantidad'];
+                                } else {
+                                    $precio = $item['precio_venta'] ?? 0;
+                                    $cantidad_display = $item['cantidad'];
+                                    $unidad = '';
+                                    $subtotal = $precio * $item['cantidad'];
+                                }
+                            } else {
+                                $precio = 0;
+                                $cantidad_display = $item['cantidad'];
+                                $unidad = '';
+                                $subtotal = 0;
+                            }
+                            ?>
+                            <div class="d-flex justify-content-between">
+                                <p><?php echo htmlspecialchars($item['nombre']); ?> x<?php echo $cantidad_display; ?><?php echo $unidad; ?></p>
+                                <p>$<?php echo number_format($subtotal, 2); ?></p>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>

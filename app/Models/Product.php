@@ -129,10 +129,10 @@ class Product extends Model {
      */
     public function createProduct($data) {
         try {
-            $query = "INSERT INTO productos (nombre, descripcion, categoria_id, precio_venta, precio_alquiler_dia, 
-                     stock_disponible, stock_minimo, imagen_principal, imagenes_adicionales, especificaciones, estado) 
-                     VALUES (:nombre, :descripcion, :categoria_id, :precio_venta, :precio_alquiler_dia, 
-                     :stock_disponible, :stock_minimo, :imagen_principal, :imagenes_adicionales, :especificaciones, :estado)";
+            $query = "INSERT INTO productos (nombre, descripcion, categoria_id, precio_venta, precio_alquiler_dia, precio_por_kg,
+                     stock_disponible, stock_minimo, imagen_principal, imagenes_adicionales, especificaciones, estado, tipo_venta) 
+                     VALUES (:nombre, :descripcion, :categoria_id, :precio_venta, :precio_alquiler_dia, :precio_por_kg,
+                     :stock_disponible, :stock_minimo, :imagen_principal, :imagenes_adicionales, :especificaciones, :estado, :tipo_venta)";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':nombre', $data['nombre']);
@@ -140,9 +140,13 @@ class Product extends Model {
             $stmt->bindParam(':categoria_id', $data['categoria_id']);
             $stmt->bindParam(':precio_venta', $data['precio_venta']);
             $stmt->bindParam(':precio_alquiler_dia', $data['precio_alquiler_dia']);
+            $precio_por_kg = isset($data['precio_por_kg']) ? $data['precio_por_kg'] : null;
+            $stmt->bindParam(':precio_por_kg', $precio_por_kg);
             $stmt->bindParam(':stock_disponible', $data['stock_disponible']);
             $stmt->bindParam(':stock_minimo', $data['stock_minimo']);
             $stmt->bindParam(':imagen_principal', $data['imagen_principal']);
+            $tipo_venta = isset($data['tipo_venta']) && !empty($data['tipo_venta']) ? $data['tipo_venta'] : 'stock';
+            $stmt->bindParam(':tipo_venta', $tipo_venta);
             
             // Manejar array de imágenes adicionales
             $imagenes_adicionales = $this->arrayToPostgresArray($data['imagenes_adicionales'] ?? []);
@@ -167,10 +171,10 @@ class Product extends Model {
     public function updateProduct($id, $data) {
         try {
             $query = "UPDATE productos SET nombre = :nombre, descripcion = :descripcion, categoria_id = :categoria_id, 
-                     precio_venta = :precio_venta, precio_alquiler_dia = :precio_alquiler_dia, 
+                     precio_venta = :precio_venta, precio_alquiler_dia = :precio_alquiler_dia, precio_por_kg = :precio_por_kg,
                      stock_disponible = :stock_disponible, stock_minimo = :stock_minimo, 
                      imagen_principal = :imagen_principal, imagenes_adicionales = :imagenes_adicionales, 
-                     especificaciones = :especificaciones, estado = :estado, 
+                     especificaciones = :especificaciones, estado = :estado, tipo_venta = :tipo_venta,
                      fecha_actualizacion = CURRENT_TIMESTAMP 
                      WHERE id = :id";
             
@@ -181,9 +185,13 @@ class Product extends Model {
             $stmt->bindParam(':categoria_id', $data['categoria_id']);
             $stmt->bindParam(':precio_venta', $data['precio_venta']);
             $stmt->bindParam(':precio_alquiler_dia', $data['precio_alquiler_dia']);
+            $precio_por_kg = isset($data['precio_por_kg']) ? $data['precio_por_kg'] : null;
+            $stmt->bindParam(':precio_por_kg', $precio_por_kg);
             $stmt->bindParam(':stock_disponible', $data['stock_disponible']);
             $stmt->bindParam(':stock_minimo', $data['stock_minimo']);
             $stmt->bindParam(':imagen_principal', $data['imagen_principal']);
+            $tipo_venta = isset($data['tipo_venta']) && !empty($data['tipo_venta']) ? $data['tipo_venta'] : 'stock';
+            $stmt->bindParam(':tipo_venta', $tipo_venta);
             
             // Buscar dentro de un array de imagenes la imagen que le pertenece
             $imagenes_adicionales = $this->arrayToPostgresArray($data['imagenes_adicionales'] ?? []);
