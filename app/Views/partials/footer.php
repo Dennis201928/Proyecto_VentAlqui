@@ -5,9 +5,9 @@
         <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
             <h5 class="text-secondary text-uppercase mb-4">Contáctanos</h5>
             <p class="mb-4">Somos especialistas en venta y alquiler de maquinaria pesada y materiales pétreos de alta calidad.</p>
-            <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
+            <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>Miravalle 1</p>
             <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@alquivent.com</p>
-            <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+593 345 67890</p>
+            <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+593 0999999999</p>
         </div>
         <div class="col-lg-8 col-md-12">
             <div class="row">

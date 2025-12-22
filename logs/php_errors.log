@@ -77,3 +77,5 @@
 [12-Dec-2025 23:16:05 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\admin\edit-product.php on line 127
 [13-Dec-2025 01:08:20 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 160
 [15-Dec-2025 23:05:56 Europe/Berlin] PHP Warning:  Undefined array key "categoria_tipo" in C:\xampp\htdocs\Proyecto_VentAlqui\app\Views\products\show.php on line 202
+[22-Dec-2025 20:41:45 Europe/Berlin] Error de conexiÃ³n a la base de datos: SQLSTATE[08006] [7] FATAL:  la autentificación password falló para el usuario «postgres»
+[22-Dec-2025 20:41:45 Europe/Berlin] Error en executeHandler: Error de conexiÃ³n a la base de datos en C:\xampp\htdocs\Proyecto_VentAlqui\app\Core\Database.php:22

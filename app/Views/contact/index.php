@@ -4,9 +4,9 @@
     <div class="row">
         <div class="col-md-6">
             <h4>Información de Contacto</h4>
-            <p><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
+            <p><i class="fa fa-map-marker-alt text-primary mr-3"></i>Miravalle 1</p>
             <p><i class="fa fa-envelope text-primary mr-3"></i>info@alquivent.com</p>
-            <p><i class="fa fa-phone-alt text-primary mr-3"></i>+593 345 67890</p>
+            <p><i class="fa fa-phone-alt text-primary mr-3"></i>+593 09999999999</p>
             <!-- Estilos del botón "Cómo llegar" -->
 <style>
   .btn-map {

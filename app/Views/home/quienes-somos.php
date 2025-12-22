@@ -64,7 +64,7 @@
                     <!-- Proyecto 1 -->
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card border-0 shadow-sm h-100">
-                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-1.jpg"
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/assets/img/reference/Obra1.jpg"
                                  class="card-img-top" alt="Movimiento de tierras - Vía Norte">
                             <div class="card-body">
                                 <h5 class="card-title">Movimiento de Tierras – Vía Norte</h5>
@@ -79,7 +79,7 @@
                     <!-- Proyecto 2 -->
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card border-0 shadow-sm h-100">
-                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-2.jpg"
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/assets/img/reference/Obra2.jpg"
                                  class="card-img-top" alt="Suministro de agregados para hormigón">
                             <div class="card-body">
                                 <h5 class="card-title">Suministro de Agregados</h5>
@@ -94,7 +94,7 @@
                     <!-- Proyecto 3 -->
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card border-0 shadow-sm h-100">
-                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-3.jpg"
+                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/assets/img/reference/Obra3.jpg"
                                  class="card-img-top" alt="Compactación de subrasante">
                             <div class="card-body">
                                 <h5 class="card-title">Compactación de Subrasante</h5>
@@ -106,48 +106,7 @@
                         </div>
                     </div>
 
-                    <!-- Proyecto 4 -->
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-4.jpg"
-                                 class="card-img-top" alt="Estabilización de taludes">
-                            <div class="card-body">
-                                <h5 class="card-title">Estabilización de Taludes</h5>
-                                <p class="card-text mb-0">
-                                    Conformación y protección de taludes con mezcla seleccionada y control de pendientes.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Proyecto 5 -->
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-5.jpg"
-                                 class="card-img-top" alt="Carguío y transporte en cantera">
-                            <div class="card-body">
-                                <h5 class="card-title">Carguío y Transporte</h5>
-                                <p class="card-text mb-0">
-                                    Operación continua en cantera, optimizando ciclos de cargadores frontales y volquetas.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Proyecto 6 -->
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card border-0 shadow-sm h-100">
-                            <img src="<?php echo $baseUrl ?? '/Proyecto_VentAlqui/public'; ?>/img/galeria/proyecto-6.jpg"
-                                 class="card-img-top" alt="Base granular para pavimento">
-                            <div class="card-body">
-                                <h5 class="card-title">Base Granular para Pavimento</h5>
-                                <p class="card-text mb-0">
-                                    Producción y extendido de material base cumpliendo especificaciones municipales.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    
 
                 <!-- CTA -->
                 <div class="row mt-4">

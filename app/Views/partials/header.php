@@ -51,7 +51,7 @@
   <div class="col-lg-4 d-flex align-items-center ml-auto justify-content-end text-right">
     <div>
       <p class="m-0">Contáctanos</p>
-      <h5 class="m-0">+012 345 6789</h5>
+      <h5 class="m-0">+593 0999999999</h5>
     </div>
   </div>
 </div>
