@@ -63,15 +63,45 @@ class Auth extends Model {
             $stmt->bindParam(':direccion', $sanitized['direccion']);
 
             if ($stmt->execute()) {
+
+                // ✅ (Tu código original) Log de registro
                 Security::logSecurityEvent('user_registered', [
                     'email' => $sanitized['email'],
                     'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
                 ]);
-                
+
+                // ✅ (AGREGADO) Enviar correo con datos del usuario (SIN contraseña)
+                try {
+                    $nombreCompleto = trim($sanitized['nombre'] . ' ' . $sanitized['apellido']);
+
+                    $userData = [
+                        'nombre'   => $sanitized['nombre'],
+                        'apellido' => $sanitized['apellido'],
+                        'email'    => $sanitized['email'],
+                        'telefono' => $sanitized['telefono'] ?? null,
+                        'direccion'=> $sanitized['direccion'] ?? null,
+                    ];
+
+                    $userService = new \App\Helpers\UserService();
+
+                    // 1) Bienvenida al usuario (opcional, si lo quieres)
+                    $userService->sendRegisterWelcomeEmail($nombreCompleto, $sanitized['email']);
+
+                    // 2) Info al admin con datos del usuario registrado (sin contraseña)
+                    $userService->sendRegisterInfoToAdmin($userData);
+
+                } catch (\Exception $e) {
+                    // No romper el registro si el correo falla
+                    error_log("Error al enviar correos de registro: " . $e->getMessage());
+                }
+                // ✅ (FIN AGREGADO)
+
                 return ['success' => true, 'message' => 'Usuario registrado exitosamente'];
+
             } else {
                 return ['success' => false, 'message' => 'Error al registrar usuario'];
             }
+
         } catch (\PDOException $e) {
             Security::logSecurityEvent('registration_error', [
                 'error' => $e->getMessage(),
@@ -237,4 +267,3 @@ class Auth extends Model {
         }
     }
 }
-
